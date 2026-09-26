@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consulta CST × cClassTrib (IBS/CBS)</title>
+<meta name="description" content="Consulta rápida aos Códigos de Situação Tributária (CST) e Códigos de Classificação Tributária (cClassTrib) do IBS/CBS.">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="topo">
+  <div class="wrap">
+    <h1>Consulta CST <span>×</span> cClassTrib <small>IBS / CBS</small></h1>
+    <p class="fonte">Espelho de consulta da página oficial
+      <a href="https://dfe-portal.svrs.rs.gov.br/CFF/ClassificacaoTributaria" target="_blank" rel="noopener">Portal da Conformidade Fácil — Classificação Tributária</a>
+      · dados de <strong id="snapshot">26/09/2026</strong></p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="status" class="status" hidden></section>
+
+  <section class="busca">
+    <label class="busca-rotulo" for="q">Busca rápida</label>
+    <input id="q" type="search" placeholder="Digite código ou palavra — ex.: 200003, “medicamento”, “410”, “ZFM”…" autocomplete="off">
+    <div class="visao">
+      <label><input type="radio" name="view" value="grupo" checked> Agrupada por CST</label>
+      <label><input type="radio" name="view" value="lista"> Aberta por cClassTrib</label>
+    </div>
+  </section>
+
+  <details class="filtros" open>
+    <summary>Filtros avançados <span id="contador" class="contador"></span></summary>
+    <div class="grade">
+
+      <fieldset>
+        <legend>CST — Situação Tributária</legend>
+        <label>Código
+          <select id="fCst"><option value="">Todos</option></select>
+        </label>
+        <label>Descrição contém
+          <input id="fNomeCst" type="text" placeholder="ex.: diferimento">
+        </label>
+        <div class="checks" id="indPai">
+          <label><input type="checkbox" id="indExigeTrib"> Exige tributação</label>
+          <label><input type="checkbox" id="indReducaoBc"> Redução de BC</label>
+          <label><input type="checkbox" id="indReducaoAliq"> Redução de alíquota</label>
+          <label><input type="checkbox" id="indTransferenciaCred"> Transferência de crédito</label>
+          <label><input type="checkbox" id="indDiferimento"> Diferimento</label>
+          <label><input type="checkbox" id="indMonofasica"> Monofásica</label>
+          <label><input type="checkbox" id="indCredPresIbsZfm"> Crédito presumido IBS ZFM</label>
+          <label><input type="checkbox" id="indAjusteCompet"> Ajuste de competência</label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>cClassTrib — Classificação Tributária</legend>
+        <label>Código
+          <select id="fCod"><option value="">Todos</option></select>
+        </label>
+        <label>Descrição contém
+          <input id="fNomeRed" type="text" placeholder="ex.: medicamento">
+        </label>
+        <label>Tipo de alíquota
+          <select id="fTipoAliq">
+            <option value="">Todos</option>
+            <option value="1">1 — Fixa</option>
+            <option value="2">2 — Padrão</option>
+            <option value="3">3 — Sem alíquota</option>
+            <option value="4">4 — Uniforme nacional</option>
+            <option value="5">5 — Uniforme setorial</option>
+          </select>
+        </label>
+        <div class="checks">
+          <label><input type="checkbox" id="indTribRegular"> Tributação regular</label>
+          <label><input type="checkbox" id="indPermiteCredPres"> Permite crédito presumido</label>
+          <label><input type="checkbox" id="indEstornoCred"> Estorno de crédito</label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Documentos fiscais (DF-e)</legend>
+        <div class="op">
+          <label><input type="radio" name="op" value="E" checked> E (todos)</label>
+          <label><input type="radio" name="op" value="OU"> OU (qualquer um)</label>
+        </div>
+        <div class="checks dfe" id="dfes"></div>
+      </fieldset>
+
+    </div>
+    <div class="acoes">
+      <button type="button" id="btnLimpar" class="btn">Limpar</button>
+      <button type="button" id="btnCsv" class="btn">Exportar CSV</button>
+      <button type="button" id="btnJson" class="btn">Exportar JSON</button>
+    </div>
+  </details>
+
+  <section id="resultados" aria-live="polite"></section>
+
+</main>
+
+<dialog id="dlg">
+  <div class="dlg-head">
+    <strong id="dlgTitulo">Detalhe</strong>
+    <button id="dlgFechar" class="btn" autofocus>Fechar ✕</button>
+  </div>
+  <div id="dlgBody" class="dlg-body"></div>
+</dialog>
+
+<footer class="rodape">
+  <div class="wrap">
+    <p>Consulta não oficial, sem vínculo com SEFAZ/Receita. Para uso fiscal, confirme sempre no
+      <a href="https://dfe-portal.svrs.rs.gov.br/CFF/ClassificacaoTributaria" target="_blank" rel="noopener">portal oficial</a>.
+      Dados extraídos em 26/09/2026 — atualize com <code>python scripts/atualizar.py portal.html</code>.</p>
+  </div>
+</footer>
+
+<script src="assets/app.js" defer></script>
+</body>
+</html>
