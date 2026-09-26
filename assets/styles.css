@@ -239,5 +239,23 @@ details.regra pre {
 
 @media (max-width: 640px) {
   .dl { grid-template-columns: 1fr; }
-  thead th:nth-child(n+6), tbody td:nth-child(n+6) { /* rolagem horizontal cuida */ }
+  .topo { padding: 30px 0 26px; }
+  .topo h1 { font-size: 1.25rem; }
+  .busca, .filtros { padding: 12px 12px; }
+  table { font-size: 0.8rem; }
+  thead th, tbody td { padding: 6px 7px; }
+  /* primeira coluna (código) fixa na rolagem horizontal */
+  .tab-wrap th:first-child, .tab-wrap td.cod:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+  .tab-wrap th:first-child { background: #eef3f8; }
+  .tab-wrap td.cod:first-child { background: #fff; }
+  tbody tr:hover td.cod:first-child { background: #f7fafd; }
+  td.dfes { max-width: 150px; }
+  .btn-mini { padding: 6px 12px; font-size: 0.85rem; }
+  dialog { width: calc(100vw - 20px); }
+  .dlg-body { padding: 12px 14px 16px; }
+  .grade { grid-template-columns: 1fr; }
 }

@@ -22,7 +22,7 @@ python -m http.server 8000
 
 ## Funcionalidades
 
-- **Busca rápida** por código ou palavra (com tolerância a acentos): ex. `200003`, `medicamento`, `ZFM`.
+- **Busca rápida** por código ou palavra (com tolerância a acentos): ex. `200003`, `medicamento`, `ZFM`. Se digitar um NCM/NBS com 7+ dígitos (ex. `07082000`), a busca rápida também encontra os cClassTrib vinculados nos anexos.
 - **Busca reversa por NCM/NBS** (aba "Por NCM / NBS"): digite o NCM (8 dígitos) ou NBS (9 dígitos) e veja **todos os cClassTrib + CST** que o referenciam nos anexos, com permissão (PERMITIDO/VEDADO) e vigência. Código completo = exato; prefixo = lista.
 - **Duas visões**: agrupada por CST ou aberta por cClassTrib.
 - **Filtros** por CST, descrição, indicadores do CST, cClassTrib, tipo de alíquota, tributação regular / crédito presumido / estorno e DF-e aplicáveis (operador E/OU).

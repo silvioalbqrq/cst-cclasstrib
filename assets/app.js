@@ -114,20 +114,47 @@ function passaFilhoBase(f, F) {
   return true;
 }
 
+function codigosNcmDe(q) {
+  const d = normCod(q);
+  if (!IDX || !IDX.codes || d.length < 7) return null;
+  const codes = IDX.codes;
+  if (codes[d]) return new Set(codes[d].ref.map((r) => r[1]));
+  const set = new Set();
+  for (const cod of Object.keys(codes)) {
+    if (cod.startsWith(d)) {
+      for (const r of codes[cod].ref) {
+        set.add(r[1]);
+        if (set.size > 1000) return set;
+      }
+    }
+  }
+  return set;
+}
+
 function applyFilters(data, F) {
+  // Vinculos NCM/NBS: so para consultas com 7+ digitos, para nao colidir
+  // com CST (3 digitos) nem cClassTrib (6 digitos).
+  const ncmSet = F.q ? codigosNcmDe(F.q) : null;
   const out = [];
+  let viaNcm = false;
   for (const p of data) {
     if (!passaPai(p, F)) continue;
     const pm = paiMatchesQ(p, F.q);
     let filhos = p.ClassificacoesTributarias.filter((f) => passaFilhoBase(f, F));
     if (F.q) {
-      filhos = pm ? filhos : filhos.filter((f) => filhoMatchesQ(f, F.q));
+      if (pm) {
+        // pai casou textualmente: mostra todos os filhos (comportamento atual)
+      } else {
+        filhos = filhos.filter((f) =>
+          filhoMatchesQ(f, F.q) || (ncmSet && ncmSet.has(f.CodClassTrib)));
+        if (filhos.some((f) => !filhoMatchesQ(f, F.q))) viaNcm = true;
+      }
       if (!pm && !filhos.length) continue;
-      if (pm && !filhos.length && !p.ClassificacoesTributarias.some((f) => passaFilhoBase(f, F))) continue;
     }
     if (!filhos.length) continue;
     out.push({ pai: p, filhos });
   }
+  out.viaNcm = viaNcm;
   return out;
 }
 
@@ -200,7 +227,8 @@ function render(filtered, F) {
   const box = $("resultados");
   const total = filtered.reduce((a, g) => a + g.filhos.length, 0);
   $("contador").textContent =
-    `${total} classificação(ões) em ${filtered.length} CST(s)`;
+    `${total} classificação(ões) em ${filtered.length} CST(s)` +
+    (filtered.viaNcm ? " · inclui vínculos NCM/NBS" : "");
 
   if (!total) {
     box.innerHTML = `<div class="vazio">Nenhum resultado para os filtros atuais.
@@ -248,9 +276,9 @@ function descricaoDe(cod) {
   return descPorCod[cod] || "";
 }
 
-async function garantirIdx() {
+async function garantirIdx(silencioso) {
   if (IDX) return true;
-  showStatus("Carregando índice NCM/NBS…");
+  if (!silencioso) showStatus("Carregando índice NCM/NBS…");
   try {
     const r = await fetch("data/ncm-nbs.json");
     if (!r.ok) throw new Error("HTTP " + r.status);
@@ -541,15 +569,21 @@ async function init() {
   $("qNcm").addEventListener("input", agenda);
   $("fNomeCst").addEventListener("input", agenda);
   $("fNomeRed").addEventListener("input", agenda);
-  $("fCst").addEventListener("change", () => { reconstruirCodigos(); atualizar(); });
+  $("fCst").addEventListener("change", () => { reconstruirCodigos();   atualizar();
+
+  // Pre-carrega o indice NCM/NBS em segundo plano para que a busca
+  // rapida tambem encontre vinculos de anexos sem espera.
+  garantirIdx(true).then((ok) => {
+    if (ok && modoAtual() === "cst" && normCod($("q").value).length >= 7) atualizar();
+  });
+});
   document.querySelectorAll('input[name="modo"]').forEach((el) =>
     el.addEventListener("change", trocarModo));
   document.querySelectorAll("select, input").forEach((el) => {
     if (el.name === "modo") return; // tratado por trocarModo
     if (!["q", "qNcm", "fNomeCst", "fNomeRed"].includes(el.id)) el.addEventListener("change", atualizar);
   });
-  $("btnLimpar").onclick = limpar;
-  $("btnCsv").onclick = () =>
+  $("btnLimpar").onclick = limpar;  $("btnCsv").onclick = () =>
     (modoAtual() === "ncm" ? exportarNcmCSV(lastNcm)
       : exportarCSV(applyFilters(DATA, collectFilters())));
   $("btnJson").onclick = () =>
