@@ -569,21 +569,15 @@ async function init() {
   $("qNcm").addEventListener("input", agenda);
   $("fNomeCst").addEventListener("input", agenda);
   $("fNomeRed").addEventListener("input", agenda);
-  $("fCst").addEventListener("change", () => { reconstruirCodigos();   atualizar();
-
-  // Pre-carrega o indice NCM/NBS em segundo plano para que a busca
-  // rapida tambem encontre vinculos de anexos sem espera.
-  garantirIdx(true).then((ok) => {
-    if (ok && modoAtual() === "cst" && normCod($("q").value).length >= 7) atualizar();
-  });
-});
+  $("fCst").addEventListener("change", () => { reconstruirCodigos(); atualizar(); });
   document.querySelectorAll('input[name="modo"]').forEach((el) =>
     el.addEventListener("change", trocarModo));
   document.querySelectorAll("select, input").forEach((el) => {
     if (el.name === "modo") return; // tratado por trocarModo
     if (!["q", "qNcm", "fNomeCst", "fNomeRed"].includes(el.id)) el.addEventListener("change", atualizar);
   });
-  $("btnLimpar").onclick = limpar;  $("btnCsv").onclick = () =>
+  $("btnLimpar").onclick = limpar;
+  $("btnCsv").onclick = () =>
     (modoAtual() === "ncm" ? exportarNcmCSV(lastNcm)
       : exportarCSV(applyFilters(DATA, collectFilters())));
   $("btnJson").onclick = () =>
@@ -592,6 +586,12 @@ async function init() {
       : exportarJSON(applyFilters(DATA, collectFilters())));
 
   atualizar();
+
+  // Pre-carrega o indice NCM/NBS em segundo plano para que a busca
+  // rapida tambem encontre vinculos de anexos sem espera.
+  garantirIdx(true).then((ok) => {
+    if (ok && modoAtual() === "cst" && normCod($("q").value).length >= 7) atualizar();
+  });
 }
 
 document.addEventListener("DOMContentLoaded", init);
