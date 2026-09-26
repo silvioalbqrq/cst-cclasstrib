@@ -22,8 +22,9 @@ python -m http.server 8000
 
 ## Funcionalidades
 
-- **Busca rápida** por código ou palavra (com tolerância a acentos): ex. `200003`, `medicamento`, `ZFM`. Se digitar um NCM/NBS com 7+ dígitos (ex. `07082000`), a busca rápida também encontra os cClassTrib vinculados nos anexos.
-- **Busca reversa por NCM/NBS** (aba "Por NCM / NBS"): digite o NCM (8 dígitos) ou NBS (9 dígitos) e veja **todos os cClassTrib + CST** que o referenciam nos anexos, com permissão (PERMITIDO/VEDADO) e vigência. Código completo = exato; prefixo = lista.
+- **Busca única** por tudo: CST, cClassTrib, palavra (com tolerância a acentos), NCM (8 dígitos)/NBS (9 dígitos) **ou palavras da descrição do produto** — ex. `200003`, `medicamento`, `07082000`, `feijão` (singular/plural).
+- NCM/NBS com 7+ dígitos lista os cClassTrib vinculados nos anexos, com badge de origem na linha (`07082000 · PERMITIDO`; VEDADO em destaque vermelho). NCM válido sem vínculo exibe a descrição do produto mesmo assim.
+- Descrição do produto NCM exibida acima dos resultados e no badge (fonte: https://silvioalbqrq.github.io/consulta-ncm/, `data/ncm-descricoes.json`).
 - **Duas visões**: agrupada por CST ou aberta por cClassTrib.
 - **Filtros** por CST, descrição, indicadores do CST, cClassTrib, tipo de alíquota, tributação regular / crédito presumido / estorno e DF-e aplicáveis (operador E/OU).
 - **Detalhe** por código: vigência, percentuais de redução, DF-e, regra IBS/CBS, link da legislação e itens de anexo (NCM/NBS, carregados sob demanda).
@@ -40,9 +41,11 @@ cst-cclasstrib/
 ├── data/
 │   ├── resumo.json             # dataset enxuto carregado pelo app (~300 KB)
 │   ├── ncm-nbs.json            # índice reverso NCM/NBS → cClassTribs (carga sob demanda)
+│   ├── ncm-descricoes.json     # descrições NCM hierárquicas (carga sob demanda)
 │   └── classificacao-tributaria.json  # snapshot completo, inclui anexos NCM/NBS
 └── scripts/
-    └── atualizar.py            # regenera os JSONs a partir da página oficial salva
+    ├── atualizar.py            # regenera os JSONs a partir da página oficial salva
+    └── atualizar_descricoes.py # regenera ncm-descricoes.json a partir do tipi-data.js
 ```
 
 ## Atualizar os dados
@@ -54,6 +57,15 @@ A página oficial embute o dataset completo em JavaScript (`var dadosOriginais`)
 # 2. Rode:
 python scripts/atualizar.py portal.html
 # 3. Confira e commite data/resumo.json + data/classificacao-tributaria.json
+```
+
+Descrições NCM (fonte: https://silvioalbqrq.github.io/consulta-ncm/tipi-data.js):
+
+```bash
+# 1. Baixe o tipi-data.js do site consulta-ncm
+# 2. Rode:
+python scripts/atualizar_descricoes.py tipi-data.js
+# 3. Confira e commite data/ncm-descricoes.json
 ```
 
 Snapshot atual: **26/09/2026** — 18 CSTs, 164 cClassTrib.

@@ -22,25 +22,14 @@
 
   <section id="status" class="status" hidden></section>
 
-  <nav class="abas" aria-label="Modo de consulta">
-    <label class="pill"><input type="radio" name="modo" value="cst" checked> Por CST / cClassTrib</label>
-    <label class="pill"><input type="radio" name="modo" value="ncm"> Por NCM / NBS</label>
-  </nav>
-
   <section class="busca" id="buscaCst">
-    <label class="busca-rotulo" for="q">Busca rápida</label>
-    <input id="q" type="search" placeholder="Digite código ou palavra — ex.: 200003, “medicamento”, “410”, “ZFM”…" autocomplete="off">
+    <label class="busca-rotulo" for="q">Busca</label>
+    <input id="q" type="search" placeholder="CST, cClassTrib, palavra, NCM/NBS ou descrição do produto — ex.: 200003, medicamento, 07082000, feijão" autocomplete="off">
+    <p class="dica">Um só campo encontra tudo: NCM/NBS com 7+ dígitos ou palavras da descrição do produto também listam os cClassTrib vinculados.</p>
     <div class="visao">
       <label><input type="radio" name="view" value="grupo" checked> Agrupada por CST</label>
       <label><input type="radio" name="view" value="lista"> Aberta por cClassTrib</label>
     </div>
-  </section>
-
-  <section class="busca" id="buscaNcm" hidden>
-    <label class="busca-rotulo" for="qNcm">Buscar por NCM ou NBS</label>
-    <input id="qNcm" type="search" inputmode="numeric" placeholder="Digite o NCM (8 dígitos) ou NBS (9 dígitos) — ex.: 10062010" autocomplete="off">
-    <p class="dica">Código completo = resultado exato. Só os primeiros dígitos = lista por prefixo.
-      Um mesmo NCM/NBS pode estar em <strong>vários cClassTrib</strong> — todos são listados com CST e permissão.</p>
   </section>
 
   <details class="filtros" id="painelFiltros" open>

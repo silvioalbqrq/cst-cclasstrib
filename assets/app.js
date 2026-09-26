@@ -32,8 +32,8 @@ const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 let DATA = [];
 let fullCache = null; // full JSON (anexos), carregado sob demanda
 let IDX = null;       // indice reverso NCM/NBS, carregado sob demanda
-let lastNcm = [];     // ultimo resultado da busca NCM/NBS
-let descPorCod = null;
+let NCM_DESC = null;  // descricoes NCM (g: grupos, i: itens), sob demanda
+let NCM_NORM = null;  // cache codigo -> descricao normalizada (busca textual)
 
 const $ = (id) => document.getElementById(id);
 
@@ -114,27 +114,89 @@ function passaFilhoBase(f, F) {
   return true;
 }
 
-function codigosNcmDe(q) {
+function detalheNcm(q) {
   const d = normCod(q);
   if (!IDX || !IDX.codes || d.length < 7) return null;
-  const codes = IDX.codes;
-  if (codes[d]) return new Set(codes[d].ref.map((r) => r[1]));
-  const set = new Set();
-  for (const cod of Object.keys(codes)) {
-    if (cod.startsWith(d)) {
-      for (const r of codes[cod].ref) {
-        set.add(r[1]);
-        if (set.size > 1000) return set;
-      }
+  const map = {};
+  for (const g of buscarNcm(IDX, q, 1000)) {
+    for (const it of g.itens) {
+      (map[it.cod] = map[it.cod] || []).push({ codigo: g.codigo, perm: it.perm });
     }
   }
-  return set;
+  return map;
+}
+
+const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+function variantesTermo(t) {
+  const v = new Set([t, t + "s", t + "es"]);
+  if (t.endsWith("s")) v.add(t.slice(0, -1));
+  if (t.endsWith("es")) v.add(t.slice(0, -2));
+  if (t.endsWith("ao")) v.add(t.slice(0, -2) + "oes");
+  if (t.endsWith("oes")) v.add(t.slice(0, -3) + "ao");
+  if (t.endsWith("m")) v.add(t + "ns");
+  if (t.endsWith("ns")) v.add(t.slice(0, -2) + "m");
+  return [...v].map((x) => new RegExp("\\b" + escRe(x)));
+}
+
+function descsParaTexto(q) {
+  // Pesquisa textual nas descricoes NCM. So quando ha letras, para nao
+  // colidir com CST (3 digitos), cClassTrib (6) nem NCM/NBS numericos.
+  const t = norm(q).trim();
+  if (!NCM_DESC || !IDX || !IDX.codes || !/[a-z]/.test(t)) return null;
+  if (!NCM_NORM) {
+    NCM_NORM = {};
+    for (const c of Object.keys(NCM_DESC.i)) {
+      const d = descNcm(c);
+      if (d) NCM_NORM[c] = norm(d);
+    }
+  }
+  const termos = t.split(/\s+/).filter((w) => w.length >= 2);
+  if (!termos.length) return null;
+  if (termos.length === 1 && termos[0].length < 3) return null; // "de","do","em"...
+  const res = termos.map(variantesTermo);
+  const achados = [];
+  for (const c of Object.keys(NCM_NORM)) {
+    const dn = NCM_NORM[c];
+    if (res.every((rx) => rx.some((r) => r.test(dn)))) achados.push(c);
+    if (achados.length >= 40) break;
+  }
+  achados.sort();
+  const map = {}, avulsos = [];
+  for (const c of achados) {
+    const e = IDX.codes[c];
+    if (e && e.ref && e.ref.length) {
+      for (const r of e.ref) {
+        const arr = (map[r[1]] = map[r[1]] || []);
+        if (!arr.some((x) => x.codigo === c)) arr.push({ codigo: c, perm: r[2] || "—" });
+      }
+    } else {
+      const d = descNcm(c);
+      if (d) avulsos.push({ codigo: c, desc: d });
+    }
+  }
+  return { map, avulsos, parcial: achados.length >= 40 };
 }
 
 function applyFilters(data, F) {
   // Vinculos NCM/NBS: so para consultas com 7+ digitos, para nao colidir
   // com CST (3 digitos) nem cClassTrib (6 digitos).
-  const ncmSet = F.q ? codigosNcmDe(F.q) : null;
+  let ncmMap = F.q ? detalheNcm(F.q) : null;
+  const txt = F.q ? descsParaTexto(F.q) : null;
+  let avulsos = [];
+  let parcial = false;
+  if (txt) {
+    ncmMap = ncmMap || {};
+    for (const [cod, arr] of Object.entries(txt.map)) {
+      const base = (ncmMap[cod] = ncmMap[cod] || []);
+      for (const x of arr) {
+        if (!base.some((y) => y.codigo === x.codigo)) base.push(x);
+      }
+    }
+    avulsos = txt.avulsos;
+    parcial = txt.parcial;
+  }
+  const ncmSet = ncmMap ? new Set(Object.keys(ncmMap)) : null;
   const out = [];
   let viaNcm = false;
   for (const p of data) {
@@ -155,6 +217,34 @@ function applyFilters(data, F) {
     out.push({ pai: p, filhos });
   }
   out.viaNcm = viaNcm;
+  out.ncmInfo = ncmMap || {};
+  out.ncmDesc = {};
+  out.ncmParcial = parcial;
+  if (NCM_DESC) {
+    const vistos = new Set();
+    for (const g of Object.values(out.ncmInfo)) {
+      for (const e of g) {
+        if (!vistos.has(e.codigo)) {
+          vistos.add(e.codigo);
+          const d = descNcm(e.codigo);
+          if (d) out.ncmDesc[e.codigo] = d;
+        }
+      }
+    }
+    for (const a of avulsos) {
+      if (!out.ncmDesc[a.codigo]) out.ncmDesc[a.codigo] = a.desc;
+    }
+  }
+  // NCM valido (8 digitos) com descricao, mesmo sem vinculo nos anexos
+  out.ncmAvulso = avulsos.slice();
+  if (!out.length && F.q && normCod(F.q).length === 8 &&
+      (!ncmMap || !Object.keys(ncmMap).length)) {
+    const qc = normCod(F.q);
+    const d = descNcm(qc);
+    if (d && !out.ncmAvulso.some((a) => a.codigo === qc)) {
+      out.ncmAvulso.push({ codigo: qc, desc: d });
+    }
+  }
   return out;
 }
 
@@ -196,14 +286,36 @@ function badgesPai(p) {
     .join("");
 }
 
-function linhaFilho(f, comCst) {
+function badgeNcm(info, cod, descs) {
+  return (info[cod] || []).map((e) => {
+    const d = (descs || {})[e.codigo];
+    return `<span class="via-ncm${e.perm === "VEDADO" ? " ved" : ""}"` +
+      (d ? ` title="${esc(d)}"` : "") +
+      `>${esc(e.codigo)} · ${esc(e.perm)}</span>`;
+  }).join("");
+}
+
+function descNcm(code) {
+  if (!NCM_DESC || !code || code.length !== 8) return null;
+  const frag = NCM_DESC.i[code];
+  if (!frag) return null;
+  const parts = [];
+  for (let i = 1; i < code.length; i++) {
+    const g = NCM_DESC.g[code.slice(0, i)];
+    if (g) parts.push(g);
+  }
+  parts.push(frag);
+  return parts.join(" — ");
+}
+
+function linhaFilho(f, comCst, ncmBadge) {
   const red = [fmtPerc(f.PercRedIbs), fmtPerc(f.PercRedCbs)];
   const redTxt = red[0] === "—" && red[1] === "—" ? "—" : `IBS ${red[0]} · CBS ${red[1]}`;
   const dfes = dfesOf(f);
   return `<tr>
     ${comCst ? `<td class="cod">${esc(f.Cst)}</td>` : ""}
     <td class="cod">${esc(f.CodClassTrib)}</td>
-    <td>${esc(f.NomeReduzido || "")}</td>
+    <td>${esc(f.NomeReduzido || "")}${ncmBadge || ""}</td>
     <td class="num">${f.TipoAliq ? esc(`${f.TipoAliq} — ${TIPO_ALIQ[f.TipoAliq] || ""}`) : "—"}</td>
     <td class="num">${esc(redTxt)}</td>
     <td>${celBool(f.IndTribRegular)}</td>
@@ -223,28 +335,49 @@ const headFilho = (comCst) => `<thead><tr>
   <th title="Itens de anexo (NCM/NBS)">Anexos</th><th></th>
 </tr></thead>`;
 
+function descBox(descs) {
+  const linhas = Object.keys(descs).sort().map((cod) =>
+    `<div><code>${esc(cod)}</code> — ${esc(descs[cod])}</div>`).join("");
+  return `<div class="ncm-desc"><strong>NCM consultado:</strong>${linhas}</div>`;
+}
+
 function render(filtered, F) {
   const box = $("resultados");
   const total = filtered.reduce((a, g) => a + g.filhos.length, 0);
   $("contador").textContent =
     `${total} classificação(ões) em ${filtered.length} CST(s)` +
-    (filtered.viaNcm ? " · inclui vínculos NCM/NBS" : "");
+    (filtered.viaNcm ? " · inclui vínculos NCM/NBS" : "") +
+    (filtered.ncmParcial ? " · lista parcial, refine a busca" : "");
 
   if (!total) {
+    const av = filtered.ncmAvulso || [];
+    if (av.length) {
+      $("contador").textContent = "NCM localizado · sem vínculos com cClassTrib";
+      const mostrar = av.slice(0, 20);
+      box.innerHTML = `<div class="ncm-desc"><strong>NCM localizado${av.length > 1 ? "s" : ""}:</strong>` +
+        mostrar.map((n) => `<div><code>${esc(n.codigo)}</code> — ${esc(n.desc)}</div>`).join("") +
+        (av.length > mostrar.length ? `<div>…e mais ${av.length - mostrar.length}. Refine a busca.</div>` : "") +
+        `<p style="margin:8px 0 0;color:var(--muted)">Sem vínculos nos anexos de cClassTrib.</p></div>`;
+      return;
+    }
     box.innerHTML = `<div class="vazio">Nenhum resultado para os filtros atuais.
       <br><button type="button" class="btn" id="vLimpar" style="margin-top:10px">Limpar filtros</button></div>`;
     $("vLimpar").onclick = limpar;
     return;
   }
 
+  const info = filtered.ncmInfo || {};
+  const descs = filtered.ncmDesc || {};
+  const descKeys = Object.keys(descs);
   if (F.view === "lista") {
     const linhas = filtered
-      .flatMap((g) => g.filhos.map((f) => linhaFilho(f, true)))
+      .flatMap((g) => g.filhos.map((f) => linhaFilho(f, true, badgeNcm(info, f.CodClassTrib, descs))))
       .join("");
-    box.innerHTML = `<div class="grupo"><div class="tab-wrap">
+    box.innerHTML = (descKeys.length ? descBox(descs) : "") +
+      `<div class="grupo"><div class="tab-wrap">
       <table>${headFilho(true)}<tbody>${linhas}</tbody></table></div></div>`;
   } else {
-    box.innerHTML = filtered.map((g) => `
+    box.innerHTML = (descKeys.length ? descBox(descs) : "") + filtered.map((g) => `
       <article class="grupo">
         <div class="grupo-head">
           <h2><code>${esc(g.pai.Cst)}</code> — ${esc(g.pai.NomeCst || "")}</h2>
@@ -253,7 +386,7 @@ function render(filtered, F) {
         </div>
         ${badgesPai(g.pai) ? `<div class="badges">${badgesPai(g.pai)}</div>` : ""}
         <div class="tab-wrap"><table>${headFilho(false)}
-          <tbody>${g.filhos.map((f) => linhaFilho(f, false)).join("")}</tbody>
+          <tbody>${g.filhos.map((f) => linhaFilho(f, false, badgeNcm(info, f.CodClassTrib, descs))).join("")}</tbody>
         </table></div>
       </article>`).join("");
   }
@@ -262,103 +395,25 @@ function render(filtered, F) {
     b.addEventListener("click", () => abrirDetalhe(b.dataset.detalhe)));
 }
 
-/* ---------- modo NCM/NBS ---------- */
-const modoAtual = () =>
-  (document.querySelector('input[name="modo"]:checked') || {}).value || "cst";
-
-function descricaoDe(cod) {
-  if (!descPorCod) {
-    descPorCod = {};
-    for (const p of DATA)
-      for (const f of p.ClassificacoesTributarias)
-        descPorCod[f.CodClassTrib] = f.NomeReduzido || "";
-  }
-  return descPorCod[cod] || "";
-}
-
+/* ---------- indice NCM/NBS ---------- */
 async function garantirIdx(silencioso) {
-  if (IDX) return true;
+  if (IDX && NCM_DESC) return true;
   if (!silencioso) showStatus("Carregando índice NCM/NBS…");
   try {
-    const r = await fetch("data/ncm-nbs.json");
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    IDX = await r.json();
+    const [ri, rd] = await Promise.all([
+      IDX ? null : fetch("data/ncm-nbs.json"),
+      NCM_DESC ? null : fetch("data/ncm-descricoes.json"),
+    ]);
+    if (ri && !ri.ok) throw new Error("HTTP " + ri.status);
+    if (rd && !rd.ok) throw new Error("HTTP " + rd.status);
+    if (ri) IDX = await ri.json();
+    if (rd) NCM_DESC = await rd.json();
     showStatus("");
     return true;
   } catch (e) {
-    showStatus("Não foi possível carregar data/ncm-nbs.json (" + e.message + ").");
+    showStatus("Não foi possível carregar os dados NCM/NBS (" + e.message + ").");
     return false;
   }
-}
-
-async function buscaNcm() {
-  if (!DATA.length) return;
-  const q = $("qNcm").value;
-  if (!normCod(q)) {
-    lastNcm = [];
-    $("resultados").innerHTML = "";
-    $("contador").textContent = "";
-    return;
-  }
-  if (!(await garantirIdx())) return;
-  lastNcm = buscarNcm(IDX, q);
-  renderNcm(lastNcm);
-}
-
-function renderNcm(res) {
-  const box = $("resultados");
-  const total = res.reduce((a, g) => a + g.itens.length, 0);
-  $("contador").textContent =
-    `${total} vínculo(s) em ${res.length} código(s) NCM/NBS`;
-
-  if (!total) {
-    box.innerHTML = `<div class="vazio">Nenhum cClassTrib referencia esse código.
-      <br>Confira os dígitos ou tente só o prefixo (ex.: capítulo NCM).</div>`;
-    return;
-  }
-  box.innerHTML = res.map((g) => `
-    <article class="grupo">
-      <div class="grupo-head">
-        <h2><code>${esc(g.codigo)}</code> <span class="badge">${esc(g.tipo)}</span></h2>
-        <p>${g.itens.length} vínculo(s) com cClassTrib</p>
-      </div>
-      <div class="tab-wrap"><table>
-        <thead><tr><th>CST</th><th>cClassTrib</th><th>Descrição</th>
-        <th>Permissão</th><th>Vigência</th><th></th></tr></thead>
-        <tbody>${g.itens.map((it) => `<tr>
-          <td class="cod">${esc(it.cst)}</td>
-          <td class="cod">${esc(it.cod)}</td>
-          <td>${esc(descricaoDe(it.cod))}</td>
-          <td class="${it.perm === "VEDADO" ? "vedado" : it.perm === "PERMITIDO" ? "permitido" : ""}">${esc(it.perm)}</td>
-          <td class="num">${it.ini ? esc(it.ini.split("-").reverse().join("/")) : "—"}${it.fim ? " a " + esc(it.fim.split("-").reverse().join("/")) : ""}</td>
-          <td><button type="button" class="btn btn-mini" data-detalhe="${esc(it.cod)}">Detalhe</button></td>
-        </tr>`).join("")}</tbody>
-      </table></div>
-    </article>`).join("");
-
-  box.querySelectorAll("[data-detalhe]").forEach((b) =>
-    b.addEventListener("click", () => abrirDetalhe(b.dataset.detalhe)));
-}
-
-function trocarModo() {
-  const ncm = modoAtual() === "ncm";
-  $("buscaCst").hidden = ncm;
-  $("painelFiltros").hidden = ncm;
-  $("buscaNcm").hidden = !ncm;
-  $("contador").textContent = "";
-  if (ncm) buscaNcm();
-  else atualizar();
-}
-
-function exportarNcmCSV(res) {
-  const head = ["NCM/NBS", "Tipo", "CST", "cClassTrib", "Descrição",
-    "Permissão", "Início vigência", "Fim vigência"];
-  const linhas = [head.map(csvCell).join(";")];
-  for (const g of res)
-    for (const it of g.itens)
-      linhas.push([g.codigo, g.tipo, it.cst, it.cod, descricaoDe(it.cod),
-        it.perm, it.ini, it.fim].map(csvCell).join(";"));
-  baixar("ncm-nbs-cclasstrib.csv", "﻿" + linhas.join("\r\n"), "text/csv;charset=utf-8");
 }
 
 /* ---------- detalhe ---------- */
@@ -524,14 +579,11 @@ function reconstruirCodigos() {
 }
 
 function atualizar() {
-  if (modoAtual() === "ncm") { buscaNcm(); return; }
   render(applyFilters(DATA, collectFilters()), collectFilters());
 }
 
 function limpar() {
   $("q").value = "";
-  $("qNcm").value = "";
-  lastNcm = [];
   $("fCst").value = "";
   $("fNomeCst").value = "";
   $("fNomeRed").value = "";
@@ -566,31 +618,22 @@ async function init() {
   popularSelects();
 
   $("q").addEventListener("input", agenda);
-  $("qNcm").addEventListener("input", agenda);
   $("fNomeCst").addEventListener("input", agenda);
   $("fNomeRed").addEventListener("input", agenda);
   $("fCst").addEventListener("change", () => { reconstruirCodigos(); atualizar(); });
-  document.querySelectorAll('input[name="modo"]').forEach((el) =>
-    el.addEventListener("change", trocarModo));
   document.querySelectorAll("select, input").forEach((el) => {
-    if (el.name === "modo") return; // tratado por trocarModo
-    if (!["q", "qNcm", "fNomeCst", "fNomeRed"].includes(el.id)) el.addEventListener("change", atualizar);
+    if (!["q", "fNomeCst", "fNomeRed"].includes(el.id)) el.addEventListener("change", atualizar);
   });
   $("btnLimpar").onclick = limpar;
-  $("btnCsv").onclick = () =>
-    (modoAtual() === "ncm" ? exportarNcmCSV(lastNcm)
-      : exportarCSV(applyFilters(DATA, collectFilters())));
-  $("btnJson").onclick = () =>
-    (modoAtual() === "ncm"
-      ? baixar("ncm-nbs-cclasstrib.json", JSON.stringify(lastNcm, null, 1), "application/json")
-      : exportarJSON(applyFilters(DATA, collectFilters())));
+  $("btnCsv").onclick = () => exportarCSV(applyFilters(DATA, collectFilters()));
+  $("btnJson").onclick = () => exportarJSON(applyFilters(DATA, collectFilters()));
 
   atualizar();
 
   // Pre-carrega o indice NCM/NBS em segundo plano para que a busca
-  // rapida tambem encontre vinculos de anexos sem espera.
+  // unica tambem encontre vinculos de anexos sem espera.
   garantirIdx(true).then((ok) => {
-    if (ok && modoAtual() === "cst" && normCod($("q").value).length >= 7) atualizar();
+    if (ok && normCod($("q").value).length >= 7) atualizar();
   });
 }
 

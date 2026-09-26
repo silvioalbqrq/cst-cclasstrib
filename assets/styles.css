@@ -70,14 +70,14 @@ body {
   gap: 10px;
 }
 .busca-rotulo { font-weight: 700; }
-#q, #qNcm {
+#q {
   width: 100%;
   font-size: 1.02rem;
   padding: 11px 14px;
   border: 1px solid var(--line);
   border-radius: 10px;
 }
-#q:focus, #qNcm:focus {
+#q:focus {
   outline: 2px solid var(--accent);
   outline-offset: 0;
   border-color: var(--accent);
@@ -168,6 +168,38 @@ fieldset select, fieldset input[type="text"] {
   border-radius: 20px;
   padding: 2px 10px;
   white-space: nowrap;
+}
+.via-ncm {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: #fff7e6;
+  border: 1px solid #ecd9a0;
+  color: #8a6d1a;
+  border-radius: 12px;
+  padding: 0 8px;
+  margin: 2px 0 2px 6px;
+  white-space: nowrap;
+}
+.via-ncm.ved {
+  background: #fdecea;
+  border-color: #f3c1bd;
+  color: #b3261e;
+}
+.ncm-desc {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  font-size: 0.88rem;
+}
+.ncm-desc code {
+  font-family: ui-monospace, Consolas, monospace;
+  font-weight: 700;
+  color: var(--accent);
 }
 
 .tab-wrap { overflow-x: auto; }
