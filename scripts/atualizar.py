@@ -15,6 +15,8 @@ What it does:
   - Writes data/resumo.json (slim + minified file loaded by the app;
     annex NCM/NBS lists stay only in the complete file and are
     fetched on demand by the detail view).
+  - Writes data/ncm-nbs.json (reverse index NCM/NBS -> cClassTribs,
+    loaded on demand by the NCM/NBS search tab).
 """
 import json
 import os
@@ -24,6 +26,7 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(REPO, "data")
 FULL_PATH = os.path.join(DATA_DIR, "classificacao-tributaria.json")
 SLIM_PATH = os.path.join(DATA_DIR, "resumo.json")
+IDX_PATH = os.path.join(DATA_DIR, "ncm-nbs.json")
 
 PAI_KEEP = [
     "Cst", "NomeCst",
@@ -95,6 +98,32 @@ def slim(data):
     return out
 
 
+def build_index(data):
+    """Reverse index: NCM/NBS code -> list of referencing cClassTribs.
+
+    {"codes": {"10062010": {"t": "NCM", "ref": [[cst, cod, permissao, ini, fim], ...]}}}
+    """
+    codes = {}
+    for pai in data:
+        for f in pai.get("ClassificacoesTributarias", []):
+            for a in f.get("Anexos") or []:
+                cod = str(a.get("CodNcmNbs") or "").strip()
+                if not cod:
+                    continue
+                entry = codes.setdefault(cod, {"t": a.get("TipoCodigo"), "ref": []})
+                ref = [
+                    f.get("Cst"), f.get("CodClassTrib"),
+                    a.get("TipoPermissao"),
+                    (a.get("DthIniVig") or "")[:10],
+                    (a.get("DthFimVig") or "")[:10],
+                ]
+                if ref not in entry["ref"]:
+                    entry["ref"].append(ref)
+    for entry in codes.values():
+        entry["ref"].sort()
+    return {"codes": codes}
+
+
 def main():
     if len(sys.argv) != 2:
         raise SystemExit("usage: python scripts/atualizar.py <portal.html>")
@@ -106,10 +135,13 @@ def main():
         json.dump(data, fh, ensure_ascii=False, indent=1)
     with open(SLIM_PATH, "w", encoding="utf-8") as fh:
         json.dump(slim(data), fh, ensure_ascii=False, separators=(",", ":"))
+    with open(IDX_PATH, "w", encoding="utf-8") as fh:
+        json.dump(build_index(data), fh, ensure_ascii=False, separators=(",", ":"))
     n_filho = sum(len(p.get("ClassificacoesTributarias", [])) for p in data)
     print(f"CST groups: {len(data)} | cClassTrib: {n_filho}")
     print(f"wrote {FULL_PATH} ({os.path.getsize(FULL_PATH)/1024:.0f} KB)")
     print(f"wrote {SLIM_PATH} ({os.path.getsize(SLIM_PATH)/1024:.0f} KB)")
+    print(f"wrote {IDX_PATH} ({os.path.getsize(IDX_PATH)/1024:.0f} KB)")
 
 
 if __name__ == "__main__":

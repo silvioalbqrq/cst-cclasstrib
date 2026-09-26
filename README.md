@@ -23,6 +23,7 @@ python -m http.server 8000
 ## Funcionalidades
 
 - **Busca rápida** por código ou palavra (com tolerância a acentos): ex. `200003`, `medicamento`, `ZFM`.
+- **Busca reversa por NCM/NBS** (aba "Por NCM / NBS"): digite o NCM (8 dígitos) ou NBS (9 dígitos) e veja **todos os cClassTrib + CST** que o referenciam nos anexos, com permissão (PERMITIDO/VEDADO) e vigência. Código completo = exato; prefixo = lista.
 - **Duas visões**: agrupada por CST ou aberta por cClassTrib.
 - **Filtros** por CST, descrição, indicadores do CST, cClassTrib, tipo de alíquota, tributação regular / crédito presumido / estorno e DF-e aplicáveis (operador E/OU).
 - **Detalhe** por código: vigência, percentuais de redução, DF-e, regra IBS/CBS, link da legislação e itens de anexo (NCM/NBS, carregados sob demanda).
@@ -38,6 +39,7 @@ cst-cclasstrib/
 │   └── app.js                  # filtros, visões, detalhe, exportação (vanilla JS)
 ├── data/
 │   ├── resumo.json             # dataset enxuto carregado pelo app (~300 KB)
+│   ├── ncm-nbs.json            # índice reverso NCM/NBS → cClassTribs (carga sob demanda)
 │   └── classificacao-tributaria.json  # snapshot completo, inclui anexos NCM/NBS
 └── scripts/
     └── atualizar.py            # regenera os JSONs a partir da página oficial salva

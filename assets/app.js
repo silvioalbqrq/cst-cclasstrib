@@ -31,6 +31,9 @@ const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
 let DATA = [];
 let fullCache = null; // full JSON (anexos), carregado sob demanda
+let IDX = null;       // indice reverso NCM/NBS, carregado sob demanda
+let lastNcm = [];     // ultimo resultado da busca NCM/NBS
+let descPorCod = null;
 
 const $ = (id) => document.getElementById(id);
 
@@ -128,6 +131,36 @@ function applyFilters(data, F) {
   return out;
 }
 
+/* ---------- busca reversa NCM/NBS ---------- */
+const normCod = (s) => (s ?? "").toString().replace(/\D/g, "");
+
+function grupoNcm(cod, e) {
+  return {
+    codigo: cod,
+    tipo: e.t || "—",
+    itens: (e.ref || []).map((r) => ({
+      cst: r[0], cod: r[1], perm: r[2] || "—",
+      ini: r[3] || "", fim: r[4] || "",
+    })),
+  };
+}
+
+function buscarNcm(idx, query, limite = 200) {
+  const q = normCod(query);
+  if (!q || !idx || !idx.codes) return [];
+  const codes = idx.codes;
+  if (codes[q]) return [grupoNcm(q, codes[q])];
+  const out = [];
+  for (const cod of Object.keys(codes)) {
+    if (cod.startsWith(q)) {
+      out.push(grupoNcm(cod, codes[cod]));
+      if (out.length >= limite) break;
+    }
+  }
+  out.sort((a, b) => (a.codigo < b.codigo ? -1 : 1));
+  return out;
+}
+
 /* ---------- render ---------- */
 function badgesPai(p) {
   return Object.entries(PAI_BADGES)
@@ -199,6 +232,105 @@ function render(filtered, F) {
 
   box.querySelectorAll("[data-detalhe]").forEach((b) =>
     b.addEventListener("click", () => abrirDetalhe(b.dataset.detalhe)));
+}
+
+/* ---------- modo NCM/NBS ---------- */
+const modoAtual = () =>
+  (document.querySelector('input[name="modo"]:checked') || {}).value || "cst";
+
+function descricaoDe(cod) {
+  if (!descPorCod) {
+    descPorCod = {};
+    for (const p of DATA)
+      for (const f of p.ClassificacoesTributarias)
+        descPorCod[f.CodClassTrib] = f.NomeReduzido || "";
+  }
+  return descPorCod[cod] || "";
+}
+
+async function garantirIdx() {
+  if (IDX) return true;
+  showStatus("Carregando índice NCM/NBS…");
+  try {
+    const r = await fetch("data/ncm-nbs.json");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    IDX = await r.json();
+    showStatus("");
+    return true;
+  } catch (e) {
+    showStatus("Não foi possível carregar data/ncm-nbs.json (" + e.message + ").");
+    return false;
+  }
+}
+
+async function buscaNcm() {
+  if (!DATA.length) return;
+  const q = $("qNcm").value;
+  if (!normCod(q)) {
+    lastNcm = [];
+    $("resultados").innerHTML = "";
+    $("contador").textContent = "";
+    return;
+  }
+  if (!(await garantirIdx())) return;
+  lastNcm = buscarNcm(IDX, q);
+  renderNcm(lastNcm);
+}
+
+function renderNcm(res) {
+  const box = $("resultados");
+  const total = res.reduce((a, g) => a + g.itens.length, 0);
+  $("contador").textContent =
+    `${total} vínculo(s) em ${res.length} código(s) NCM/NBS`;
+
+  if (!total) {
+    box.innerHTML = `<div class="vazio">Nenhum cClassTrib referencia esse código.
+      <br>Confira os dígitos ou tente só o prefixo (ex.: capítulo NCM).</div>`;
+    return;
+  }
+  box.innerHTML = res.map((g) => `
+    <article class="grupo">
+      <div class="grupo-head">
+        <h2><code>${esc(g.codigo)}</code> <span class="badge">${esc(g.tipo)}</span></h2>
+        <p>${g.itens.length} vínculo(s) com cClassTrib</p>
+      </div>
+      <div class="tab-wrap"><table>
+        <thead><tr><th>CST</th><th>cClassTrib</th><th>Descrição</th>
+        <th>Permissão</th><th>Vigência</th><th></th></tr></thead>
+        <tbody>${g.itens.map((it) => `<tr>
+          <td class="cod">${esc(it.cst)}</td>
+          <td class="cod">${esc(it.cod)}</td>
+          <td>${esc(descricaoDe(it.cod))}</td>
+          <td class="${it.perm === "VEDADO" ? "vedado" : it.perm === "PERMITIDO" ? "permitido" : ""}">${esc(it.perm)}</td>
+          <td class="num">${it.ini ? esc(it.ini.split("-").reverse().join("/")) : "—"}${it.fim ? " a " + esc(it.fim.split("-").reverse().join("/")) : ""}</td>
+          <td><button type="button" class="btn btn-mini" data-detalhe="${esc(it.cod)}">Detalhe</button></td>
+        </tr>`).join("")}</tbody>
+      </table></div>
+    </article>`).join("");
+
+  box.querySelectorAll("[data-detalhe]").forEach((b) =>
+    b.addEventListener("click", () => abrirDetalhe(b.dataset.detalhe)));
+}
+
+function trocarModo() {
+  const ncm = modoAtual() === "ncm";
+  $("buscaCst").hidden = ncm;
+  $("painelFiltros").hidden = ncm;
+  $("buscaNcm").hidden = !ncm;
+  $("contador").textContent = "";
+  if (ncm) buscaNcm();
+  else atualizar();
+}
+
+function exportarNcmCSV(res) {
+  const head = ["NCM/NBS", "Tipo", "CST", "cClassTrib", "Descrição",
+    "Permissão", "Início vigência", "Fim vigência"];
+  const linhas = [head.map(csvCell).join(";")];
+  for (const g of res)
+    for (const it of g.itens)
+      linhas.push([g.codigo, g.tipo, it.cst, it.cod, descricaoDe(it.cod),
+        it.perm, it.ini, it.fim].map(csvCell).join(";"));
+  baixar("ncm-nbs-cclasstrib.csv", "﻿" + linhas.join("\r\n"), "text/csv;charset=utf-8");
 }
 
 /* ---------- detalhe ---------- */
@@ -364,11 +496,14 @@ function reconstruirCodigos() {
 }
 
 function atualizar() {
+  if (modoAtual() === "ncm") { buscaNcm(); return; }
   render(applyFilters(DATA, collectFilters()), collectFilters());
 }
 
 function limpar() {
   $("q").value = "";
+  $("qNcm").value = "";
+  lastNcm = [];
   $("fCst").value = "";
   $("fNomeCst").value = "";
   $("fNomeRed").value = "";
@@ -403,15 +538,24 @@ async function init() {
   popularSelects();
 
   $("q").addEventListener("input", agenda);
+  $("qNcm").addEventListener("input", agenda);
   $("fNomeCst").addEventListener("input", agenda);
   $("fNomeRed").addEventListener("input", agenda);
   $("fCst").addEventListener("change", () => { reconstruirCodigos(); atualizar(); });
+  document.querySelectorAll('input[name="modo"]').forEach((el) =>
+    el.addEventListener("change", trocarModo));
   document.querySelectorAll("select, input").forEach((el) => {
-    if (!["q", "fNomeCst", "fNomeRed"].includes(el.id)) el.addEventListener("change", atualizar);
+    if (el.name === "modo") return; // tratado por trocarModo
+    if (!["q", "qNcm", "fNomeCst", "fNomeRed"].includes(el.id)) el.addEventListener("change", atualizar);
   });
   $("btnLimpar").onclick = limpar;
-  $("btnCsv").onclick = () => exportarCSV(applyFilters(DATA, collectFilters()));
-  $("btnJson").onclick = () => exportarJSON(applyFilters(DATA, collectFilters()));
+  $("btnCsv").onclick = () =>
+    (modoAtual() === "ncm" ? exportarNcmCSV(lastNcm)
+      : exportarCSV(applyFilters(DATA, collectFilters())));
+  $("btnJson").onclick = () =>
+    (modoAtual() === "ncm"
+      ? baixar("ncm-nbs-cclasstrib.json", JSON.stringify(lastNcm, null, 1), "application/json")
+      : exportarJSON(applyFilters(DATA, collectFilters())));
 
   atualizar();
 }

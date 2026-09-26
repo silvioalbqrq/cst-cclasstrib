@@ -22,7 +22,12 @@
 
   <section id="status" class="status" hidden></section>
 
-  <section class="busca">
+  <nav class="abas" aria-label="Modo de consulta">
+    <label class="pill"><input type="radio" name="modo" value="cst" checked> Por CST / cClassTrib</label>
+    <label class="pill"><input type="radio" name="modo" value="ncm"> Por NCM / NBS</label>
+  </nav>
+
+  <section class="busca" id="buscaCst">
     <label class="busca-rotulo" for="q">Busca rápida</label>
     <input id="q" type="search" placeholder="Digite código ou palavra — ex.: 200003, “medicamento”, “410”, “ZFM”…" autocomplete="off">
     <div class="visao">
@@ -31,7 +36,14 @@
     </div>
   </section>
 
-  <details class="filtros" open>
+  <section class="busca" id="buscaNcm" hidden>
+    <label class="busca-rotulo" for="qNcm">Buscar por NCM ou NBS</label>
+    <input id="qNcm" type="search" inputmode="numeric" placeholder="Digite o NCM (8 dígitos) ou NBS (9 dígitos) — ex.: 10062010" autocomplete="off">
+    <p class="dica">Código completo = resultado exato. Só os primeiros dígitos = lista por prefixo.
+      Um mesmo NCM/NBS pode estar em <strong>vários cClassTrib</strong> — todos são listados com CST e permissão.</p>
+  </section>
+
+  <details class="filtros" id="painelFiltros" open>
     <summary>Filtros avançados <span id="contador" class="contador"></span></summary>
     <div class="grade">
 
