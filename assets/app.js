@@ -54,7 +54,11 @@ const fmtDate = (iso) => {
 
 const fmtPerc = (v) => {
   if (v === null || v === undefined || Number(v) === 0) return "—";
-  return `${String(v).replace(/\.?0+$/, "").replace(".", ",")}%`;
+  const n = Number(v);
+  const s = Number.isInteger(n)
+    ? String(n)
+    : String(n).replace(/0+$/, "").replace(/\.$/, "").replace(".", ",");
+  return `${s}%`;
 };
 
 const celBool = (v) =>
