@@ -396,24 +396,36 @@ function render(filtered, F) {
 }
 
 /* ---------- indice NCM/NBS ---------- */
+async function carregarJson(path) {
+  const r = await fetch(path);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+
 async function garantirIdx(silencioso) {
   if (IDX && NCM_DESC) return true;
   if (!silencioso) showStatus("Carregando índice NCM/NBS…");
-  try {
-    const [ri, rd] = await Promise.all([
-      IDX ? null : fetch("data/ncm-nbs.json"),
-      NCM_DESC ? null : fetch("data/ncm-descricoes.json"),
-    ]);
-    if (ri && !ri.ok) throw new Error("HTTP " + ri.status);
-    if (rd && !rd.ok) throw new Error("HTTP " + rd.status);
-    if (ri) IDX = await ri.json();
-    if (rd) NCM_DESC = await rd.json();
-    showStatus("");
-    return true;
-  } catch (e) {
-    showStatus("Não foi possível carregar os dados NCM/NBS (" + e.message + ").");
+  const erros = [];
+  if (!IDX) {
+    try {
+      IDX = await carregarJson("data/ncm-nbs.json");
+    } catch (e) {
+      erros.push("ncm-nbs.json (" + e.message + ")");
+    }
+  }
+  if (!NCM_DESC) {
+    try {
+      NCM_DESC = await carregarJson("data/ncm-descricoes.json");
+    } catch (e) {
+      erros.push("ncm-descricoes.json (" + e.message + ")");
+    }
+  }
+  if (erros.length) {
+    showStatus("Não foi possível carregar: " + erros.join("; ") + ".");
     return false;
   }
+  showStatus("");
+  return true;
 }
 
 /* ---------- detalhe ---------- */
