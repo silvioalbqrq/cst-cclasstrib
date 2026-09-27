@@ -32,9 +32,8 @@ body {
 .fonte { margin: 10px auto 0; font-size: 0.9rem; color: var(--navy-soft); max-width: 640px; }
 .fonte a { color: #fff; }
 
-/* ---------- abas (pílulas) ---------- */
-.abas { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 0; }
-.pill, .visao label, .op label {
+/* ---------- pílulas (visão e operador) ---------- */
+.visao label, .op label {
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--line);
@@ -46,12 +45,12 @@ body {
   cursor: pointer;
   margin: 0;
 }
-.pill input, .visao input, .op input {
+.visao input, .op input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
-.pill:has(input:checked), .visao label:has(input:checked), .op label:has(input:checked) {
+.visao label:has(input:checked), .op label:has(input:checked) {
   background: var(--navy);
   border-color: var(--navy);
   color: #fff;

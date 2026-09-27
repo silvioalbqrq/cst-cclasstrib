@@ -127,7 +127,7 @@ def build_index(data):
 def main():
     if len(sys.argv) != 2:
         raise SystemExit("usage: python scripts/atualizar.py <portal.html>")
-    with open(sys.argv[1], "r", encoding="utf-8", errors="replace") as fh:
+    with open(sys.argv[1], "r", encoding="utf-8") as fh:
         html = fh.read()
     data = extract_dataset(html)
     os.makedirs(DATA_DIR, exist_ok=True)
