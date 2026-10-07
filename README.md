@@ -68,7 +68,7 @@ python scripts/atualizar_descricoes.py tipi-data.js
 # 3. Confira e commite data/ncm-descricoes.json
 ```
 
-Snapshot atual: **26/09/2026** — 18 CSTs, 164 cClassTrib.
+Snapshot atual: **07/10/2026 (IT 2025.002 v1.70)** — 18 CSTs, 173 cClassTrib.
 
 ## Aviso
 
