@@ -38,7 +38,8 @@ python -m http.server 8000
 cst-cclasstrib/
 ├── index.html                  # página única
 ├── assets/
-│   ├── styles.css              # visual (sem frameworks)
+│   ├── styles.css              # visual base (sem frameworks)
+│   ├── corporativo.css         # tema institucional VMF (marinho + dourado)
 │   └── app.js                  # filtros, visões, detalhe, exportação (vanilla JS)
 ├── data/
 │   ├── resumo.json             # dataset enxuto carregado pelo app (~300 KB)

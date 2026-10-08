@@ -1,0 +1,96 @@
+/* Tema corporativo (PRÉVIA LOCAL) — sobrepõe assets/styles.css.
+   Paleta escritório de contabilidade: azul-marinho + dourado, serifas. */
+:root {
+  --bg: #f4f2ec;
+  --card: #ffffff;
+  --ink: #1d2b3a;
+  --muted: #6b7280;
+  --line: #e3ddd0;
+  --accent: #0f2a43;
+  --accent-soft: #eef1f6;
+  --gold: #b98f2e;
+  --gold-soft: #faf5e8;
+  --navy: #0e2338;
+  --navy-soft: #c8d2e0;
+  --radius: 8px;
+}
+
+body { font-family: Georgia, "Times New Roman", serif; background: var(--bg); }
+
+/* ---------- herói ---------- */
+.topo {
+  background: linear-gradient(135deg, #0e2338 0%, #14395c 60%, #0e2338 100%);
+  padding: 40px 0 34px; text-align: left;
+  border-bottom: 4px solid var(--gold);
+}
+.topo .marca {
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: 0.8rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold); margin: 0 0 8px;
+}
+.topo h1 { font-size: 1.9rem; }
+.topo h1 small { color: var(--navy-soft); }
+.topo .fonte { margin-left: 0; max-width: 720px; text-align: left; }
+.selos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.selos span {
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: 0.75rem; color: #fff;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 999px; padding: 3px 12px;
+}
+.selos span b { color: var(--gold); }
+
+/* cartões */
+.busca, .filtros, .grupo, .ncm-desc, .vazio { border-radius: var(--radius); }
+.busca { border-top: 3px solid var(--gold); }
+.busca-rotulo {
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--accent);
+}
+.filtros > summary, details.filtros > summary { color: var(--accent); }
+fieldset { border-radius: 6px; }
+legend { color: var(--accent); }
+
+/* botões */
+.btn {
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  border-color: var(--accent); color: var(--accent);
+  border-radius: 6px;
+}
+.btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* pílulas */
+.visao label:has(input:checked), .op label:has(input:checked) {
+  background: var(--accent); border-color: var(--accent);
+}
+
+/* tabelas */
+thead th { background: #eceff4; }
+.grupo-head h2 code { background: var(--gold-soft); color: #7a5f14; }
+.badge { background: var(--gold-soft); color: #7a5f14; }
+.ncm-desc { border-left-color: var(--gold); }
+.ncm-desc code { color: #7a5f14; }
+
+/* rodapé institucional */
+.rodape { color: var(--muted); }
+.rodape .cols {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px; background: var(--navy); color: #d8dee8;
+  border-radius: var(--radius); padding: 20px 22px; margin-bottom: 14px;
+}
+.rodape .cols h4 {
+  margin: 0 0 6px; font-size: 0.85rem; color: var(--gold);
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.rodape .cols p { margin: 3px 0; font-size: 0.85rem; }
+.rodape .aviso { font-size: 0.78rem; }
+.contato-icones { display: flex; gap: 10px; margin: 6px 0; }
+.contato-icones a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--gold); color: var(--gold);
+}
+.contato-icones a:hover { background: var(--gold); color: #0e2338; }
+.contato-icones svg { width: 20px; height: 20px; }
