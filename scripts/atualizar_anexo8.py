@@ -19,17 +19,20 @@ Normalizações:
 import json, re, sys
 import openpyxl
 
-DEFAULT_XLSX = "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V1.00.00.xlsx"
+DEFAULT_XLSX = "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V1.01.00.xlsx"
 OUT = "data/anexo-viii.json"
+VERSAO = "V1.01.00"
 
 LOCAIS = {
     "local da entrega ou disponibilização": "Local da entrega ou disponibilização",
+    "local da entrega ou da disponibilização": "Local da entrega ou da disponibilização",
     "local da prestação": "Local da prestação",
     "local do evento": "Local do evento",
     "local evento": "Local do evento",
     "local do imóvel": "Local do imóvel",
     "via explorada": "Via explorada",
     "domicílio principal do adquirente": "Domicílio principal do adquirente",
+    "domicílio principal do adquirente (estabelecimento matriz)": "Domicílio principal do adquirente (estabelecimento matriz)",
 }
 
 
@@ -144,6 +147,7 @@ def main(xlsx_path):
     data = {
         "meta": {
             "fonte": "Anexo VIII — Correlação Item NBS / IndOp / cClassTrib — IBS/CBS",
+            "versao": VERSAO,
             "observacao": (
                 "Extraído da planilha com desmesclagem de células: cada registro é uma "
                 "correlação NBS x IndOp x cClassTrib. IndOp numérico foi normalizado "

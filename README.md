@@ -71,12 +71,12 @@ python scripts/atualizar_descricoes.py tipi-data.js
 # 3. Confira e commite data/ncm-descricoes.json
 ```
 
-Anexo VIII — correlação NBS × IndOp × cClassTrib (planilha do Anexo VIII, V1.00.00):
+Anexo VIII — correlação NBS × IndOp × cClassTrib (planilha do Anexo VIII, V1.01.00):
 
 ```bash
 # 1. Salve a planilha do Anexo VIII (.xlsx)
 # 2. Rode:
-python scripts/atualizar_anexo8.py "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V1.00.00.xlsx"
+python scripts/atualizar_anexo8.py "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V1.01.00.xlsx"
 # 3. Confira e commite data/anexo-viii.json
 ```
 
