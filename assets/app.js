@@ -29,6 +29,10 @@ const PAI_BADGES = {
 
 const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
+// Versão dos assets para cache-busting (?v=). Bump a cada release de dados.
+const ASSET_V = "20261008";
+const urlV = (p) => `${p}?v=${ASSET_V}`;
+
 let DATA = [];
 let fullCache = null; // full JSON (anexos), carregado sob demanda
 let IDX = null;       // indice reverso NCM/NBS, carregado sob demanda
@@ -284,11 +288,32 @@ function buscarNcm(idx, query, limite = 200) {
 }
 
 /* ---------- Anexo VIII (NBS x IndOp x cClassTrib) ---------- */
+let pagina8 = 0;
+const PAGE8 = 100;
+
+function infoVersao8() {
+  if (!ANEXO8 || !ANEXO8.meta) return "";
+  const m = ANEXO8.meta;
+  const ver = m.versao ? ` ${m.versao}` : "";
+  const gen = m.geradoEm ? ` (${m.geradoEm})` : "";
+  return `Anexo VIII${ver}${gen} · ${m.correlacoes} correlações · ${m.nbsUnicos} NBS · ${m.cClassTribUnicos} cClassTrib`;
+}
+
+function mostrarVersao8() {
+  const txt = infoVersao8();
+  if ($("versao8")) $("versao8").textContent = txt ? `— ${txt}` : "";
+  if ($("rodape8") && ANEXO8 && ANEXO8.meta) {
+    const m = ANEXO8.meta;
+    $("rodape8").textContent = `Anexo VIII ${m.versao || ""} (${m.geradoEm || ""})`.trim();
+  }
+}
+
 async function garantirAnexo8(silencioso) {
   if (ANEXO8) return true;
   if (!silencioso) showStatus("Carregando Anexo VIII…");
   try {
-    ANEXO8 = await carregarJson("data/anexo-viii.json");
+    ANEXO8 = await carregarJson(urlV("data/anexo-viii.json"));
+    mostrarVersao8();
   } catch (e) {
     showStatus("Não foi possível carregar data/anexo-viii.json (" + e.message + ").");
     return false;
@@ -346,8 +371,6 @@ function caixaAnexo8(q) {
     `<tbody>${blocos}</tbody></table></div></div>`;
 }
 
-const MAX8 = 500;
-
 function renderAnexo8() {
   const box = $("resultados8");
   if (!ANEXO8) {
@@ -355,15 +378,28 @@ function renderAnexo8() {
     return;
   }
   const q = $("q8").value;
-  const itens = filtroAnexo8(q);
-  $("contador8").textContent = q.trim()
-    ? `${itens.length} correlação(ões)`
-    : `${ANEXO8.itens.length} correlações — digite para filtrar`;
+  const filtrando = q.trim().length > 0;
+  const itens = filtrando ? filtroAnexo8(q) : [];
+  const m = ANEXO8.meta || {};
+  $("contador8").textContent = filtrando
+    ? `${itens.length} correlação(ões) em ${m.correlacoes} totais`
+    : `${m.correlacoes} correlações disponíveis — digite para filtrar`;
+  if (!filtrando) {
+    const maxPag = Math.max(1, Math.ceil(ANEXO8.itens.length / PAGE8));
+    pagina8 = Math.min(pagina8, maxPag - 1);
+    box.innerHTML = `<div class="vazio">Digite NBS, IndOp, cClassTrib ou palavra para listar. ` +
+      `Nada é renderizado até filtrar, para preservar performance.</div>`;
+    return;
+  }
   if (!itens.length) {
     box.innerHTML = `<div class="vazio">Nenhum resultado para "${esc(q)}" no Anexo VIII.</div>`;
     return;
   }
-  const linhas = itens.slice(0, MAX8).map((it) => `<tr>
+  const totalPag = Math.max(1, Math.ceil(itens.length / PAGE8));
+  pagina8 = Math.min(Math.max(0, pagina8), totalPag - 1);
+  const ini = pagina8 * PAGE8;
+  const fatia = itens.slice(ini, ini + PAGE8);
+  const linhas = fatia.map((it) => `<tr>
     <td class="cod">${esc(it.itemLc116)}</td>
     <td>${esc(it.descItem)}</td>
     <td class="cod">${esc(it.nbs || "—")}</td>
@@ -382,8 +418,15 @@ function renderAnexo8() {
       <th>cClassTrib</th><th>Nome cClassTrib</th>
     </tr></thead>
     <tbody>${linhas}</tbody></table></div>
-    ${itens.length > MAX8 ? `<p style="color:var(--muted);padding:8px 16px">Mostrando ${MAX8} de ${itens.length}. Refine a busca.</p>` : ""}
+    <div class="paginacao" style="display:flex;gap:8px;align-items:center;padding:8px 16px">
+      <button type="button" class="btn btn-mini" id="pgAnt8" ${pagina8 === 0 ? "disabled" : ""}>← Anterior</button>
+      <span style="color:var(--muted)">Página ${pagina8 + 1} de ${totalPag} · mostrando ${ini + 1}–${Math.min(ini + PAGE8, itens.length)} de ${itens.length}</span>
+      <button type="button" class="btn btn-mini" id="pgProx8" ${pagina8 >= totalPag - 1 ? "disabled" : ""}>Próxima →</button>
+    </div>
   </div>`;
+  const ant = $("pgAnt8"), prox = $("pgProx8");
+  if (ant) ant.onclick = () => { if (pagina8 > 0) { pagina8--; renderAnexo8(); } };
+  if (prox) prox.onclick = () => { if (pagina8 < totalPag - 1) { pagina8++; renderAnexo8(); } };
 }
 
 function renderRegra8() {
@@ -546,14 +589,14 @@ async function garantirIdx(silencioso) {
   const erros = [];
   if (!IDX) {
     try {
-      IDX = await carregarJson("data/ncm-nbs.json");
+      IDX = await carregarJson(urlV("data/ncm-nbs.json"));
     } catch (e) {
       erros.push("ncm-nbs.json (" + e.message + ")");
     }
   }
   if (!NCM_DESC) {
     try {
-      NCM_DESC = await carregarJson("data/ncm-descricoes.json");
+      NCM_DESC = await carregarJson(urlV("data/ncm-descricoes.json"));
     } catch (e) {
       erros.push("ncm-descricoes.json (" + e.message + ")");
     }
@@ -625,7 +668,7 @@ async function carregarAnexos(cod) {
   tab.innerHTML = "<p>Carregando…</p>";
   try {
     if (!fullCache) {
-      const r = await fetch("data/classificacao-tributaria.json");
+      const r = await fetch(urlV("data/classificacao-tributaria.json"));
       if (!r.ok) throw new Error("HTTP " + r.status);
       fullCache = await r.json();
     }
@@ -768,6 +811,7 @@ function atualizar() {
 function limpar() {
   $("q").value = "";
   $("q8").value = "";
+  pagina8 = 0;
   $("fCst").value = "";
   $("fNomeCst").value = "";
   $("fNomeRed").value = "";
@@ -792,7 +836,7 @@ async function init() {
     if (e.target === $("dlg")) $("dlg").close();
   });
   try {
-    const r = await fetch("data/resumo.json");
+    const r = await fetch(urlV("data/resumo.json"));
     if (!r.ok) throw new Error("HTTP " + r.status);
     DATA = await r.json();
   } catch (e) {
@@ -806,7 +850,7 @@ async function init() {
   let debounce8 = null;
   $("q8").addEventListener("input", () => {
     clearTimeout(debounce8);
-    debounce8 = setTimeout(renderAnexo8, 150);
+    debounce8 = setTimeout(() => { pagina8 = 0; renderAnexo8(); }, 150);
   });
   $("btnCsv8").onclick = exportarCSVAnexo8;
   $("fNomeCst").addEventListener("input", agenda);

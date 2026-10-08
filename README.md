@@ -80,7 +80,18 @@ python scripts/atualizar_anexo8.py "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_I
 # 3. Confira e commite data/anexo-viii.json
 ```
 
-Snapshot atual: **07/10/2026 (IT 2025.002 v1.70)** — 18 CSTs, 173 cClassTrib.
+Notas do Anexo VIII:
+- `99.01.01` (“Outros serviços sem incidência de ISSQN/ICMS”) vem na planilha sem NBS/IndOp/cClassTrib e é descartado pelo script — por isso 207 itens com correlação em 208 grupos da aba.
+- `regraIndOp` (aba `REGRA inc. X`) é a matriz PS Onerosa × Adq. Exterior → IndOp exibida em “Regra de incidência → IndOp”; linhas sem IndOp (ex. N/S) são mantidas como lista vazia.
+
+Testes:
+
+```bash
+python scripts/test_dados.py
+# CI (.github/workflows/ci.yml): node --check assets/app.js + teste acima
+```
+
+Snapshot atual: **07/10/2026 (IT 2025.002 v1.70)** — 18 CSTs, 173 cClassTrib. Anexo VIII **V1.01.00 (08/10/2026)** — 1517 correlações, 731 NBS, 28 cClassTrib.
 
 ## Aviso
 
