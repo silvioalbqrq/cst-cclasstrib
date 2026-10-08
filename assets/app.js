@@ -30,7 +30,7 @@ const PAI_BADGES = {
 const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
 // Versão dos assets para cache-busting (?v=). Bump a cada release de dados.
-const ASSET_V = "20261008b";
+const ASSET_V = "20261008c";
 const urlV = (p) => `${p}?v=${ASSET_V}`;
 
 let DATA = [];
@@ -209,16 +209,31 @@ function applyFilters(data, F) {
     parcial = txt.parcial;
   }
   const ncmSet = ncmMap ? new Set(Object.keys(ncmMap)) : null;
-  // NBS do Anexo VIII (serviços): conjunto de cClassTrib vinculados ao NBS de 9 dígitos.
+  // NBS do Anexo VIII (serviços): conjunto de cClassTrib vinculados.
+  // - 9 dígitos: correlação direta NBS -> cClassTrib.
+  // - texto (ex. "desinfec"): busca nas descrições do Anexo VIII
+  //   (item LC 116, NBS, local, cClassTrib) e traz os cCT vinculados
+  //   para a grade principal — antes o texto de serviço só existia
+  //   na segunda janela e a primeira devolvia "0 classificações".
   let anexoSet = null;
   if (F.q && ANEXO8 && ANEXO8.itens) {
     const d = normCod(F.q);
-    if (d.length === 9) {
+    if (d.length === 9 && !/[a-z]/.test(F.q)) {
       anexoSet = new Set();
       for (const it of ANEXO8.itens) {
         if (it.nbsDigits === d && it.cClassTrib) anexoSet.add(it.cClassTrib);
       }
       if (!anexoSet.size) anexoSet = null;
+    } else if (/[a-z]/.test(F.q) && F.q.replace(/\d/g, "").trim().length >= 3) {
+      const ach = filtroAnexo8(F.q);
+      if (ach.length && ach.length < ANEXO8.itens.length) {
+        anexoSet = new Set();
+        for (const it of ach) {
+          if (it.cClassTrib) anexoSet.add(it.cClassTrib);
+          if (anexoSet.size >= 60) break;
+        }
+        if (!anexoSet.size) anexoSet = null;
+      }
     }
   }
   const out = [];
@@ -358,36 +373,65 @@ function filtroAnexo8(q) {
 }
 
 // Caixa de correlacoes do Anexo VIII exibida junto aos resultados
-// da busca unica quando a consulta e um NBS (9 digitos).
+// da busca unica:
+// - NBS (9 digitos): tabela detalhada por cClassTrib;
+// - texto (3+ letras): resumo agrupado por cClassTrib com contagem
+//   + convite para refinar na segunda janela.
 function caixaAnexo8(q) {
   if (!ANEXO8) return "";
   const d = normCod(q);
-  if (d.length !== 9) return "";
-  const ach = ANEXO8.itens.filter((it) => it.nbsDigits === d);
-  if (!ach.length) return "";
+  if (d.length === 9 && !/[a-z]/.test(norm(q))) {
+    const ach = ANEXO8.itens.filter((it) => it.nbsDigits === d);
+    if (!ach.length) return "";
+    const porCct = {};
+    for (const it of ach) {
+      const k = it.cClassTrib || "—";
+      (porCct[k] = porCct[k] || []).push(it);
+    }
+    const blocos = Object.entries(porCct).map(([cct, lista]) => {
+      const unicos = (campo) =>
+        [...new Set(lista.map((it) => it[campo]).filter(Boolean))].join(", ");
+      return `<tr><td class="cod">${esc(cct)}</td>` +
+        `<td>${esc(lista[0].nomeClassTrib || "")}</td>` +
+        `<td class="cod">${esc(unicos("indop"))}</td>` +
+        `<td>${esc(unicos("localIncidencia"))}</td>` +
+        `<td>${esc(unicos("psOnerosa") || "—")}</td>` +
+        `<td>${esc(unicos("adqExterior") || "—")}</td>` +
+        `<td class="cod">${esc(unicos("itemLc116"))}</td></tr>`;
+    }).join("");
+    return `<div class="ncm-desc"><strong>Anexo VIII — NBS ${esc(q)}` +
+      (ach[0].descNbs ? ` (${esc(ach[0].descNbs)})` : "") + ":</strong>" +
+      `<div class="tab-wrap"><table>` +
+      `<thead><tr><th>cClassTrib</th><th>Nome cClassTrib</th><th>IndOp</th>` +
+      `<th>Local de incidência</th><th>PS Onerosa</th><th>Adq. Exterior</th>` +
+      `<th>Item LC 116</th></tr></thead>` +
+      `<tbody>${blocos}</tbody></table></div></div>`;
+  }
+  const t = norm(q).trim();
+  if (!/[a-z]/.test(t) || t.replace(/\d/g, "").trim().length < 3) return "";
+  const ach = filtroAnexo8(q);
+  if (!ach.length || ach.length >= ANEXO8.itens.length) return "";
   const porCct = {};
   for (const it of ach) {
     const k = it.cClassTrib || "—";
     (porCct[k] = porCct[k] || []).push(it);
   }
-  const blocos = Object.entries(porCct).map(([cct, lista]) => {
-    const unicos = (campo) =>
-      [...new Set(lista.map((it) => it[campo]).filter(Boolean))].join(", ");
-    return `<tr><td class="cod">${esc(cct)}</td>` +
-      `<td>${esc(lista[0].nomeClassTrib || "")}</td>` +
-      `<td class="cod">${esc(unicos("indop"))}</td>` +
-      `<td>${esc(unicos("localIncidencia"))}</td>` +
-      `<td>${esc(unicos("psOnerosa") || "—")}</td>` +
-      `<td>${esc(unicos("adqExterior") || "—")}</td>` +
-      `<td class="cod">${esc(unicos("itemLc116"))}</td></tr>`;
-  }).join("");
-  return `<div class="ncm-desc"><strong>Anexo VIII — NBS ${esc(q)}` +
-    (ach[0].descNbs ? ` (${esc(ach[0].descNbs)})` : "") + ":</strong>" +
+  const entries = Object.entries(porCct).sort((a, b) => b[1].length - a[1].length);
+  const MAXC = 8;
+  const blocos = entries.slice(0, MAXC).map(([cct, lista]) =>
+    `<tr><td class="cod">${esc(cct)}</td>` +
+    `<td>${esc(lista[0].nomeClassTrib || "")}</td>` +
+    `<td class="num">${lista.length}</td>` +
+    `<td class="cod">${esc(lista[0].itemLc116 || "")}</td></tr>`
+  ).join("");
+  return `<div class="ncm-desc"><strong>Anexo VIII — "${esc(q)}": ` +
+    `${ach.length} correlação(ões) em ${entries.length} cClassTrib:</strong>` +
     `<div class="tab-wrap"><table>` +
-    `<thead><tr><th>cClassTrib</th><th>Nome cClassTrib</th><th>IndOp</th>` +
-    `<th>Local de incidência</th><th>PS Onerosa</th><th>Adq. Exterior</th>` +
-    `<th>Item LC 116</th></tr></thead>` +
-    `<tbody>${blocos}</tbody></table></div></div>`;
+    `<thead><tr><th>cClassTrib</th><th>Nome cClassTrib</th><th>Correlações</th>` +
+    `<th>Ex. item LC 116</th></tr></thead>` +
+    `<tbody>${blocos}</tbody></table></div>` +
+    (entries.length > MAXC ? `<div>…e mais ${entries.length - MAXC} cClassTrib. </div>` : "") +
+    `<div>Refine na segunda janela (Anexo VIII) para ver NBS × IndOp.</div></div>`;
 }
 
 function renderAnexo8() {
@@ -897,7 +941,9 @@ async function init() {
     if (!ok) return;
     renderRegra8();
     renderAnexo8();
-    if (normCod($("q").value).length === 9) atualizar();
+    mostrarVersao8();
+    const qv = $("q").value || "";
+    if (normCod(qv).length === 9 || norm(qv).trim().length >= 3) atualizar();
   });
 }
 
