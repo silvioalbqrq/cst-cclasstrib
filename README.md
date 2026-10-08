@@ -22,7 +22,8 @@ python -m http.server 8000
 
 ## Funcionalidades
 
-- **Busca única** por tudo: CST, cClassTrib, palavra (com tolerância a acentos), NCM (8 dígitos)/NBS (9 dígitos) **ou palavras da descrição do produto** — ex. `200003`, `medicamento`, `07082000`, `feijão` (singular/plural).
+- **Busca NCM (janela 1)** por CST, cClassTrib, NCM (7+ dígitos) ou palavras da descrição do produto — ex. `200003`, `medicamento`, `07082000`, `feijão` (singular/plural).
+- **Busca NBS e serviços (janela 2, lado a lado)** por NBS (9 dígitos), palavra do serviço, IndOp, cClassTrib ou item da LC 116 — ex. `1.1502.10.00`, `desinfecção`, `030101`, `200029`, `saúde` — com paginação e exportação CSV própria.
 - NCM/NBS com 7+ dígitos lista os cClassTrib vinculados nos anexos, com badge de origem na linha (`07082000 · PERMITIDO`; VEDADO em destaque vermelho). NCM válido sem vínculo exibe a descrição do produto mesmo assim.
 - Descrição do produto NCM exibida acima dos resultados e no badge (fonte: https://silvioalbqrq.github.io/consulta-ncm/, `data/ncm-descricoes.json`).
 - **Duas visões**: agrupada por CST ou aberta por cClassTrib.

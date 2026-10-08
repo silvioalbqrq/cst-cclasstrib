@@ -30,7 +30,7 @@ const PAI_BADGES = {
 const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
 // Versão dos assets para cache-busting (?v=). Bump a cada release de dados.
-const ASSET_V = "20261008c";
+const ASSET_V = "20261008d";
 const urlV = (p) => `${p}?v=${ASSET_V}`;
 
 let DATA = [];
@@ -188,11 +188,10 @@ function descsParaTexto(q) {
 }
 
 function applyFilters(data, F) {
-  // Vinculos NCM/NBS: so para consultas com 7+ digitos, para nao colidir
-  // com CST (3 digitos) nem cClassTrib (6 digitos).
-  // - IDX (ncm-nbs.json): NCM/NBS dos anexos do CST -> filtra a grade.
-  // - ANEXO8: NBS de servicos (9 digitos) -> tambem filtra a grade principal
-  //   (antes só aparecia na caixa "Anexo VIII" abaixo, sem filtrar a grade).
+  // Janela 1 (NCM, mercadorias): filtra a grade por CST/cClassTrib,
+  // NCM (7+ digitos, via IDX dos anexos do CST) e palavras da
+  // descricao do produto. NBS/servicos ficam exclusivos na
+  // janela 2 (Anexo VIII).
   let ncmMap = F.q ? detalheNcm(F.q) : null;
   const txt = F.q ? descsParaTexto(F.q) : null;
   let avulsos = [];
@@ -209,36 +208,8 @@ function applyFilters(data, F) {
     parcial = txt.parcial;
   }
   const ncmSet = ncmMap ? new Set(Object.keys(ncmMap)) : null;
-  // NBS do Anexo VIII (serviços): conjunto de cClassTrib vinculados.
-  // - 9 dígitos: correlação direta NBS -> cClassTrib.
-  // - texto (ex. "desinfec"): busca nas descrições do Anexo VIII
-  //   (item LC 116, NBS, local, cClassTrib) e traz os cCT vinculados
-  //   para a grade principal — antes o texto de serviço só existia
-  //   na segunda janela e a primeira devolvia "0 classificações".
-  let anexoSet = null;
-  if (F.q && ANEXO8 && ANEXO8.itens) {
-    const d = normCod(F.q);
-    if (d.length === 9 && !/[a-z]/.test(F.q)) {
-      anexoSet = new Set();
-      for (const it of ANEXO8.itens) {
-        if (it.nbsDigits === d && it.cClassTrib) anexoSet.add(it.cClassTrib);
-      }
-      if (!anexoSet.size) anexoSet = null;
-    } else if (/[a-z]/.test(F.q) && F.q.replace(/\d/g, "").trim().length >= 3) {
-      const ach = filtroAnexo8(F.q);
-      if (ach.length && ach.length < ANEXO8.itens.length) {
-        anexoSet = new Set();
-        for (const it of ach) {
-          if (it.cClassTrib) anexoSet.add(it.cClassTrib);
-          if (anexoSet.size >= 60) break;
-        }
-        if (!anexoSet.size) anexoSet = null;
-      }
-    }
-  }
   const out = [];
   let viaNcm = false;
-  let viaAnexo8 = false;
   for (const p of data) {
     if (!passaPai(p, F)) continue;
     const pm = paiMatchesQ(p, F.q);
@@ -248,10 +219,8 @@ function applyFilters(data, F) {
         // pai casou textualmente: mostra todos os filhos (comportamento atual)
       } else {
         filhos = filhos.filter((f) =>
-          filhoMatchesQ(f, F.q) || (ncmSet && ncmSet.has(f.CodClassTrib)) ||
-          (anexoSet && anexoSet.has(f.CodClassTrib)));
+          filhoMatchesQ(f, F.q) || (ncmSet && ncmSet.has(f.CodClassTrib)));
         if (filhos.some((f) => !filhoMatchesQ(f, F.q))) viaNcm = true;
-        if (anexoSet && filhos.some((f) => anexoSet.has(f.CodClassTrib))) viaAnexo8 = true;
       }
       if (!pm && !filhos.length) continue;
     }
@@ -259,7 +228,6 @@ function applyFilters(data, F) {
     out.push({ pai: p, filhos });
   }
   out.viaNcm = viaNcm;
-  out.viaAnexo8 = viaAnexo8;
   out.ncmInfo = ncmMap || {};
   out.ncmDesc = {};
   out.ncmParcial = parcial;
@@ -372,67 +340,7 @@ function filtroAnexo8(q) {
   });
 }
 
-// Caixa de correlacoes do Anexo VIII exibida junto aos resultados
-// da busca unica:
-// - NBS (9 digitos): tabela detalhada por cClassTrib;
-// - texto (3+ letras): resumo agrupado por cClassTrib com contagem
-//   + convite para refinar na segunda janela.
-function caixaAnexo8(q) {
-  if (!ANEXO8) return "";
-  const d = normCod(q);
-  if (d.length === 9 && !/[a-z]/.test(norm(q))) {
-    const ach = ANEXO8.itens.filter((it) => it.nbsDigits === d);
-    if (!ach.length) return "";
-    const porCct = {};
-    for (const it of ach) {
-      const k = it.cClassTrib || "—";
-      (porCct[k] = porCct[k] || []).push(it);
-    }
-    const blocos = Object.entries(porCct).map(([cct, lista]) => {
-      const unicos = (campo) =>
-        [...new Set(lista.map((it) => it[campo]).filter(Boolean))].join(", ");
-      return `<tr><td class="cod">${esc(cct)}</td>` +
-        `<td>${esc(lista[0].nomeClassTrib || "")}</td>` +
-        `<td class="cod">${esc(unicos("indop"))}</td>` +
-        `<td>${esc(unicos("localIncidencia"))}</td>` +
-        `<td>${esc(unicos("psOnerosa") || "—")}</td>` +
-        `<td>${esc(unicos("adqExterior") || "—")}</td>` +
-        `<td class="cod">${esc(unicos("itemLc116"))}</td></tr>`;
-    }).join("");
-    return `<div class="ncm-desc"><strong>Anexo VIII — NBS ${esc(q)}` +
-      (ach[0].descNbs ? ` (${esc(ach[0].descNbs)})` : "") + ":</strong>" +
-      `<div class="tab-wrap"><table>` +
-      `<thead><tr><th>cClassTrib</th><th>Nome cClassTrib</th><th>IndOp</th>` +
-      `<th>Local de incidência</th><th>PS Onerosa</th><th>Adq. Exterior</th>` +
-      `<th>Item LC 116</th></tr></thead>` +
-      `<tbody>${blocos}</tbody></table></div></div>`;
-  }
-  const t = norm(q).trim();
-  if (!/[a-z]/.test(t) || t.replace(/\d/g, "").trim().length < 3) return "";
-  const ach = filtroAnexo8(q);
-  if (!ach.length || ach.length >= ANEXO8.itens.length) return "";
-  const porCct = {};
-  for (const it of ach) {
-    const k = it.cClassTrib || "—";
-    (porCct[k] = porCct[k] || []).push(it);
-  }
-  const entries = Object.entries(porCct).sort((a, b) => b[1].length - a[1].length);
-  const MAXC = 8;
-  const blocos = entries.slice(0, MAXC).map(([cct, lista]) =>
-    `<tr><td class="cod">${esc(cct)}</td>` +
-    `<td>${esc(lista[0].nomeClassTrib || "")}</td>` +
-    `<td class="num">${lista.length}</td>` +
-    `<td class="cod">${esc(lista[0].itemLc116 || "")}</td></tr>`
-  ).join("");
-  return `<div class="ncm-desc"><strong>Anexo VIII — "${esc(q)}": ` +
-    `${ach.length} correlação(ões) em ${entries.length} cClassTrib:</strong>` +
-    `<div class="tab-wrap"><table>` +
-    `<thead><tr><th>cClassTrib</th><th>Nome cClassTrib</th><th>Correlações</th>` +
-    `<th>Ex. item LC 116</th></tr></thead>` +
-    `<tbody>${blocos}</tbody></table></div>` +
-    (entries.length > MAXC ? `<div>…e mais ${entries.length - MAXC} cClassTrib. </div>` : "") +
-    `<div>Refine na segunda janela (Anexo VIII) para ver NBS × IndOp.</div></div>`;
-}
+// ---------- Anexo VIII: janela 2, exclusiva NBS/serviços ----------
 
 function renderAnexo8() {
   const box = $("resultados8");
@@ -589,8 +497,7 @@ function render(filtered, F) {
   const total = filtered.reduce((a, g) => a + g.filhos.length, 0);
   $("contador").textContent =
     `${total} classificação(ões) em ${filtered.length} CST(s)` +
-    (filtered.viaNcm ? " · inclui vínculos NCM/NBS" : "") +
-    (filtered.viaAnexo8 ? " · via Anexo VIII" : "") +
+    (filtered.viaNcm ? " · inclui vínculos NCM" : "") +
     (filtered.ncmParcial ? " · lista parcial, refine a busca" : "");
 
   if (!total) {
@@ -598,14 +505,14 @@ function render(filtered, F) {
     if (av.length) {
       $("contador").textContent = "NCM localizado · sem vínculos com cClassTrib";
       const mostrar = av.slice(0, 20);
-      box.innerHTML = caixaAnexo8(F.q) +
+      box.innerHTML =
         `<div class="ncm-desc"><strong>NCM localizado${av.length > 1 ? "s" : ""}:</strong>` +
         mostrar.map((n) => `<div><code>${esc(n.codigo)}</code> — ${esc(n.desc)}</div>`).join("") +
         (av.length > mostrar.length ? `<div>…e mais ${av.length - mostrar.length}. Refine a busca.</div>` : "") +
         `<p style="margin:8px 0 0;color:var(--muted)">Sem vínculos nos anexos de cClassTrib.</p></div>`;
       return;
     }
-    box.innerHTML = caixaAnexo8(F.q) + `<div class="vazio">Nenhum resultado para os filtros atuais.
+    box.innerHTML = `<div class="vazio">Nenhum resultado para os filtros atuais. Serviços (NBS) ficam na janela 2 (Anexo VIII).
       <br><button type="button" class="btn" id="vLimpar" style="margin-top:10px">Limpar filtros</button></div>`;
     $("vLimpar").onclick = limpar;
     return;
@@ -618,11 +525,11 @@ function render(filtered, F) {
     const linhas = filtered
       .flatMap((g) => g.filhos.map((f) => linhaFilho(f, true, badgeNcm(info, f.CodClassTrib, descs))))
       .join("");
-    box.innerHTML = (descKeys.length ? descBox(descs) : "") + caixaAnexo8(F.q) +
+    box.innerHTML = (descKeys.length ? descBox(descs) : "") +
       `<div class="grupo"><div class="tab-wrap">
       <table>${headFilho(true)}<tbody>${linhas}</tbody></table></div></div>`;
   } else {
-    box.innerHTML = (descKeys.length ? descBox(descs) : "") + caixaAnexo8(F.q) + filtered.map((g) => `
+    box.innerHTML = (descKeys.length ? descBox(descs) : "") + filtered.map((g) => `
       <article class="grupo">
         <div class="grupo-head">
           <h2><code>${esc(g.pai.Cst)}</code> — ${esc(g.pai.NomeCst || "")}</h2>
@@ -929,21 +836,18 @@ async function init() {
 
   atualizar();
 
-  // Pre-carrega o indice NCM/NBS em segundo plano para que a busca
-  // unica tambem encontre vinculos de anexos sem espera.
+  // Pre-carrega o indice NCM em segundo plano para que a busca
+  // da janela 1 tambem encontre vinculos de anexos sem espera.
   garantirIdx(true).then((ok) => {
     if (ok && normCod($("q").value).length >= 7) atualizar();
   });
 
-  // Pre-carrega o Anexo VIII em segundo plano (secao propria, caixa
-  // de NBS na busca unica e detalhe do cClassTrib).
+  // Pre-carrega o Anexo VIII em segundo plano (janela 2 + detalhe do cClassTrib).
   garantirAnexo8(true).then((ok) => {
     if (!ok) return;
     renderRegra8();
     renderAnexo8();
     mostrarVersao8();
-    const qv = $("q").value || "";
-    if (normCod(qv).length === 9 || norm(qv).trim().length >= 3) atualizar();
   });
 }
 

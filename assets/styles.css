@@ -58,6 +58,16 @@ body {
 }
 
 /* ---------- busca ---------- */
+.buscas-lado {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.buscas-lado .busca { margin: 16px 0 0; }
+@media (max-width: 900px) {
+  .buscas-lado { grid-template-columns: 1fr; }
+}
 .busca {
   background: var(--card);
   border: 1px solid var(--line);
