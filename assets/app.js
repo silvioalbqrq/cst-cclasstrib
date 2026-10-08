@@ -30,7 +30,7 @@ const PAI_BADGES = {
 const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
 // Versão dos assets para cache-busting (?v=). Bump a cada release de dados.
-const ASSET_V = "20261008";
+const ASSET_V = "20261008b";
 const urlV = (p) => `${p}?v=${ASSET_V}`;
 
 let DATA = [];
@@ -190,6 +190,9 @@ function descsParaTexto(q) {
 function applyFilters(data, F) {
   // Vinculos NCM/NBS: so para consultas com 7+ digitos, para nao colidir
   // com CST (3 digitos) nem cClassTrib (6 digitos).
+  // - IDX (ncm-nbs.json): NCM/NBS dos anexos do CST -> filtra a grade.
+  // - ANEXO8: NBS de servicos (9 digitos) -> tambem filtra a grade principal
+  //   (antes só aparecia na caixa "Anexo VIII" abaixo, sem filtrar a grade).
   let ncmMap = F.q ? detalheNcm(F.q) : null;
   const txt = F.q ? descsParaTexto(F.q) : null;
   let avulsos = [];
@@ -206,8 +209,21 @@ function applyFilters(data, F) {
     parcial = txt.parcial;
   }
   const ncmSet = ncmMap ? new Set(Object.keys(ncmMap)) : null;
+  // NBS do Anexo VIII (serviços): conjunto de cClassTrib vinculados ao NBS de 9 dígitos.
+  let anexoSet = null;
+  if (F.q && ANEXO8 && ANEXO8.itens) {
+    const d = normCod(F.q);
+    if (d.length === 9) {
+      anexoSet = new Set();
+      for (const it of ANEXO8.itens) {
+        if (it.nbsDigits === d && it.cClassTrib) anexoSet.add(it.cClassTrib);
+      }
+      if (!anexoSet.size) anexoSet = null;
+    }
+  }
   const out = [];
   let viaNcm = false;
+  let viaAnexo8 = false;
   for (const p of data) {
     if (!passaPai(p, F)) continue;
     const pm = paiMatchesQ(p, F.q);
@@ -217,8 +233,10 @@ function applyFilters(data, F) {
         // pai casou textualmente: mostra todos os filhos (comportamento atual)
       } else {
         filhos = filhos.filter((f) =>
-          filhoMatchesQ(f, F.q) || (ncmSet && ncmSet.has(f.CodClassTrib)));
+          filhoMatchesQ(f, F.q) || (ncmSet && ncmSet.has(f.CodClassTrib)) ||
+          (anexoSet && anexoSet.has(f.CodClassTrib)));
         if (filhos.some((f) => !filhoMatchesQ(f, F.q))) viaNcm = true;
+        if (anexoSet && filhos.some((f) => anexoSet.has(f.CodClassTrib))) viaAnexo8 = true;
       }
       if (!pm && !filhos.length) continue;
     }
@@ -226,6 +244,7 @@ function applyFilters(data, F) {
     out.push({ pai: p, filhos });
   }
   out.viaNcm = viaNcm;
+  out.viaAnexo8 = viaAnexo8;
   out.ncmInfo = ncmMap || {};
   out.ncmDesc = {};
   out.ncmParcial = parcial;
@@ -295,7 +314,7 @@ function infoVersao8() {
   if (!ANEXO8 || !ANEXO8.meta) return "";
   const m = ANEXO8.meta;
   const ver = m.versao ? ` ${m.versao}` : "";
-  const gen = m.geradoEm ? ` (${m.geradoEm})` : "";
+  const gen = m.geradoEm ? ` (${fmtDate(m.geradoEm)})` : "";
   return `Anexo VIII${ver}${gen} · ${m.correlacoes} correlações · ${m.nbsUnicos} NBS · ${m.cClassTribUnicos} cClassTrib`;
 }
 
@@ -304,7 +323,7 @@ function mostrarVersao8() {
   if ($("versao8")) $("versao8").textContent = txt ? `— ${txt}` : "";
   if ($("rodape8") && ANEXO8 && ANEXO8.meta) {
     const m = ANEXO8.meta;
-    $("rodape8").textContent = `Anexo VIII ${m.versao || ""} (${m.geradoEm || ""})`.trim();
+    $("rodape8").textContent = `Anexo VIII ${m.versao || ""} (${fmtDate(m.geradoEm) || ""})`.trim();
   }
 }
 
@@ -527,6 +546,7 @@ function render(filtered, F) {
   $("contador").textContent =
     `${total} classificação(ões) em ${filtered.length} CST(s)` +
     (filtered.viaNcm ? " · inclui vínculos NCM/NBS" : "") +
+    (filtered.viaAnexo8 ? " · via Anexo VIII" : "") +
     (filtered.ncmParcial ? " · lista parcial, refine a busca" : "");
 
   if (!total) {
