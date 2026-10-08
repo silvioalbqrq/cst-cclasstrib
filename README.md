@@ -45,11 +45,14 @@ cst-cclasstrib/
 │   ├── ncm-nbs.json            # índice reverso NCM/NBS → cClassTribs (carga sob demanda)
 │   ├── ncm-descricoes.json     # descrições NCM hierárquicas (carga sob demanda)
 │   ├── anexo-viii.json         # correlação NBS × IndOp × cClassTrib do Anexo VIII (carga sob demanda)
-│   └── classificacao-tributaria.json  # snapshot completo, inclui anexos NCM/NBS
+│   ├── anexos/                 # fragmentos por cClassTrib (Detalhe baixa só o fragmento, em KB)
+│   └── classificacao-tributaria.json  # snapshot completo, inclui anexos NCM/NBS (fallback do Detalhe)
 └── scripts/
     ├── atualizar.py            # regenera os JSONs a partir da página oficial salva
     ├── atualizar_descricoes.py # regenera ncm-descricoes.json a partir do tipi-data.js
-    └── atualizar_anexo8.py     # regenera anexo-viii.json a partir da planilha do Anexo VIII
+    ├── atualizar_anexo8.py     # regenera anexo-viii.json a partir da planilha do Anexo VIII
+    ├── gerar_anexos.py         # fatia os anexos por cClassTrib em data/anexos/
+    └── test_dados.py           # regressão: contagens, cruzamentos, fragmentos, ASSET_V
 ```
 
 ## Atualizar os dados
@@ -83,7 +86,10 @@ python scripts/atualizar_anexo8.py "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_I
 
 Notas do Anexo VIII:
 - `99.01.01` (“Outros serviços sem incidência de ISSQN/ICMS”) vem na planilha sem NBS/IndOp/cClassTrib e é descartado pelo script — por isso 207 itens com correlação em 208 grupos da aba.
+- 15 correlações têm NBS vazio na própria planilha (ex. `07.13` pulverização → `200038`, `99.03.0x` imóveis → `200027`): alcançáveis só por descrição/IndOp, nunca por dígito NBS.
 - `regraIndOp` (aba `REGRA inc. X`) é a matriz PS Onerosa × Adq. Exterior → IndOp exibida em “Regra de incidência → IndOp”; linhas sem IndOp (ex. N/S) são mantidas como lista vazia.
+- Hierarquia de nomes: em divergência entre Portal (IT 1.70) e planilha (v1.01.00), prevalece o Portal — a UI avisa no detalhe. Divergências conhecidas: `200039`, `200042`, `200044`, `820001`, `820002` (ver `DIVERGENCIAS_CONHECIDAS` em `scripts/test_dados.py`).
+- Detalhe baixa `data/anexos/<cod>.json` (KB, gerado por `scripts/gerar_anexos.py`); o snapshot completo só é usado como fallback.
 
 Testes:
 

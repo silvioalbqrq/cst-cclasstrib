@@ -37,6 +37,7 @@
     <label class="busca-rotulo" for="q8">Busca NBS e serviços — Anexo VIII <small id="versao8" class="contador"></small></label>
     <input id="q8" type="search" placeholder="NBS, serviço, IndOp, cClassTrib ou item da LC 116 — ex.: 1.1502.10.00, desinfecção, 030101, 200029, saúde" autocomplete="off">
     <p class="dica">Exclusiva para serviços: correlação Item LC 116 → NBS → PS Onerosa / Adq. Exterior / IndOp / Local de incidência → cClassTrib.
+      Nomes de cClassTrib conforme a planilha v1.01.00; em divergência com o Portal (IT 1.70), prevalece o Portal.
       <span id="contador8" class="contador"></span></p>
     <div class="acoes">
       <button type="button" id="btnCsv8" class="btn">Exportar CSV</button>
@@ -48,6 +49,7 @@
 
   <details class="filtros" id="painelRegra8">
     <summary>Regra de incidência → IndOp (matriz do Anexo VIII)</summary>
+    <p class="dica">Matriz genérica PS Onerosa × Adq. Exterior (Anexo VII); nem todo IndOp listado possui correlação nesta versão da planilha.</p>
     <div class="tab-wrap" id="regra8"></div>
   </details>
 
@@ -106,7 +108,7 @@
           <label><input type="radio" name="op" value="E" checked> E (todos)</label>
           <label><input type="radio" name="op" value="OU"> OU (qualquer um)</label>
         </div>
-        <div class="checks dfe" id="dfes"></div>
+        <div class="checks dfe" id="dfes" role="group" aria-label="Documentos fiscais"></div>
       </fieldset>
 
     </div>
@@ -121,7 +123,7 @@
 
 </main>
 
-<dialog id="dlg">
+<dialog id="dlg" aria-labelledby="dlgTitulo">
   <div class="dlg-head">
     <strong id="dlgTitulo">Detalhe</strong>
     <button id="dlgFechar" class="btn" autofocus>Fechar ✕</button>
@@ -133,10 +135,10 @@
   <div class="wrap">
     <p>Consulta não oficial, sem vínculo com SEFAZ/Receita. Para uso fiscal, confirme sempre no
       <a href="https://dfe-portal.svrs.rs.gov.br/CFF/ClassificacaoTributaria" target="_blank" rel="noopener">portal oficial</a>.
-      Dados extraídos em 07/10/2026 (IT 2025.002 v1.70) · <span id="rodape8">Anexo VIII v1.01.00 (08/10/2026)</span> — atualize com <code>python scripts/atualizar.py portal.html</code>.</p>
+      Dados extraídos em 07/10/2026 (IT 2025.002 v1.70) · <span id="rodape8">Anexo VIII v1.01.00 (08/10/2026)</span> — atualize com <code>python scripts/atualizar.py portal.html</code> e <code>python scripts/atualizar_anexo8.py planilha.xlsx</code>.</p>
   </div>
 </footer>
 
-<script src="assets/app.js?v=20261008d" defer></script>
+<script src="assets/app.js?v=20261008e" defer></script>
 </body>
 </html>

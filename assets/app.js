@@ -30,7 +30,7 @@ const PAI_BADGES = {
 const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
 // Versão dos assets para cache-busting (?v=). Bump a cada release de dados.
-const ASSET_V = "20261008d";
+const ASSET_V = "20261008e";
 const urlV = (p) => `${p}?v=${ASSET_V}`;
 
 let DATA = [];
@@ -363,7 +363,10 @@ function renderAnexo8() {
     return;
   }
   if (!itens.length) {
-    box.innerHTML = `<div class="vazio">Nenhum resultado para "${esc(q)}" no Anexo VIII.</div>`;
+    const curto = q.trim().length > 0 && !q.trim().split(/\s+/).some((w) => w.length >= 2);
+    box.innerHTML = curto
+      ? `<div class="vazio">Termo muito curto — digite ao menos 2 letras ou um código (NBS, IndOp, cClassTrib).</div>`
+      : `<div class="vazio">Nenhum resultado para "${esc(q)}" no Anexo VIII.</div>`;
     return;
   }
   const totalPag = Math.max(1, Math.ceil(itens.length / PAGE8));
@@ -572,9 +575,15 @@ async function garantirIdx(silencioso) {
       erros.push("ncm-descricoes.json (" + e.message + ")");
     }
   }
-  if (erros.length) {
+  if (erros.length && !IDX) {
     showStatus("Não foi possível carregar: " + erros.join("; ") + ".");
     return false;
+  }
+  if (erros.length) {
+    // Índice NCM carregado, só faltam as descrições: busca por código
+    // funciona, só a busca por palavra do produto fica degradada.
+    showStatus("Aviso: " + erros.join("; ") + ". Busca por código funciona; por palavra pode falhar.");
+    return true;
   }
   showStatus("");
   return true;
@@ -596,7 +605,7 @@ function abrirDetalhe(cod) {
   const ach = localizar(cod);
   if (!ach) return;
   const { pai, filho: f } = ach;
-  $("dlgTitulo").textContent = `${f.CodClassTrib} — ${f.NomeReduzido || ""}`;
+  $("dlgTitulo").textContent = `${f.CodClassTrib} — ${(f.NomeReduzido || "").trim()}`;
 
   const flags = [...FILHO_FLAGS, "IndMonoRetem", "IndMonoRet", "IndMonoDif",
     "IndMonoVal", "IndPbioDiferenca", "PossuiIndDfe"]
@@ -637,16 +646,7 @@ function abrirDetalhe(cod) {
 async function carregarAnexos(cod) {
   const tab = $("anexosTab");
   tab.innerHTML = "<p>Carregando…</p>";
-  try {
-    if (!fullCache) {
-      const r = await fetch(urlV("data/classificacao-tributaria.json"));
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      fullCache = await r.json();
-    }
-    let anexos = [];
-    outer: for (const p of fullCache)
-      for (const f of p.ClassificacoesTributarias)
-        if (f.CodClassTrib === cod) { anexos = f.Anexos || []; break outer; }
+  const mostra = (anexos) => {
     if (!anexos.length) { tab.innerHTML = "<p>Nenhum anexo encontrado.</p>"; return; }
     tab.innerHTML = `<div class="tab-wrap"><table>
       <thead><tr><th>Tipo</th><th>Código</th><th>Item</th><th>Início</th><th>Fim</th><th>Permissão</th></tr></thead>
@@ -658,6 +658,24 @@ async function carregarAnexos(cod) {
         <td class="num">${fmtDate(a.DthFimVig)}</td>
         <td class="${a.TipoPermissao === "VEDADO" ? "vedado" : "permitido"}">${esc(a.TipoPermissao ?? "")}</td>
       </tr>`).join("")}</tbody></table></div>`;
+  };
+  // 1) fragmento por código (KB, gerado por scripts/gerar_anexos.py)
+  try {
+    const r = await fetch(urlV(`data/anexos/${cod}.json`));
+    if (r.ok) { mostra((await r.json()).anexos || []); return; }
+  } catch (e) { /* cai para o snapshot completo */ }
+  // 2) fallback: snapshot completo (MB, só quando o fragmento não existe)
+  try {
+    if (!fullCache) {
+      const r = await fetch(urlV("data/classificacao-tributaria.json"));
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      fullCache = await r.json();
+    }
+    let anexos = [];
+    outer: for (const p of fullCache)
+      for (const f of p.ClassificacoesTributarias)
+        if (f.CodClassTrib === cod) { anexos = f.Anexos || []; break outer; }
+    mostra(anexos);
   } catch (e) {
     tab.innerHTML = `<p>Não foi possível carregar os anexos (${esc(e.message)}).</p>`;
   }
@@ -676,6 +694,16 @@ async function preencherAnexo8Dlg(cod) {
     wrap.innerHTML = `<p style="color:var(--muted)">Sem correlações do Anexo VIII (NBS/IndOp) para este cClassTrib.</p>`;
     return;
   }
+  // Hierarquia de nomes: prevalece o Portal (IT 1.70, cabeçalho do detalhe);
+  // a planilha do Anexo VIII v1.01.00 diverge em alguns códigos — avisa.
+  const nomePortal = ((localizar(cod) || {}).filho || {}).NomeReduzido;
+  const nomePlan = ach[0].nomeClassTrib || "";
+  const divergente = nomePortal && nomePlan &&
+    nomePortal.trim() !== nomePlan.trim();
+  const notaNome = divergente
+    ? `<p style="color:var(--muted)">Nome no Portal (IT 1.70): “${esc(nomePortal.trim())}”. ` +
+      `Abaixo, nome conforme a planilha do Anexo VIII v1.01.00.</p>`
+    : "";
   const MAX = 200;
   const linhas = ach.slice(0, MAX).map((it) => `<tr>
     <td class="cod">${esc(it.nbs || "—")}</td>
@@ -687,6 +715,7 @@ async function preencherAnexo8Dlg(cod) {
     <td class="cod">${esc(it.itemLc116)}</td>
   </tr>`).join("");
   wrap.innerHTML = `<details class="regra" open><summary>Anexo VIII — ${ach.length} correlação(ões) NBS/IndOp</summary>
+    ${notaNome}
     <div class="tab-wrap"><table>
     <thead><tr><th>NBS</th><th>Descrição NBS</th><th>IndOp</th><th>Local de incidência</th><th>PS Onerosa</th><th>Adq. Exterior</th><th>Item LC 116</th></tr></thead>
     <tbody>${linhas}</tbody></table></div>
@@ -768,7 +797,7 @@ function reconstruirCodigos() {
     for (const f of p.ClassificacoesTributarias) {
       const o = document.createElement("option");
       o.value = f.CodClassTrib;
-      o.textContent = `${f.CodClassTrib} — ${f.NomeReduzido}`;
+      o.textContent = `${f.CodClassTrib} — ${(f.NomeReduzido || "").trim()}`;
       sel.appendChild(o);
     }
   }
@@ -776,14 +805,15 @@ function reconstruirCodigos() {
 }
 
 function atualizar() {
-  render(applyFilters(DATA, collectFilters()), collectFilters());
+  const F = collectFilters();
+  render(applyFilters(DATA, F), F);
 }
 
 function limpar() {
+  // Escopo: só a janela 1 (a busca NBS tem limpeza própria no × do campo).
   $("q").value = "";
-  $("q8").value = "";
-  pagina8 = 0;
   $("fCst").value = "";
+  $("fCod").value = "";
   $("fNomeCst").value = "";
   $("fNomeRed").value = "";
   $("fTipoAliq").value = "";
@@ -792,7 +822,6 @@ function limpar() {
   document.querySelector('input[name="op"][value="E"]').checked = true;
   reconstruirCodigos();
   atualizar();
-  renderAnexo8();
 }
 
 let debounce = null;
@@ -828,7 +857,7 @@ async function init() {
   $("fNomeRed").addEventListener("input", agenda);
   $("fCst").addEventListener("change", () => { reconstruirCodigos(); atualizar(); });
   document.querySelectorAll("select, input").forEach((el) => {
-    if (!["q", "fNomeCst", "fNomeRed"].includes(el.id)) el.addEventListener("change", atualizar);
+    if (!["q", "q8", "fNomeCst", "fNomeRed"].includes(el.id)) el.addEventListener("change", atualizar);
   });
   $("btnLimpar").onclick = limpar;
   $("btnCsv").onclick = () => exportarCSV(applyFilters(DATA, collectFilters()));

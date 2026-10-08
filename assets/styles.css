@@ -56,6 +56,10 @@ body {
   color: #fff;
   font-weight: 600;
 }
+.visao label:has(input:focus-visible), .op label:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 
 /* ---------- busca ---------- */
 .buscas-lado {

@@ -24,7 +24,7 @@ OUT = "data/anexo-viii.json"
 VERSAO = "V1.01.00"
 
 LOCAIS = {
-    "local da entrega ou disponibilização": "Local da entrega ou disponibilização",
+    "local da entrega ou disponibilização": "Local da entrega ou da disponibilização",
     "local da entrega ou da disponibilização": "Local da entrega ou da disponibilização",
     "local da prestação": "Local da prestação",
     "local do evento": "Local do evento",
@@ -34,6 +34,8 @@ LOCAIS = {
     "domicílio principal do adquirente": "Domicílio principal do adquirente",
     "domicílio principal do adquirente (estabelecimento matriz)": "Domicílio principal do adquirente (estabelecimento matriz)",
 }
+# A planilha traz "Local da entrega ou disponibilização" (1 ocorrência) e
+# "Local da entrega ou da disponibilização" (60); ambas são unificadas acima.
 
 
 def clean(v):
@@ -70,6 +72,12 @@ def unmerge(ws):
 def main(xlsx_path):
     wb = openpyxl.load_workbook(xlsx_path, data_only=True)
 
+    if "REGRA inc. X" not in wb.sheetnames or "tabela geral" not in wb.sheetnames:
+        raise SystemExit(
+            f"abas esperadas não encontradas em {xlsx_path}: "
+            f"{wb.sheetnames} (esperado 'REGRA inc. X' e 'tabela geral')"
+        )
+
     # ---------- matriz REGRA inc. X ----------
     # leitura direta (sem desmesclar): E:F é merge horizontal visual,
     # o valor de N/S (coluna F) é vazio de propósito
@@ -92,6 +100,12 @@ def main(xlsx_path):
 
     # ---------- aba tabela geral ----------
     ws = wb["tabela geral"]
+    cab = [clean(ws.cell(row=1, column=c).value).lower() for c in range(1, 11)]
+    if not (cab[0].startswith("item") and "nbs" in cab[2] and "indop" in cab[6]):
+        raise SystemExit(
+            f"layout inesperado da aba 'tabela geral' em {xlsx_path}: {cab}. "
+            "Confira se é a planilha oficial do Anexo VIII antes de regerar."
+        )
     grid = unmerge(ws)
 
     itens = []

@@ -32,7 +32,6 @@
    "Domicílio principal do adquirente",
    "Domicílio principal do adquirente (estabelecimento matriz)",
    "Local da entrega ou da disponibilização",
-   "Local da entrega ou disponibilização",
    "Local da prestação",
    "Local do evento",
    "Local do imóvel",
@@ -13109,7 +13108,7 @@
    "psOnerosa": "",
    "adqExterior": "",
    "indop": "010101",
-   "localIncidencia": "Local da entrega ou disponibilização",
+   "localIncidencia": "Local da entrega ou da disponibilização",
    "cClassTrib": "820007",
    "nomeClassTrib": "Documento com informações de fornecimento de serviços financeiros"
   },
