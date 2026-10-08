@@ -34,6 +34,7 @@ let fullCache = null; // full JSON (anexos), carregado sob demanda
 let IDX = null;       // indice reverso NCM/NBS, carregado sob demanda
 let NCM_DESC = null;  // descricoes NCM (g: grupos, i: itens), sob demanda
 let NCM_NORM = null;  // cache codigo -> descricao normalizada (busca textual)
+let ANEXO8 = null;    // dados do Anexo VIII (NBS x IndOp x cClassTrib), sob demanda
 
 const $ = (id) => document.getElementById(id);
 
@@ -282,6 +283,138 @@ function buscarNcm(idx, query, limite = 200) {
   return out;
 }
 
+/* ---------- Anexo VIII (NBS x IndOp x cClassTrib) ---------- */
+async function garantirAnexo8(silencioso) {
+  if (ANEXO8) return true;
+  if (!silencioso) showStatus("Carregando Anexo VIII…");
+  try {
+    ANEXO8 = await carregarJson("data/anexo-viii.json");
+  } catch (e) {
+    showStatus("Não foi possível carregar data/anexo-viii.json (" + e.message + ").");
+    return false;
+  }
+  if (!silencioso) showStatus("");
+  return true;
+}
+
+function filtroAnexo8(q) {
+  if (!ANEXO8) return [];
+  const t = norm(q).trim();
+  if (!t) return ANEXO8.itens;
+  const termos = t.split(/\s+/).filter((w) => w.length >= 2);
+  if (!termos.length) return [];
+  return ANEXO8.itens.filter((it) => {
+    const hay = norm(
+      it.itemLc116 + " " + it.descItem + " " + it.nbs + " " + it.nbsDigits + " " +
+      it.descNbs + " " + it.psOnerosa + " " + it.adqExterior + " " + it.indop + " " +
+      it.localIncidencia + " " + it.cClassTrib + " " + it.nomeClassTrib
+    );
+    return termos.every((term) => hay.includes(term));
+  });
+}
+
+// Caixa de correlacoes do Anexo VIII exibida junto aos resultados
+// da busca unica quando a consulta e um NBS (9 digitos).
+function caixaAnexo8(q) {
+  if (!ANEXO8) return "";
+  const d = normCod(q);
+  if (d.length !== 9) return "";
+  const ach = ANEXO8.itens.filter((it) => it.nbsDigits === d);
+  if (!ach.length) return "";
+  const porCct = {};
+  for (const it of ach) {
+    const k = it.cClassTrib || "—";
+    (porCct[k] = porCct[k] || []).push(it);
+  }
+  const blocos = Object.entries(porCct).map(([cct, lista]) => {
+    const unicos = (campo) =>
+      [...new Set(lista.map((it) => it[campo]).filter(Boolean))].join(", ");
+    return `<tr><td class="cod">${esc(cct)}</td>` +
+      `<td>${esc(lista[0].nomeClassTrib || "")}</td>` +
+      `<td class="cod">${esc(unicos("indop"))}</td>` +
+      `<td>${esc(unicos("localIncidencia"))}</td>` +
+      `<td>${esc(unicos("psOnerosa") || "—")}</td>` +
+      `<td>${esc(unicos("adqExterior") || "—")}</td>` +
+      `<td class="cod">${esc(unicos("itemLc116"))}</td></tr>`;
+  }).join("");
+  return `<div class="ncm-desc"><strong>Anexo VIII — NBS ${esc(q)}` +
+    (ach[0].descNbs ? ` (${esc(ach[0].descNbs)})` : "") + ":</strong>" +
+    `<div class="tab-wrap"><table>` +
+    `<thead><tr><th>cClassTrib</th><th>Nome cClassTrib</th><th>IndOp</th>` +
+    `<th>Local de incidência</th><th>PS Onerosa</th><th>Adq. Exterior</th>` +
+    `<th>Item LC 116</th></tr></thead>` +
+    `<tbody>${blocos}</tbody></table></div></div>`;
+}
+
+const MAX8 = 500;
+
+function renderAnexo8() {
+  const box = $("resultados8");
+  if (!ANEXO8) {
+    box.innerHTML = `<div class="vazio">Carregando Anexo VIII…</div>`;
+    return;
+  }
+  const q = $("q8").value;
+  const itens = filtroAnexo8(q);
+  $("contador8").textContent = q.trim()
+    ? `${itens.length} correlação(ões)`
+    : `${ANEXO8.itens.length} correlações — digite para filtrar`;
+  if (!itens.length) {
+    box.innerHTML = `<div class="vazio">Nenhum resultado para "${esc(q)}" no Anexo VIII.</div>`;
+    return;
+  }
+  const linhas = itens.slice(0, MAX8).map((it) => `<tr>
+    <td class="cod">${esc(it.itemLc116)}</td>
+    <td>${esc(it.descItem)}</td>
+    <td class="cod">${esc(it.nbs || "—")}</td>
+    <td>${esc(it.descNbs || "—")}</td>
+    <td>${esc(it.psOnerosa || "—")}</td>
+    <td>${esc(it.adqExterior || "—")}</td>
+    <td class="cod">${esc(it.indop)}</td>
+    <td>${esc(it.localIncidencia || "—")}</td>
+    <td class="cod">${esc(it.cClassTrib || "—")}</td>
+    <td>${esc(it.nomeClassTrib || "—")}</td>
+  </tr>`).join("");
+  box.innerHTML = `<div class="grupo"><div class="tab-wrap"><table>
+    <thead><tr>
+      <th>Item LC 116</th><th>Descrição do item (LC 116)</th><th>NBS</th><th>Descrição NBS</th>
+      <th>PS Onerosa</th><th>Adq. Exterior</th><th>IndOp</th><th>Local de incidência IBS</th>
+      <th>cClassTrib</th><th>Nome cClassTrib</th>
+    </tr></thead>
+    <tbody>${linhas}</tbody></table></div>
+    ${itens.length > MAX8 ? `<p style="color:var(--muted);padding:8px 16px">Mostrando ${MAX8} de ${itens.length}. Refine a busca.</p>` : ""}
+  </div>`;
+}
+
+function renderRegra8() {
+  if (!ANEXO8 || !ANEXO8.regraIndOp || !$("regra8")) return;
+  const linhas = ANEXO8.regraIndOp.map((r) => `<tr>
+    <td>${r.psOnerosa === "S" ? "Sim" : "Não"}</td>
+    <td>${r.adqExterior === "S" ? "Sim" : "Não"}</td>
+    <td class="cod">${esc(r.indop.join(", ") || "—")}</td>
+  </tr>`).join("");
+  $("regra8").innerHTML = `<table>
+    <thead><tr><th>PS Onerosa</th><th>Adq. Exterior</th><th>IndOp</th></tr></thead>
+    <tbody>${linhas}</tbody></table>`;
+}
+
+function exportarCSVAnexo8() {
+  if (!ANEXO8) return;
+  const head = ["Item LC 116", "Descrição item", "NBS", "Descrição NBS",
+    "PS Onerosa", "Adq. Exterior", "IndOp", "Local de incidência IBS",
+    "cClassTrib", "Nome cClassTrib"];
+  const linhas = [head.map(csvCell).join(";")];
+  for (const it of filtroAnexo8($("q8").value)) {
+    linhas.push([
+      it.itemLc116, it.descItem, it.nbs, it.descNbs,
+      it.psOnerosa, it.adqExterior, it.indop, it.localIncidencia,
+      it.cClassTrib, it.nomeClassTrib,
+    ].map(csvCell).join(";"));
+  }
+  baixar("anexo-viii-nbs-indop-cclasstrib.csv",
+    "﻿" + linhas.join("\r\n"), "text/csv;charset=utf-8");
+}
+
 /* ---------- render ---------- */
 function badgesPai(p) {
   return Object.entries(PAI_BADGES)
@@ -358,13 +491,14 @@ function render(filtered, F) {
     if (av.length) {
       $("contador").textContent = "NCM localizado · sem vínculos com cClassTrib";
       const mostrar = av.slice(0, 20);
-      box.innerHTML = `<div class="ncm-desc"><strong>NCM localizado${av.length > 1 ? "s" : ""}:</strong>` +
+      box.innerHTML = caixaAnexo8(F.q) +
+        `<div class="ncm-desc"><strong>NCM localizado${av.length > 1 ? "s" : ""}:</strong>` +
         mostrar.map((n) => `<div><code>${esc(n.codigo)}</code> — ${esc(n.desc)}</div>`).join("") +
         (av.length > mostrar.length ? `<div>…e mais ${av.length - mostrar.length}. Refine a busca.</div>` : "") +
         `<p style="margin:8px 0 0;color:var(--muted)">Sem vínculos nos anexos de cClassTrib.</p></div>`;
       return;
     }
-    box.innerHTML = `<div class="vazio">Nenhum resultado para os filtros atuais.
+    box.innerHTML = caixaAnexo8(F.q) + `<div class="vazio">Nenhum resultado para os filtros atuais.
       <br><button type="button" class="btn" id="vLimpar" style="margin-top:10px">Limpar filtros</button></div>`;
     $("vLimpar").onclick = limpar;
     return;
@@ -377,11 +511,11 @@ function render(filtered, F) {
     const linhas = filtered
       .flatMap((g) => g.filhos.map((f) => linhaFilho(f, true, badgeNcm(info, f.CodClassTrib, descs))))
       .join("");
-    box.innerHTML = (descKeys.length ? descBox(descs) : "") +
+    box.innerHTML = (descKeys.length ? descBox(descs) : "") + caixaAnexo8(F.q) +
       `<div class="grupo"><div class="tab-wrap">
       <table>${headFilho(true)}<tbody>${linhas}</tbody></table></div></div>`;
   } else {
-    box.innerHTML = (descKeys.length ? descBox(descs) : "") + filtered.map((g) => `
+    box.innerHTML = (descKeys.length ? descBox(descs) : "") + caixaAnexo8(F.q) + filtered.map((g) => `
       <article class="grupo">
         <div class="grupo-head">
           <h2><code>${esc(g.pai.Cst)}</code> — ${esc(g.pai.NomeCst || "")}</h2>
@@ -471,7 +605,8 @@ function abrirDetalhe(cod) {
     </dl>
     ${f.TexRegIbs ? `<details class="regra"><summary>Regra IBS</summary><pre>${esc(f.TexRegIbs)}</pre></details>` : ""}
     ${f.TexRegCbs ? `<details class="regra"><summary>Regra CBS</summary><pre>${esc(f.TexRegCbs)}</pre></details>` : ""}
-    <div id="anexosWrap" style="margin-top:12px"></div>`;
+    <div id="anexosWrap" style="margin-top:12px"></div>` +
+    `<div id="anexo8Wrap" style="margin-top:12px"></div>`;
 
   const wrap = $("anexosWrap");
   if (f.qtdAnexos > 0) {
@@ -482,6 +617,7 @@ function abrirDetalhe(cod) {
     wrap.innerHTML = `<p style="color:var(--muted)">Sem itens de anexo (NCM/NBS) para este código.</p>`;
   }
   $("dlg").showModal();
+  preencherAnexo8Dlg(cod);
 }
 
 async function carregarAnexos(cod) {
@@ -511,6 +647,37 @@ async function carregarAnexos(cod) {
   } catch (e) {
     tab.innerHTML = `<p>Não foi possível carregar os anexos (${esc(e.message)}).</p>`;
   }
+}
+
+async function preencherAnexo8Dlg(cod) {
+  const ok = await garantirAnexo8(true);
+  if (!ok || !ANEXO8) return;
+  if (!$("dlg").open) return; // diálogo fechado durante a carga
+  const titulo = $("dlgTitulo").textContent || "";
+  if (!titulo.startsWith(cod + " —")) return; // diálogo trocou de código
+  const wrap = $("anexo8Wrap");
+  if (!wrap) return;
+  const ach = ANEXO8.itens.filter((it) => it.cClassTrib === cod);
+  if (!ach.length) {
+    wrap.innerHTML = `<p style="color:var(--muted)">Sem correlações do Anexo VIII (NBS/IndOp) para este cClassTrib.</p>`;
+    return;
+  }
+  const MAX = 200;
+  const linhas = ach.slice(0, MAX).map((it) => `<tr>
+    <td class="cod">${esc(it.nbs || "—")}</td>
+    <td>${esc(it.descNbs || "")}</td>
+    <td class="cod">${esc(it.indop)}</td>
+    <td>${esc(it.localIncidencia || "—")}</td>
+    <td>${esc(it.psOnerosa || "—")}</td>
+    <td>${esc(it.adqExterior || "—")}</td>
+    <td class="cod">${esc(it.itemLc116)}</td>
+  </tr>`).join("");
+  wrap.innerHTML = `<details class="regra" open><summary>Anexo VIII — ${ach.length} correlação(ões) NBS/IndOp</summary>
+    <div class="tab-wrap"><table>
+    <thead><tr><th>NBS</th><th>Descrição NBS</th><th>IndOp</th><th>Local de incidência</th><th>PS Onerosa</th><th>Adq. Exterior</th><th>Item LC 116</th></tr></thead>
+    <tbody>${linhas}</tbody></table></div>
+    ${ach.length > MAX ? `<p style="color:var(--muted)">…e mais ${ach.length - MAX}.</p>` : ""}
+    </details>`;
 }
 
 /* ---------- exportação ---------- */
@@ -600,6 +767,7 @@ function atualizar() {
 
 function limpar() {
   $("q").value = "";
+  $("q8").value = "";
   $("fCst").value = "";
   $("fNomeCst").value = "";
   $("fNomeRed").value = "";
@@ -609,6 +777,7 @@ function limpar() {
   document.querySelector('input[name="op"][value="E"]').checked = true;
   reconstruirCodigos();
   atualizar();
+  renderAnexo8();
 }
 
 let debounce = null;
@@ -634,6 +803,12 @@ async function init() {
   popularSelects();
 
   $("q").addEventListener("input", agenda);
+  let debounce8 = null;
+  $("q8").addEventListener("input", () => {
+    clearTimeout(debounce8);
+    debounce8 = setTimeout(renderAnexo8, 150);
+  });
+  $("btnCsv8").onclick = exportarCSVAnexo8;
   $("fNomeCst").addEventListener("input", agenda);
   $("fNomeRed").addEventListener("input", agenda);
   $("fCst").addEventListener("change", () => { reconstruirCodigos(); atualizar(); });
@@ -650,6 +825,15 @@ async function init() {
   // unica tambem encontre vinculos de anexos sem espera.
   garantirIdx(true).then((ok) => {
     if (ok && normCod($("q").value).length >= 7) atualizar();
+  });
+
+  // Pre-carrega o Anexo VIII em segundo plano (secao propria, caixa
+  // de NBS na busca unica e detalhe do cClassTrib).
+  garantirAnexo8(true).then((ok) => {
+    if (!ok) return;
+    renderRegra8();
+    renderAnexo8();
+    if (normCod($("q").value).length === 9) atualizar();
   });
 }
 

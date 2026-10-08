@@ -69,14 +69,14 @@ body {
   gap: 10px;
 }
 .busca-rotulo { font-weight: 700; }
-#q {
+#q, #q8 {
   width: 100%;
   font-size: 1.02rem;
   padding: 11px 14px;
   border: 1px solid var(--line);
   border-radius: 10px;
 }
-#q:focus {
+#q:focus, #q8:focus {
   outline: 2px solid var(--accent);
   outline-offset: 0;
   border-color: var(--accent);

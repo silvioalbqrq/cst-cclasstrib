@@ -100,6 +100,23 @@
 
   <section id="resultados" aria-live="polite"></section>
 
+  <section class="busca" id="buscaAnexo8">
+    <label class="busca-rotulo" for="q8">Anexo VIII — NBS × IndOp × cClassTrib</label>
+    <input id="q8" type="search" placeholder="NBS, descrição do NBS, IndOp, cClassTrib, nome ou item da LC 116 — ex.: 1.2301.93.00, 030101, 100301, 200029, saúde" autocomplete="off">
+    <p class="dica">Correlação Item LC 116 → NBS → PS Onerosa / Adq. Exterior / IndOp / Local de incidência IBS → cClassTrib.
+      <span id="contador8" class="contador"></span></p>
+    <div class="acoes">
+      <button type="button" id="btnCsv8" class="btn">Exportar CSV</button>
+    </div>
+  </section>
+
+  <details class="filtros" id="painelRegra8">
+    <summary>Regra de incidência → IndOp (matriz do Anexo VIII)</summary>
+    <div class="tab-wrap" id="regra8"></div>
+  </details>
+
+  <section id="resultados8" aria-live="polite"></section>
+
 </main>
 
 <dialog id="dlg">

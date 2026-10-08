@@ -28,6 +28,7 @@ python -m http.server 8000
 - **Duas visões**: agrupada por CST ou aberta por cClassTrib.
 - **Filtros** por CST, descrição, indicadores do CST, cClassTrib, tipo de alíquota, tributação regular / crédito presumido / estorno e DF-e aplicáveis (operador E/OU).
 - **Detalhe** por código: vigência, percentuais de redução, DF-e, regra IBS/CBS, link da legislação e itens de anexo (NCM/NBS, carregados sob demanda).
+- **Anexo VIII** — correlação Item LC 116 → NBS → PS Onerosa / Adq. Exterior / IndOp / Local de incidência → cClassTrib: seção própria de consulta, matriz de regra de incidência → IndOp, caixa de correlações na busca de NBS (9 dígitos) e no detalhe do cClassTrib.
 - **Exportação** do resultado filtrado em CSV (abre no Excel) e JSON.
 
 ## Estrutura
@@ -42,10 +43,12 @@ cst-cclasstrib/
 │   ├── resumo.json             # dataset enxuto carregado pelo app (~300 KB)
 │   ├── ncm-nbs.json            # índice reverso NCM/NBS → cClassTribs (carga sob demanda)
 │   ├── ncm-descricoes.json     # descrições NCM hierárquicas (carga sob demanda)
+│   ├── anexo-viii.json         # correlação NBS × IndOp × cClassTrib do Anexo VIII (carga sob demanda)
 │   └── classificacao-tributaria.json  # snapshot completo, inclui anexos NCM/NBS
 └── scripts/
     ├── atualizar.py            # regenera os JSONs a partir da página oficial salva
-    └── atualizar_descricoes.py # regenera ncm-descricoes.json a partir do tipi-data.js
+    ├── atualizar_descricoes.py # regenera ncm-descricoes.json a partir do tipi-data.js
+    └── atualizar_anexo8.py     # regenera anexo-viii.json a partir da planilha do Anexo VIII
 ```
 
 ## Atualizar os dados
@@ -66,6 +69,15 @@ Descrições NCM (fonte: https://silvioalbqrq.github.io/consulta-ncm/tipi-data.j
 # 2. Rode:
 python scripts/atualizar_descricoes.py tipi-data.js
 # 3. Confira e commite data/ncm-descricoes.json
+```
+
+Anexo VIII — correlação NBS × IndOp × cClassTrib (planilha do Anexo VIII, V1.00.00):
+
+```bash
+# 1. Salve a planilha do Anexo VIII (.xlsx)
+# 2. Rode:
+python scripts/atualizar_anexo8.py "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V1.00.00.xlsx"
+# 3. Confira e commite data/anexo-viii.json
 ```
 
 Snapshot atual: **07/10/2026 (IT 2025.002 v1.70)** — 18 CSTs, 173 cClassTrib.
