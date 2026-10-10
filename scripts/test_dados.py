@@ -28,11 +28,11 @@ ESPERADO = {
     "csts": 18,
     "cclasstrib_resumo": 173,
     "anexo_versao": "V1.01.00",
-    "anexo_correlacoes": 1518,
+    "anexo_correlacoes": 1524,
     "anexo_nbs": 731,
     "anexo_cct": 28,
     "anexo_indops": 19,
-    "anexo_nbs_vazios": 16,
+    "anexo_nbs_vazios": 22,
 }
 
 # Nomes que divergem entre Portal (IT 1.70) e planilha do Anexo VIII (v1.01.00).

@@ -2,9 +2,9 @@
  "meta": {
   "fonte": "Anexo VIII — Correlação Item NBS / IndOp / cClassTrib — IBS/CBS",
   "versao": "V1.01.00",
-  "observacao": "Extraído da planilha com desmesclagem de células: cada registro é uma correlação NBS x IndOp x cClassTrib. IndOp numérico foi normalizado com zeros à esquerda (6 dígitos). PS Onerosa/Adq. Exterior vazios aplicam-se às regras de incidência por local de prestação (0301xx). Inclusao manual MANUAL-IX-34 (Anexo IX item 34, sem codigo oficial) em 2026-10-10.",
+  "observacao": "Extraído da planilha com desmesclagem de células: cada registro é uma correlação NBS x IndOp x cClassTrib. IndOp numérico foi normalizado com zeros à esquerda (6 dígitos). PS Onerosa/Adq. Exterior vazios aplicam-se às regras de incidência por local de prestação (0301xx). Inclusao manual MANUAL-IX-34 (Anexo IX item 34, sem codigo oficial) em 2026-10-10. Inclusoes manuais MANUAL-X-49 a MANUAL-X-54 (Anexo X itens 49-54, sem codigo oficial) em 2026-10-10.",
   "geradoEm": "2026-10-08",
-  "correlacoes": 1518,
+  "correlacoes": 1524,
   "nbsUnicos": 731,
   "cClassTribUnicos": 28,
   "indops": [
@@ -19806,6 +19806,84 @@
    "localIncidencia": "",
    "cClassTrib": "200038",
    "nomeClassTrib": "Fornecimento dos insumos agropecuarios e aquicolas (Anexo IX)"
+  },
+  {
+   "itemLc116": "MANUAL-X-49",
+   "descItem": "Licenciamento de direitos de autor de obras teatrais (Anexo X, item 49 - sem NBS oficial; inclusao manual)",
+   "nbs": "",
+   "nbsDigits": "",
+   "descNbs": "Licenciamento de direitos de autor de obras teatrais",
+   "psOnerosa": "",
+   "adqExterior": "",
+   "indop": "",
+   "localIncidencia": "",
+   "cClassTrib": "200039",
+   "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
+  },
+  {
+   "itemLc116": "MANUAL-X-50",
+   "descItem": "Licenciamento de direitos conexos de produtores de obras teatrais (Anexo X, item 50 - sem NBS oficial; inclusao manual)",
+   "nbs": "",
+   "nbsDigits": "",
+   "descNbs": "Licenciamento de direitos conexos de produtores de obras teatrais",
+   "psOnerosa": "",
+   "adqExterior": "",
+   "indop": "",
+   "localIncidencia": "",
+   "cClassTrib": "200039",
+   "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
+  },
+  {
+   "itemLc116": "MANUAL-X-51",
+   "descItem": "Licenciamento de direitos conexos de artistas interpretes ou executantes em obras teatrais (Anexo X, item 51 - sem NBS oficial; inclusao manual)",
+   "nbs": "",
+   "nbsDigits": "",
+   "descNbs": "Licenciamento de direitos conexos de artistas interpretes ou executantes em obras teatrais",
+   "psOnerosa": "",
+   "adqExterior": "",
+   "indop": "",
+   "localIncidencia": "",
+   "cClassTrib": "200039",
+   "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
+  },
+  {
+   "itemLc116": "MANUAL-X-52",
+   "descItem": "Cessao temporaria de direitos de autor de obras teatrais (Anexo X, item 52 - sem NBS oficial; inclusao manual)",
+   "nbs": "",
+   "nbsDigits": "",
+   "descNbs": "Cessao temporaria de direitos de autor de obras teatrais",
+   "psOnerosa": "",
+   "adqExterior": "",
+   "indop": "",
+   "localIncidencia": "",
+   "cClassTrib": "200039",
+   "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
+  },
+  {
+   "itemLc116": "MANUAL-X-53",
+   "descItem": "Cessao temporaria de direitos conexos de artistas interpretes ou executantes em obras teatrais (Anexo X, item 53 - sem NBS oficial; inclusao manual)",
+   "nbs": "",
+   "nbsDigits": "",
+   "descNbs": "Cessao temporaria de direitos conexos de artistas interpretes ou executantes em obras teatrais",
+   "psOnerosa": "",
+   "adqExterior": "",
+   "indop": "",
+   "localIncidencia": "",
+   "cClassTrib": "200039",
+   "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
+  },
+  {
+   "itemLc116": "MANUAL-X-54",
+   "descItem": "Cessao temporaria de direitos conexos de produtores em obras teatrais (Anexo X, item 54 - sem NBS oficial; inclusao manual)",
+   "nbs": "",
+   "nbsDigits": "",
+   "descNbs": "Cessao temporaria de direitos conexos de produtores em obras teatrais",
+   "psOnerosa": "",
+   "adqExterior": "",
+   "indop": "",
+   "localIncidencia": "",
+   "cClassTrib": "200039",
+   "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
   }
  ]
 }
