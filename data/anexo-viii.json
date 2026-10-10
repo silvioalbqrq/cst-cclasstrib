@@ -2,9 +2,9 @@
  "meta": {
   "fonte": "Anexo VIII — Correlação Item NBS / IndOp / cClassTrib — IBS/CBS",
   "versao": "V1.01.00",
-  "observacao": "Extraído da planilha com desmesclagem de células: cada registro é uma correlação NBS x IndOp x cClassTrib. IndOp numérico foi normalizado com zeros à esquerda (6 dígitos). PS Onerosa/Adq. Exterior vazios aplicam-se às regras de incidência por local de prestação (0301xx). Inclusao manual MANUAL-IX-34 (Anexo IX item 34, sem codigo oficial) em 2026-10-10. Inclusoes manuais MANUAL-X-49 a MANUAL-X-54 (Anexo X itens 49-54, sem codigo oficial) em 2026-10-10. Inclusoes manuais MANUAL-X-20/21 (1.1704.10.00 e 1.1704.20.00 com 200039, lei x planilha) em 2026-10-10.",
+  "observacao": "Extraído da planilha com desmesclagem de células: cada registro é uma correlação NBS x IndOp x cClassTrib. IndOp numérico foi normalizado com zeros à esquerda (6 dígitos). PS Onerosa/Adq. Exterior vazios aplicam-se às regras de incidência por local de prestação (0301xx). Inclusao manual MANUAL-IX-34 (Anexo IX item 34, sem codigo oficial) em 2026-10-10. Inclusoes manuais MANUAL-X-49 a MANUAL-X-54 (Anexo X itens 49-54, sem codigo oficial) em 2026-10-10. Inclusoes manuais MANUAL-X-20/21 (1.1704.10.00 e 1.1704.20.00 com 200039, lei x planilha) em 2026-10-10. Inclusao manual MANUAL-XVII-CONC (Concursos/Fantasy, so descritiva) em 2026-10-10.",
   "geradoEm": "2026-10-08",
-  "correlacoes": 1528,
+  "correlacoes": 1529,
   "nbsUnicos": 731,
   "cClassTribUnicos": 28,
   "indops": [
@@ -19936,6 +19936,19 @@
    "localIncidencia": "Domicílio principal do adquirente",
    "cClassTrib": "200039",
    "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
+  },
+  {
+   "itemLc116": "MANUAL-XVII-CONC",
+   "descItem": "Concursos de prognosticos e Fantasy sport (Anexo XVII, Imposto Seletivo - sem NBS/NCM oficial; inclusao manual so descritiva, sem cClassTrib: IS fora do escopo IBS/CBS do site)",
+   "nbs": "",
+   "nbsDigits": "",
+   "descNbs": "Concursos de prognosticos e Fantasy sport",
+   "psOnerosa": "",
+   "adqExterior": "",
+   "indop": "",
+   "localIncidencia": "",
+   "cClassTrib": "",
+   "nomeClassTrib": "Imposto Seletivo (fora do escopo IBS/CBS do site)"
   }
  ]
 }
