@@ -28,7 +28,7 @@ ESPERADO = {
     "csts": 18,
     "cclasstrib_resumo": 173,
     "anexo_versao": "V1.01.00",
-    "anexo_correlacoes": 1524,
+    "anexo_correlacoes": 1528,
     "anexo_nbs": 731,
     "anexo_cct": 28,
     "anexo_indops": 19,

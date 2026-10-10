@@ -2,9 +2,9 @@
  "meta": {
   "fonte": "Anexo VIII — Correlação Item NBS / IndOp / cClassTrib — IBS/CBS",
   "versao": "V1.01.00",
-  "observacao": "Extraído da planilha com desmesclagem de células: cada registro é uma correlação NBS x IndOp x cClassTrib. IndOp numérico foi normalizado com zeros à esquerda (6 dígitos). PS Onerosa/Adq. Exterior vazios aplicam-se às regras de incidência por local de prestação (0301xx). Inclusao manual MANUAL-IX-34 (Anexo IX item 34, sem codigo oficial) em 2026-10-10. Inclusoes manuais MANUAL-X-49 a MANUAL-X-54 (Anexo X itens 49-54, sem codigo oficial) em 2026-10-10.",
+  "observacao": "Extraído da planilha com desmesclagem de células: cada registro é uma correlação NBS x IndOp x cClassTrib. IndOp numérico foi normalizado com zeros à esquerda (6 dígitos). PS Onerosa/Adq. Exterior vazios aplicam-se às regras de incidência por local de prestação (0301xx). Inclusao manual MANUAL-IX-34 (Anexo IX item 34, sem codigo oficial) em 2026-10-10. Inclusoes manuais MANUAL-X-49 a MANUAL-X-54 (Anexo X itens 49-54, sem codigo oficial) em 2026-10-10. Inclusoes manuais MANUAL-X-20/21 (1.1704.10.00 e 1.1704.20.00 com 200039, lei x planilha) em 2026-10-10.",
   "geradoEm": "2026-10-08",
-  "correlacoes": 1524,
+  "correlacoes": 1528,
   "nbsUnicos": 731,
   "cClassTribUnicos": 28,
   "indops": [
@@ -19882,6 +19882,58 @@
    "adqExterior": "",
    "indop": "",
    "localIncidencia": "",
+   "cClassTrib": "200039",
+   "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
+  },
+  {
+   "itemLc116": "10.07",
+   "descItem": "Agenciamento De Notícias. [Reducao Anexo X itens 20/21 - inclusao manual, lei prevalece sobre planilha]",
+   "nbs": "1.1704.10.00",
+   "nbsDigits": "117041000",
+   "descNbs": "Serviços de agências de notícias para jornais e periódicos",
+   "psOnerosa": "S",
+   "adqExterior": "N",
+   "indop": "100301",
+   "localIncidencia": "Domicílio principal do adquirente",
+   "cClassTrib": "200039",
+   "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
+  },
+  {
+   "itemLc116": "10.07",
+   "descItem": "Agenciamento De Notícias. [Reducao Anexo X itens 20/21 - inclusao manual, lei prevalece sobre planilha]",
+   "nbs": "1.1704.20.00",
+   "nbsDigits": "117042000",
+   "descNbs": "Serviços de agências de notícias para mídia audiovisual",
+   "psOnerosa": "S",
+   "adqExterior": "N",
+   "indop": "100301",
+   "localIncidencia": "Domicílio principal do adquirente",
+   "cClassTrib": "200039",
+   "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
+  },
+  {
+   "itemLc116": "35.01",
+   "descItem": "Serviços De Reportagem, Assessoria De Imprensa, Jornalismo E Relações Públicas. [Reducao Anexo X itens 20/21 - inclusao manual, lei prevalece sobre planilha]",
+   "nbs": "1.1704.10.00",
+   "nbsDigits": "117041000",
+   "descNbs": "Serviços de agências de notícias para jornais e periódicos",
+   "psOnerosa": "S",
+   "adqExterior": "N",
+   "indop": "100301",
+   "localIncidencia": "Domicílio principal do adquirente",
+   "cClassTrib": "200039",
+   "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
+  },
+  {
+   "itemLc116": "35.01",
+   "descItem": "Serviços De Reportagem, Assessoria De Imprensa, Jornalismo E Relações Públicas. [Reducao Anexo X itens 20/21 - inclusao manual, lei prevalece sobre planilha]",
+   "nbs": "1.1704.20.00",
+   "nbsDigits": "117042000",
+   "descNbs": "Serviços de agências de notícias para mídia audiovisual",
+   "psOnerosa": "S",
+   "adqExterior": "N",
+   "indop": "100301",
+   "localIncidencia": "Domicílio principal do adquirente",
    "cClassTrib": "200039",
    "nomeClassTrib": "Fornecimento dos bens e servicos relacionados com producoes nacionais artisticas, culturais, de eventos, jornalisticas e audiovisuais (Anexo X)"
   }
