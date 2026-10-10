@@ -12841,6 +12841,22 @@
       "NroItemAnexoLei": null,
       "DescItemAnexo": "Triglicerídeos de cadeia média",
       "DescAnexo": "COMPOSIÇÕES PARA NUTRIÇÃO ENTERAL OU PARENTERAL E COMPOSIÇÕES ESPECIAIS E FÓRMULAS NUTRICIONAIS DESTINADAS ÀS PESSOAS COM ERROS INATOS DO METABOLISMO SUBMETIDAS À REDUÇÃO DE 60% (SESSENTA POR CENTO) DAS ALÍQUOTAS DO IBS E DA CBS"
+     },
+     {
+      "CodIntProdServ": 3735,
+      "NroAnexo": 6,
+      "CodNcmNbs": "17025000",
+      "TipoCodigo": "NCM",
+      "TipoPermissao": "PERMITIDO",
+      "DescCondicao": "COMPOSIÇÕES PARA NUTRIÇÃO ENTERAL OU PARENTERAL E COMPOSIÇÕES ESPECIAIS E FÓRMULAS NUTRICIONAIS DESTINADAS ÀS PESSOAS COM ERROS INATOS DO METABOLISMO",
+      "DescExcecao": null,
+      "Observacao": null,
+      "DthIniVig": "2026-01-01T00:00:00",
+      "DthFimVig": null,
+      "CtrDthInc": "2026-01-16T11:42:48.34",
+      "NroItemAnexoLei": null,
+      "DescItemAnexo": "Frutose",
+      "DescAnexo": "COMPOSIÇÕES PARA NUTRIÇÃO ENTERAL OU PARENTERAL E COMPOSIÇÕES ESPECIAIS E FÓRMULAS NUTRICIONAIS DESTINADAS ÀS PESSOAS COM ERROS INATOS DO METABOLISMO SUBMETIDAS À REDUÇÃO DE 60% (SESSENTA POR CENTO) DAS ALÍQUOTAS DO IBS E DA CBS"
      }
     ],
     "AnexoNew": null
@@ -21969,6 +21985,22 @@
       "CtrDthInc": "2026-01-16T11:42:48.34",
       "NroItemAnexoLei": null,
       "DescItemAnexo": "Cloreto crômico",
+      "DescAnexo": "COMPOSIÇÕES PARA NUTRIÇÃO ENTERAL OU PARENTERAL E COMPOSIÇÕES ESPECIAIS E FÓRMULAS NUTRICIONAIS DESTINADAS ÀS PESSOAS COM ERROS INATOS DO METABOLISMO SUBMETIDAS À REDUÇÃO DE 60% (SESSENTA POR CENTO) DAS ALÍQUOTAS DO IBS E DA CBS"
+     },
+     {
+      "CodIntProdServ": 3736,
+      "NroAnexo": 6,
+      "CodNcmNbs": "17025000",
+      "TipoCodigo": "NCM",
+      "TipoPermissao": "PERMITIDO",
+      "DescCondicao": "COMPOSIÇÕES PARA NUTRIÇÃO ENTERAL OU PARENTERAL E COMPOSIÇÕES ESPECIAIS E FÓRMULAS NUTRICIONAIS DESTINADAS ÀS PESSOAS COM ERROS INATOS DO METABOLISMO",
+      "DescExcecao": null,
+      "Observacao": null,
+      "DthIniVig": "2026-01-01T00:00:00",
+      "DthFimVig": null,
+      "CtrDthInc": "2026-01-16T11:42:48.34",
+      "NroItemAnexoLei": null,
+      "DescItemAnexo": "Frutose",
       "DescAnexo": "COMPOSIÇÕES PARA NUTRIÇÃO ENTERAL OU PARENTERAL E COMPOSIÇÕES ESPECIAIS E FÓRMULAS NUTRICIONAIS DESTINADAS ÀS PESSOAS COM ERROS INATOS DO METABOLISMO SUBMETIDAS À REDUÇÃO DE 60% (SESSENTA POR CENTO) DAS ALÍQUOTAS DO IBS E DA CBS"
      }
     ],
