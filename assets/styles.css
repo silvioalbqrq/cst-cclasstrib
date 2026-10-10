@@ -301,6 +301,7 @@ details.regra pre {
   td.dfes { max-width: 150px; }
   .btn-mini { padding: 6px 12px; font-size: 0.85rem; }
   dialog { width: calc(100vw - 20px); }
-  .dlg-body { padding: 12px 14px 16px; }
+  .dlg-body { padding: 12px 14px 16px; max-height: 85vh; }
+  .dl { grid-template-columns: 1fr; }
   .grade { grid-template-columns: 1fr; }
 }

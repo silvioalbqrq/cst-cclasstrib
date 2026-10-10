@@ -30,15 +30,20 @@ const PAI_BADGES = {
 const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
 // Versão dos assets para cache-busting (?v=). Bump a cada release de dados.
-const ASSET_V = "20261010f";
+const ASSET_V = "20261010g";
 const urlV = (p) => `${p}?v=${ASSET_V}`;
 
 let DATA = [];
+let MAP_CCT = new Map();
 let fullCache = null; // full JSON (anexos), carregado sob demanda
 let IDX = null;       // indice reverso NCM/NBS, carregado sob demanda
 let NCM_DESC = null;  // descricoes NCM (g: grupos, i: itens), sob demanda
 let NCM_NORM = null;  // cache codigo -> descricao normalizada (busca textual)
 let ANEXO8 = null;    // dados do Anexo VIII (NBS x IndOp x cClassTrib), sob demanda
+
+let tBusca = null;
+let tBusca8 = null;
+let lastBtnDetalhe = null;
 
 const $ = (id) => document.getElementById(id);
 
@@ -517,7 +522,7 @@ function render(filtered, F) {
     }
     box.innerHTML = `<div class="vazio">Nenhum resultado para os filtros atuais. Serviços (NBS) ficam na janela 2 (Anexo VIII).
       <br><button type="button" class="btn" id="vLimpar" style="margin-top:10px">Limpar filtros</button></div>`;
-    $("vLimpar").onclick = limpar;
+    const vl = $("vLimpar"); if (vl) vl.onclick = limpar;
     return;
   }
 
@@ -547,7 +552,10 @@ function render(filtered, F) {
   }
 
   box.querySelectorAll("[data-detalhe]").forEach((b) =>
-    b.addEventListener("click", () => abrirDetalhe(b.dataset.detalhe)));
+    b.addEventListener("click", (e) => {
+      lastBtnDetalhe = e.currentTarget;
+      abrirDetalhe(b.dataset.detalhe, true);
+    }));
 }
 
 /* ---------- indice NCM/NBS ---------- */
@@ -601,11 +609,17 @@ function dlRow(dt, dd) {
   return `<dt>${esc(dt)}</dt><dd>${dd}</dd>`;
 }
 
-function abrirDetalhe(cod) {
+function abrirDetalhe(cod, fromBtn) {
   const ach = localizar(cod);
   if (!ach) return;
+  if (fromBtn) lastBtnDetalhe = document.activeElement;
   const { pai, filho: f } = ach;
   $("dlgTitulo").textContent = `${f.CodClassTrib} — ${(f.NomeReduzido || "").trim()}`;
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set("cct", f.CodClassTrib);
+    history.replaceState(null, "", url);
+  } catch (e) {}
 
   const flags = [...FILHO_FLAGS, "IndMonoRetem", "IndMonoRet", "IndMonoDif",
     "IndMonoVal", "IndPbioDiferenca", "PossuiIndDfe"]
@@ -635,11 +649,15 @@ function abrirDetalhe(cod) {
   if (f.qtdAnexos > 0) {
     wrap.innerHTML = `<button type="button" class="btn" id="btnAnexos">
       Carregar ${f.qtdAnexos} item(ns) de anexo (NCM/NBS)</button><div id="anexosTab"></div>`;
-    $("btnAnexos").onclick = () => carregarAnexos(cod);
+    $("btnAnexos").onclick = () => carregarAnexosToggle(cod, f.qtdAnexos);
   } else {
     wrap.innerHTML = `<p style="color:var(--muted)">Sem itens de anexo (NCM/NBS) para este código.</p>`;
   }
-  $("dlg").showModal();
+  const dlg = $("dlg");
+  dlg.showModal();
+  if (lastBtnDetalhe) {
+    try { lastBtnDetalhe.focus(); } catch (e) {}
+  }
   preencherAnexo8Dlg(cod);
 }
 
@@ -672,13 +690,32 @@ async function carregarAnexos(cod) {
       fullCache = await r.json();
     }
     let anexos = [];
-    outer: for (const p of fullCache)
-      for (const f of p.ClassificacoesTributarias)
-        if (f.CodClassTrib === cod) { anexos = f.Anexos || []; break outer; }
+    if (MAP_CCT && MAP_CCT.get(cod)) {
+      anexos = (MAP_CCT.get(cod).filho.Anexos) || [];
+    } else {
+      outer: for (const p of fullCache)
+        for (const f of p.ClassificacoesTributarias)
+          if (f.CodClassTrib === cod) { anexos = f.Anexos || []; break outer; }
+    }
     mostra(anexos);
   } catch (e) {
     tab.innerHTML = `<p>Não foi possível carregar os anexos (${esc(e.message)}).</p>`;
   }
+}
+
+async function carregarAnexosToggle(cod, qtd) {
+  const tab = $("anexosTab");
+  const btn = $("btnAnexos");
+  if (tab.innerHTML.trim() !== "") {
+    tab.innerHTML = "";
+    btn.textContent = `Carregar ${qtd} item(ns) de anexo (NCM/NBS)`;
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Carregando…";
+  await carregarAnexos(cod);
+  btn.disabled = false;
+  btn.textContent = `Recolher anexos (${qtd})`;
 }
 
 async function preencherAnexo8Dlg(cod) {
@@ -830,8 +867,29 @@ const agenda = () => {
   debounce = setTimeout(atualizar, 150);
 };
 
+function setBuscaValor(v) {
+  const qel = $("q");
+  qel.value = v;
+}
+function gravarHash() {
+  try {
+    const url = new URL(location.href);
+    const qv = $("q").value.trim();
+    if (qv) url.searchParams.set("q", qv);
+    else url.searchParams.delete("q");
+    history.replaceState(null, "", url);
+  } catch (e) {}
+}
+
 async function init() {
   $("dlgFechar").onclick = () => $("dlg").close();
+$("dlg").addEventListener("close", () => {
+  try {
+    const url = new URL(location.href);
+    url.searchParams.delete("cct");
+    history.replaceState(null, "", url);
+  } catch (e) {}
+});
   $("dlg").addEventListener("click", (e) => {
     if (e.target === $("dlg")) $("dlg").close();
   });
@@ -839,6 +897,12 @@ async function init() {
     const r = await fetch(urlV("data/resumo.json"));
     if (!r.ok) throw new Error("HTTP " + r.status);
     DATA = await r.json();
+    MAP_CCT.clear();
+    for (const p of DATA) {
+      for (const f of p.ClassificacoesTributarias) {
+        MAP_CCT.set(f.CodClassTrib, { pai: p, filho: f });
+      }
+    }
   } catch (e) {
     showStatus("Não foi possível carregar data/resumo.json (" + e.message + "). " +
       "Sirva esta pasta por HTTP (ex.: python -m http.server) ou publique no GitHub Pages — abrir index.html direto pelo protocolo file:// bloqueia o fetch.");
@@ -846,7 +910,10 @@ async function init() {
   }
   popularSelects();
 
-  $("q").addEventListener("input", agenda);
+  $("q").addEventListener("input", () => {
+    clearTimeout(tBusca);
+    tBusca = setTimeout(() => { gravarHash(); agenda(); }, 150);
+  });
   let debounce8 = null;
   $("q8").addEventListener("input", () => {
     clearTimeout(debounce8);
@@ -868,7 +935,10 @@ async function init() {
   // Pre-carrega o indice NCM em segundo plano para que a busca
   // da janela 1 tambem encontre vinculos de anexos sem espera.
   garantirIdx(true).then((ok) => {
-    if (ok && normCod($("q").value).length >= 7) atualizar();
+    if (ok) {
+    const qv = $("q").value.trim();
+    if (normCod(qv).length >= 7 || qv.length >= 2) atualizar();
+  }
   });
 
   // Pre-carrega o Anexo VIII em segundo plano (janela 2 + detalhe do cClassTrib).
@@ -878,6 +948,16 @@ async function init() {
     renderAnexo8();
     mostrarVersao8();
   });
+  // Hash inicial
+  try {
+    const url = new URL(location.href);
+    const qv = url.searchParams.get("q");
+    if (qv) { $("q").value = qv; }
+    const cct = url.searchParams.get("cct");
+    if (cct && MAP_CCT.has(cct)) {
+      setTimeout(() => abrirDetalhe(cct), 50);
+    }
+  } catch (e) {}
 }
 
 document.addEventListener("DOMContentLoaded", init);
