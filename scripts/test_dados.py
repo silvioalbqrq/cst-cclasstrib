@@ -24,6 +24,9 @@ import sys
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(REPO, "data")
 
+sys.path.insert(0, os.path.join(REPO, "scripts"))
+from atualizar import carregar_patches, conferir_patches  # noqa: E402
+
 ESPERADO = {
     "csts": 18,
     "cclasstrib_resumo": 173,
@@ -142,6 +145,38 @@ def main():
     if not ok:
         falhas.append("qtdanexos-x-full")
 
+    # Curadoria: os anexos de scripts/patches.json têm de estar no snapshot.
+    # O atualizar.py reaplica os patches a cada regeração; se algum sumir, é
+    # sinal de que os dados foram regerados sem eles (ou com --sem-patches).
+    # Sem o arquivo (projeto sem curadoria), não há o que conferir.
+    patches_path = os.path.join(REPO, "scripts", "patches.json")
+    if not os.path.isfile(patches_path):
+        print("--   patches curados: scripts/patches.json não existe (nada a conferir)")
+    else:
+        total_patch, faltando_patch, erro_patch, marcados = 0, [], None, 0
+        try:
+            patches = carregar_patches(patches_path)
+            total_patch = sum(len(p.get("itens") or []) for p in patches)
+            faltando_patch = conferir_patches(full, patches)
+            marcados = sum(
+                1 for p in full for f in p.get("ClassificacoesTributarias", [])
+                for a in (f.get("Anexos") or []) if a.get("Curadoria")
+            )
+        except Exception as e:  # JSON quebrado, patch malformado
+            erro_patch = e
+        ok = erro_patch is None and not faltando_patch and marcados == total_patch
+        print(f"{'OK  ' if ok else 'FAIL'} patches curados (scripts/patches.json): "
+              f"{total_patch} anexo(s), {len(faltando_patch)} faltando, {marcados} marcado(s)"
+              + (f" — {erro_patch}" if erro_patch else ""))
+        if not ok:
+            for cod, motivo in faltando_patch:
+                print(f"  {cod}: {motivo}")
+            if erro_patch is None and marcados != total_patch:
+                print("  a marca 'Curadoria' não confere: rode scripts/atualizar.py para regerar")
+            else:
+                print("  rode scripts/atualizar.py (sem --sem-patches) para reaplicar a curadoria")
+            falhas.append("patches-curados")
+
     # Fragmentos data/anexos/*.json (Detalhe baixa o fragmento, não o full)
     frags = glob.glob(os.path.join(DATA, "anexos", "*.json"))
     ok = len(frags) == len(s_resumo)
@@ -166,7 +201,9 @@ def main():
     if not ok:
         falhas.append("anexos-fragmentos-x-full")
 
-    # ASSET_V consistente entre index.html e assets/app.js
+    # ASSET_V consistente entre index.html, assets/app.js e os CSS
+    # (o CSS também é versionado: sem ?v= a correção de layout pode não chegar
+    # ao navegador de quem já visitou o site).
     html = open(os.path.join(REPO, "index.html"), encoding="utf-8").read()
     js = open(os.path.join(REPO, "assets", "app.js"), encoding="utf-8").read()
     m_html = re.search(r"assets/app\.js\?v=([\w.-]+)", html)
@@ -177,6 +214,14 @@ def main():
     print(f"{'OK  ' if ok else 'FAIL'} ASSET_V: html={vh} js={vj}")
     if not ok:
         falhas.append("asset-v-divergente")
+
+    vcss = re.findall(r"assets/([\w.-]+\.css)\?v=([\w.-]+)", html)
+    sem_v = re.findall(r'assets/[\w.-]+\.css"', html)
+    ok = bool(vcss) and not sem_v and all(v == vh for _, v in vcss)
+    print(f"{'OK  ' if ok else 'FAIL'} ASSET_V nos CSS: "
+          f"{dict(vcss) if vcss else 'nenhum ?v='} (sem ?v=: {len(sem_v)})")
+    if not ok:
+        falhas.append("css-sem-versao")
 
     if falhas:
         print(f"\n{len(falhas)} falha(s): {falhas}")

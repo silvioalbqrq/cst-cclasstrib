@@ -3,7 +3,13 @@
 (Correlação Item NBS / IndOp / cClassTrib — IBS/CBS).
 
 Uso:
-    python scripts/atualizar_anexo8.py "caminho/AnexoVIII....xlsx"
+    python scripts/atualizar_anexo8.py "caminho/AnexoVIII-...V1.01.00.xlsx"
+    python scripts/atualizar_anexo8.py --check          # não grava, só compara
+    python scripts/atualizar_anexo8.py --versao V1.02.00 planilha.xlsx
+
+A versão é lida do nome do arquivo (`V1.01.00`) quando não vier em --versao.
+A data exibida no site (meta.geradoEm) é preservada do arquivo atual, salvo se
+--gerado-em for informado.
 
 A planilha usa células mescladas verticalmente: cada NBS se estende
 pelas linhas-variante de IndOp (030101-030104 = local da prestação;
@@ -16,12 +22,31 @@ Normalizações:
 - PS Onerosa / Adq. Exterior: "s"/"n" -> "S"/"N"
 - Local de incidência: capitalização unificada
 """
-import json, re, sys
-import openpyxl
+import argparse
+import datetime
+import json
+import os
+import re
+import sys
+import zipfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _comum import ErroFonte, fim_de_uso, gravar, mesmo_conteudo, rel  # noqa: E402
+
+try:
+    import openpyxl  # noqa: E402
+except ImportError:
+    fim_de_uso()
+    print(
+        "erro: falta a biblioteca openpyxl, necessária para ler a planilha.\n"
+        "  Instale com:  python -m pip install openpyxl",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_XLSX = "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V1.01.00.xlsx"
-OUT = "data/anexo-viii.json"
-VERSAO = "V1.01.00"
+OUT = os.path.join(REPO, "data", "anexo-viii.json")
 
 LOCAIS = {
     "local da entrega ou disponibilização": "Local da entrega ou da disponibilização",
@@ -69,13 +94,37 @@ def unmerge(ws):
     return grid
 
 
-def main(xlsx_path):
-    wb = openpyxl.load_workbook(xlsx_path, data_only=True)
+def versao_do_nome(caminho):
+    m = re.search(r"[Vv](\d+\.\d+\.\d+)", os.path.basename(caminho))
+    return f"V{m.group(1)}" if m else None
+
+
+def gerado_em_do_arquivo(caminho):
+    """Preserva a data já publicada, para regerar sem mexer no rodapé do site."""
+    if not os.path.isfile(caminho):
+        return None
+    try:
+        with open(caminho, encoding="utf-8") as fh:
+            return (json.load(fh).get("meta") or {}).get("geradoEm")
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def gerar(xlsx_path, versao, gerado_em):
+    """Lê a planilha e devolve o dict do data/anexo-viii.json."""
+    try:
+        wb = openpyxl.load_workbook(xlsx_path, data_only=True)
+    except zipfile.BadZipFile:
+        raise ErroFonte(
+            f"'{xlsx_path}' não é uma planilha .xlsx válida.\n"
+            "  Baixe de novo a planilha oficial do Anexo VIII e passe o caminho."
+        )
 
     if "REGRA inc. X" not in wb.sheetnames or "tabela geral" not in wb.sheetnames:
-        raise SystemExit(
+        raise ErroFonte(
             f"abas esperadas não encontradas em {xlsx_path}: "
-            f"{wb.sheetnames} (esperado 'REGRA inc. X' e 'tabela geral')"
+            f"{wb.sheetnames} (esperado 'REGRA inc. X' e 'tabela geral').\n"
+            "  Confira se é a planilha oficial do Anexo VIII."
         )
 
     # ---------- matriz REGRA inc. X ----------
@@ -102,9 +151,9 @@ def main(xlsx_path):
     ws = wb["tabela geral"]
     cab = [clean(ws.cell(row=1, column=c).value).lower() for c in range(1, 11)]
     if not (cab[0].startswith("item") and "nbs" in cab[2] and "indop" in cab[6]):
-        raise SystemExit(
-            f"layout inesperado da aba 'tabela geral' em {xlsx_path}: {cab}. "
-            "Confira se é a planilha oficial do Anexo VIII antes de regerar."
+        raise ErroFonte(
+            f"layout inesperado da aba 'tabela geral' em {xlsx_path}: {cab}.\n"
+            "  Confira se é a planilha oficial do Anexo VIII antes de regerar."
         )
     grid = unmerge(ws)
 
@@ -151,24 +200,26 @@ def main(xlsx_path):
         print("PROBLEMAS:")
         for p in problemas[:20]:
             print("  " + p)
-        raise SystemExit(1)
+        raise ErroFonte(
+            f"{len(problemas)} registro(s) fora do padrão; a planilha mudou de formato?"
+        )
 
     nbs_unicos = sorted({it["nbsDigits"] for it in itens if it["nbsDigits"]})
     cct_unicos = sorted({it["cClassTrib"] for it in itens if it["cClassTrib"]})
     indops = sorted({it["indop"] for it in itens if it["indop"]})
     locais = sorted({it["localIncidencia"] for it in itens if it["localIncidencia"]})
 
-    data = {
+    return {
         "meta": {
             "fonte": "Anexo VIII — Correlação Item NBS / IndOp / cClassTrib — IBS/CBS",
-            "versao": VERSAO,
+            "versao": versao,
             "observacao": (
                 "Extraído da planilha com desmesclagem de células: cada registro é uma "
                 "correlação NBS x IndOp x cClassTrib. IndOp numérico foi normalizado "
                 "com zeros à esquerda (6 dígitos). PS Onerosa/Adq. Exterior vazios "
                 "aplicam-se às regras de incidência por local de prestação (0301xx)."
             ),
-            "geradoEm": "2026-10-08",
+            "geradoEm": gerado_em,
             "correlacoes": len(itens),
             "nbsUnicos": len(nbs_unicos),
             "cClassTribUnicos": len(cct_unicos),
@@ -177,18 +228,77 @@ def main(xlsx_path):
         },
         "regraIndOp": regra,
         "itens": itens,
-    }
+    }, {"nbs": nbs_unicos, "cct": cct_unicos, "indops": indops, "locais": locais, "regra": regra}
 
-    with open(OUT, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=1)
 
-    print(f"OK -> {OUT}")
-    print(f"  correlações: {len(itens)}")
-    print(f"  NBS unicos: {len(nbs_unicos)} | cClassTrib unicos: {len(cct_unicos)} | IndOps: {len(indops)}")
-    print(f"  matriz regra: {json.dumps(regra, ensure_ascii=False)}")
-    print(f"  locais: {locais}")
+def main(argv=None):
+    fim_de_uso()
+    parser = argparse.ArgumentParser(
+        description="Gera data/anexo-viii.json a partir da planilha do Anexo VIII.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "exemplos:\n"
+            f'  python scripts/atualizar_anexo8.py "{DEFAULT_XLSX}"\n'
+            "  python scripts/atualizar_anexo8.py --check planilha.xlsx\n"
+        ),
+    )
+    parser.add_argument("planilha", nargs="?", default=DEFAULT_XLSX,
+                        help=f"planilha .xlsx do Anexo VIII (padrão: {DEFAULT_XLSX})")
+    parser.add_argument("--versao", help="versão a gravar em meta.versao (padrão: lida do nome do arquivo)")
+    parser.add_argument("--gerado-em", help="data a gravar em meta.geradoEm (padrão: a do arquivo atual)")
+    parser.add_argument("--saida", default=OUT, help=f"arquivo de saída (padrão: {os.path.relpath(OUT, REPO)})")
+    parser.add_argument("--check", action="store_true", help="não grava nada; mostra o que mudaria")
+    args = parser.parse_args(argv)
+
+    if not os.path.isfile(args.planilha):
+        print(
+            f"erro: não encontrei a planilha '{args.planilha}' "
+            f"(procurando em {os.getcwd()}).\n"
+            "  Baixe a planilha do Anexo VIII e passe o caminho completo, por exemplo:\n"
+            f'    python scripts/atualizar_anexo8.py "%USERPROFILE%\\Downloads\\{DEFAULT_XLSX}"',
+            file=sys.stderr,
+        )
+        return 1
+    if os.path.isdir(args.planilha):
+        print(f"erro: '{args.planilha}' é uma pasta, não a planilha.", file=sys.stderr)
+        return 1
+
+    versao = args.versao or versao_do_nome(args.planilha)
+    if not versao:
+        print(
+            f"erro: não consegui detectar a versão no nome de '{os.path.basename(args.planilha)}'.\n"
+            "  Informe com --versao, por exemplo: --versao V1.02.00",
+            file=sys.stderr,
+        )
+        return 1
+    gerado_em = args.gerado_em or gerado_em_do_arquivo(args.saida) or datetime.date.today().isoformat()
+
+    try:
+        data, info = gerar(args.planilha, versao, gerado_em)
+    except ErroFonte as e:
+        print(f"erro: {e}", file=sys.stderr)
+        return 1
+
+    texto = json.dumps(data, ensure_ascii=False, indent=1)
+
+    if args.check:
+        if mesmo_conteudo(args.saida, texto):
+            print(f"sem mudanças: {rel(args.saida)}")
+        else:
+            print(f"MUDARIA: {rel(args.saida)}")
+        print("--check: nada foi gravado.")
+        return 0
+
+    gravar(args.saida, texto)
+    print(f"OK -> {rel(args.saida)}")
+    print(f"  versão: {versao} | geradoEm: {gerado_em}")
+    print(f"  correlações: {len(data['itens'])}")
+    print(f"  NBS unicos: {len(info['nbs'])} | cClassTrib unicos: {len(info['cct'])} | "
+          f"IndOps: {len(info['indops'])}")
+    print(f"  matriz regra: {json.dumps(info['regra'], ensure_ascii=False)}")
+    print(f"  locais: {info['locais']}")
+    return 0
 
 
 if __name__ == "__main__":
-    caminho = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_XLSX
-    main(caminho)
+    sys.exit(main())

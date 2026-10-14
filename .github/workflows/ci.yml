@@ -18,3 +18,5 @@ jobs:
         run: node --check assets/app.js
       - name: Regressão dos datasets
         run: python scripts/test_dados.py
+      - name: Regressão da importação em lote de NCM
+        run: node scripts/test_lote.mjs

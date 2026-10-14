@@ -1,0 +1,2385 @@
+{
+ "descricao": [
+  "Anexos curados a mao que a fonte oficial (portal) NAO traz.",
+  "scripts/atualizar.py aplica estes patches depois de extrair o dataset, para",
+  "que regenerar os dados nunca apague curadoria.",
+  "Cada patch acrescenta anexos ao FIM da lista do cClassTrib indicado. A",
+  "entrada final e sempre {**modelo, **item}: use 'modelo' para os campos que",
+  "se repetem e 'itens' para o que varia (item inteiro quando o patch tem uma",
+  "entrada so). Entradas que a fonte ja traga sao ignoradas, e o script avisa",
+  "quando um patch ficou obsoleto.",
+  "'rotulo' e o aviso curto que a tela mostra no selo e no tooltip, para deixar claro que",
+  "aquele vinculo nao esta na lista oficial. A explicacao longa fica no motivo (aqui) e no",
+  "campo Observacao do proprio anexo. Como a marca nasce do patch, ela desaparece",
+  "sozinha quando a fonte passar a trazer o item.",
+  "Mexeu na mao em data/classificacao-tributaria.json? Registre aqui tambem,",
+  "senao a proxima atualizacao descarta a mudanca."
+ ],
+ "fonte": "https://dfe-portal.svrs.rs.gov.br/CFF/ClassificacaoTributaria",
+ "patches": [
+  {
+   "cClassTrib": "200011",
+   "motivo": "Item 54 do Anexo VI da LC 214/2025: NCM 1702.50.00 (Frutose) não consta do IT 2025.002 v1.70.",
+   "referencia": "commit 7c449dd",
+   "itens": [
+    {
+     "CodIntProdServ": 3735,
+     "NroAnexo": 6,
+     "CodNcmNbs": "17025000",
+     "TipoCodigo": "NCM",
+     "TipoPermissao": "PERMITIDO",
+     "DescCondicao": "COMPOSIÇÕES PARA NUTRIÇÃO ENTERAL OU PARENTERAL E COMPOSIÇÕES ESPECIAIS E FÓRMULAS NUTRICIONAIS DESTINADAS ÀS PESSOAS COM ERROS INATOS DO METABOLISMO",
+     "DescExcecao": null,
+     "Observacao": null,
+     "DthIniVig": "2026-01-01T00:00:00",
+     "DthFimVig": null,
+     "CtrDthInc": "2026-01-16T11:42:48.34",
+     "NroItemAnexoLei": null,
+     "DescItemAnexo": "Frutose",
+     "DescAnexo": "COMPOSIÇÕES PARA NUTRIÇÃO ENTERAL OU PARENTERAL E COMPOSIÇÕES ESPECIAIS E FÓRMULAS NUTRICIONAIS DESTINADAS ÀS PESSOAS COM ERROS INATOS DO METABOLISMO SUBMETIDAS À REDUÇÃO DE 60% (SESSENTA POR CENTO) DAS ALÍQUOTAS DO IBS E DA CBS"
+    }
+   ],
+   "rotulo": "ausente no IT v1.70"
+  },
+  {
+   "cClassTrib": "200032",
+   "motivo": "Anexo XIV (lista fechada de NCM de medicamentos) revogado pela LC 227/2026. O cClassTrib 200032 continua valendo pelo art. 133 (reducao de 60%), agora por DESCRICAO - medicamento registrado na Anvisa ou produzido por farmacia de manipulacao - e nao por lista de NCM. Mantido como referencia, com aviso na tela.",
+   "referencia": "commit a376900",
+   "modelo": {
+    "CodIntProdServ": null,
+    "NroAnexo": 14,
+    "CodNcmNbs": null,
+    "TipoCodigo": "NCM",
+    "TipoPermissao": "PERMITIDO",
+    "DescCondicao": "MEDICAMENTOS REGISTRADOS NA ANVISA OU PRODUZIDOS POR FARMÁCIAS DE MANIPULAÇÃO",
+    "DescExcecao": null,
+    "Observacao": "Inclusão manual (2026-10-10): NCM da lista de medicamentos do Anexo XIV da LC 214/2025 (revogado pela LC 227/2026), enquadrado no art. 133 (redução de 60%); ressalvados os medicamentos de alíquota zero do art. 222.",
+    "DthIniVig": "2026-01-01T00:00:00",
+    "DthFimVig": null,
+    "CtrDthInc": "2026-10-10T00:00:00",
+    "NroItemAnexoLei": null,
+    "DescItemAnexo": null,
+    "DescAnexo": "MEDICAMENTOS REGISTRADOS NA ANVISA OU PRODUZIDOS POR FARMÁCIAS DE MANIPULAÇÃO SUBMETIDOS À REDUÇÃO DE 60% (SESSENTA POR CENTO) DAS ALÍQUOTAS DO IBS E DA CBS"
+   },
+   "itens": [
+    {
+     "CodIntProdServ": 3737,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 1,
+     "DescItemAnexo": "ABACAVIR"
+    },
+    {
+     "CodIntProdServ": 3738,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 2,
+     "DescItemAnexo": "ABEMACICLIBE"
+    },
+    {
+     "CodIntProdServ": 3739,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 3,
+     "DescItemAnexo": "ACALABRUTINIBE"
+    },
+    {
+     "CodIntProdServ": 3740,
+     "CodNcmNbs": "30043210",
+     "NroItemAnexoLei": 4,
+     "DescItemAnexo": "ACEPONATO DE METILPREDNISOLONA"
+    },
+    {
+     "CodIntProdServ": 3741,
+     "CodNcmNbs": "30043290",
+     "NroItemAnexoLei": 5,
+     "DescItemAnexo": "ACETATO DE ABIRATERONA"
+    },
+    {
+     "CodIntProdServ": 3742,
+     "CodNcmNbs": "30043939",
+     "NroItemAnexoLei": 6,
+     "DescItemAnexo": "ACETATO DE CIPROTERONA"
+    },
+    {
+     "CodIntProdServ": 3743,
+     "CodNcmNbs": "30043929",
+     "NroItemAnexoLei": 7,
+     "DescItemAnexo": "ACETATO DE DEGARELIX"
+    },
+    {
+     "CodIntProdServ": 3744,
+     "CodNcmNbs": "30043927",
+     "NroItemAnexoLei": 8,
+     "DescItemAnexo": "ACETATO DE GOSSERRELINA"
+    },
+    {
+     "CodIntProdServ": 3745,
+     "CodNcmNbs": "30043919",
+     "NroItemAnexoLei": 9,
+     "DescItemAnexo": "ACETATO DE LEUPRORRELINA"
+    },
+    {
+     "CodIntProdServ": 3746,
+     "CodNcmNbs": "30043936",
+     "NroItemAnexoLei": 10,
+     "DescItemAnexo": "ACETATO DE MEGESTROL"
+    },
+    {
+     "CodIntProdServ": 3747,
+     "CodNcmNbs": "30043929",
+     "NroItemAnexoLei": 11,
+     "DescItemAnexo": "ACETATO DE OCTREOTIDA"
+    },
+    {
+     "CodIntProdServ": 3748,
+     "CodNcmNbs": "30043918",
+     "NroItemAnexoLei": 12,
+     "DescItemAnexo": "ACETATO DE TRIPTORRELINA"
+    },
+    {
+     "CodIntProdServ": 3749,
+     "CodNcmNbs": "30043929",
+     "NroItemAnexoLei": 13,
+     "DescItemAnexo": "ACETATO DESMOPRESSINA"
+    },
+    {
+     "CodIntProdServ": 3750,
+     "CodNcmNbs": "30045090",
+     "NroItemAnexoLei": 14,
+     "DescItemAnexo": "ÁCIDO FOLÍNICO (FÓLICO)"
+    },
+    {
+     "CodIntProdServ": 3751,
+     "CodNcmNbs": "30049039",
+     "NroItemAnexoLei": 15,
+     "DescItemAnexo": "ÁCIDO TRANEXÂMICO"
+    },
+    {
+     "CodIntProdServ": 3752,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 16,
+     "DescItemAnexo": "ÁCIDO ZOLEDRÔNICO"
+    },
+    {
+     "CodIntProdServ": 3753,
+     "CodNcmNbs": "30049029",
+     "NroItemAnexoLei": 17,
+     "DescItemAnexo": "ACITRETINA"
+    },
+    {
+     "CodIntProdServ": 3754,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 18,
+     "DescItemAnexo": "AFLIBERCEPTE"
+    },
+    {
+     "CodIntProdServ": 3755,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 19,
+     "DescItemAnexo": "ALBINTERFERONA ALFA-2B"
+    },
+    {
+     "CodIntProdServ": 3756,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 20,
+     "DescItemAnexo": "ALBUMINA HUMANA"
+    },
+    {
+     "CodIntProdServ": 3757,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 21,
+     "DescItemAnexo": "ALENDRONATO DE SÓDIO"
+    },
+    {
+     "CodIntProdServ": 3758,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 22,
+     "DescItemAnexo": "ALENTUZUMABE"
+    },
+    {
+     "CodIntProdServ": 3759,
+     "CodNcmNbs": "30049019",
+     "NroItemAnexoLei": 23,
+     "DescItemAnexo": "ALFA-ALGLICOSIDASE"
+    },
+    {
+     "CodIntProdServ": 3760,
+     "CodNcmNbs": "30049019",
+     "NroItemAnexoLei": 24,
+     "DescItemAnexo": "ALFAELOSULFASE"
+    },
+    {
+     "CodIntProdServ": 3761,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 25,
+     "DescItemAnexo": "ALFAEPOETINA"
+    },
+    {
+     "CodIntProdServ": 3762,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 26,
+     "DescItemAnexo": "ALFAINTERFERONA"
+    },
+    {
+     "CodIntProdServ": 3763,
+     "CodNcmNbs": "30021510",
+     "NroItemAnexoLei": 27,
+     "DescItemAnexo": "ALFAPEGINTERFERONA 2A"
+    },
+    {
+     "CodIntProdServ": 3764,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 28,
+     "DescItemAnexo": "ALFAPEGINTERFERONA 2B"
+    },
+    {
+     "CodIntProdServ": 3765,
+     "CodNcmNbs": "30043929",
+     "NroItemAnexoLei": 29,
+     "DescItemAnexo": "ALFATIROTROPINA"
+    },
+    {
+     "CodIntProdServ": 3766,
+     "CodNcmNbs": "30049019",
+     "NroItemAnexoLei": 30,
+     "DescItemAnexo": "ALFAVESTRONIDASE"
+    },
+    {
+     "CodIntProdServ": 3767,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 31,
+     "DescItemAnexo": "ALPELISIBE"
+    },
+    {
+     "CodIntProdServ": 3768,
+     "CodNcmNbs": "30049019",
+     "NroItemAnexoLei": 32,
+     "DescItemAnexo": "ALTEPLASE"
+    },
+    {
+     "CodIntProdServ": 3769,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 33,
+     "DescItemAnexo": "AMBRISENTANA"
+    },
+    {
+     "CodIntProdServ": 3770,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 34,
+     "DescItemAnexo": "AMIFOSTINA"
+    },
+    {
+     "CodIntProdServ": 3771,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 35,
+     "DescItemAnexo": "ANASTROZOL"
+    },
+    {
+     "CodIntProdServ": 3772,
+     "CodNcmNbs": "30042099",
+     "NroItemAnexoLei": 36,
+     "DescItemAnexo": "ANFOTERICINA B"
+    },
+    {
+     "CodIntProdServ": 3773,
+     "CodNcmNbs": "30042095",
+     "NroItemAnexoLei": 37,
+     "DescItemAnexo": "ANFOTERICINA B EM LIPOSSOMAS"
+    },
+    {
+     "CodIntProdServ": 3774,
+     "CodNcmNbs": "30049029",
+     "NroItemAnexoLei": 38,
+     "DescItemAnexo": "ANTIMONIAL PENTAVALENTE"
+    },
+    {
+     "CodIntProdServ": 3775,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 39,
+     "DescItemAnexo": "APALUTAMIDA"
+    },
+    {
+     "CodIntProdServ": 3776,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 40,
+     "DescItemAnexo": "APREPITANTO"
+    },
+    {
+     "CodIntProdServ": 3777,
+     "CodNcmNbs": "30046000",
+     "NroItemAnexoLei": 41,
+     "DescItemAnexo": "ARTEMÉTER"
+    },
+    {
+     "CodIntProdServ": 3778,
+     "CodNcmNbs": "30046000",
+     "NroItemAnexoLei": 42,
+     "DescItemAnexo": "ARTEMÉTER + LUMEFANTRINA"
+    },
+    {
+     "CodIntProdServ": 3779,
+     "CodNcmNbs": "30046000",
+     "NroItemAnexoLei": 43,
+     "DescItemAnexo": "ARTESUNATO + CLORIDRATO MEFLOQUINA"
+    },
+    {
+     "CodIntProdServ": 3780,
+     "CodNcmNbs": "30046000",
+     "NroItemAnexoLei": 44,
+     "DescItemAnexo": "ARTESUNATO DE SÓDIO"
+    },
+    {
+     "CodIntProdServ": 3781,
+     "CodNcmNbs": "30049012",
+     "NroItemAnexoLei": 45,
+     "DescItemAnexo": "ASPARAGINASE"
+    },
+    {
+     "CodIntProdServ": 3782,
+     "CodNcmNbs": "30049042",
+     "NroItemAnexoLei": 46,
+     "DescItemAnexo": "ATENOLOL"
+    },
+    {
+     "CodIntProdServ": 3783,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 47,
+     "DescItemAnexo": "ATEZOLIZUMABE"
+    },
+    {
+     "CodIntProdServ": 3784,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 48,
+     "DescItemAnexo": "AVELUMABE"
+    },
+    {
+     "CodIntProdServ": 3785,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 49,
+     "DescItemAnexo": "AXITINIBE"
+    },
+    {
+     "CodIntProdServ": 3786,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 50,
+     "DescItemAnexo": "AZACITIDINA"
+    },
+    {
+     "CodIntProdServ": 3787,
+     "CodNcmNbs": "30049066",
+     "NroItemAnexoLei": 51,
+     "DescItemAnexo": "AZATIOPRINA"
+    },
+    {
+     "CodIntProdServ": 3788,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 52,
+     "DescItemAnexo": "BARICITINIBE"
+    },
+    {
+     "CodIntProdServ": 3789,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 53,
+     "DescItemAnexo": "BENZONIDAZOL"
+    },
+    {
+     "CodIntProdServ": 3790,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 54,
+     "DescItemAnexo": "BESILATO DE ANLODIPINO"
+    },
+    {
+     "CodIntProdServ": 3791,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 55,
+     "DescItemAnexo": "BETAEPOETINA"
+    },
+    {
+     "CodIntProdServ": 3792,
+     "CodNcmNbs": "30021520",
+     "NroItemAnexoLei": 56,
+     "DescItemAnexo": "BEVACIZUMABE"
+    },
+    {
+     "CodIntProdServ": 3793,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 57,
+     "DescItemAnexo": "BICALUTAMIDA"
+    },
+    {
+     "CodIntProdServ": 3794,
+     "CodNcmNbs": "29362931",
+     "NroItemAnexoLei": 58,
+     "DescItemAnexo": "BIOTINA"
+    },
+    {
+     "CodIntProdServ": 3795,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 59,
+     "DescItemAnexo": "BLINATUMOMABE"
+    },
+    {
+     "CodIntProdServ": 3796,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 60,
+     "DescItemAnexo": "BORTEZOMIBE"
+    },
+    {
+     "CodIntProdServ": 3797,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 61,
+     "DescItemAnexo": "BRENTUXIMABE VEDOTINA"
+    },
+    {
+     "CodIntProdServ": 3798,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 62,
+     "DescItemAnexo": "BRIGATINIBE"
+    },
+    {
+     "CodIntProdServ": 3799,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 63,
+     "DescItemAnexo": "BROMETO DE IPRATRÓPIO"
+    },
+    {
+     "CodIntProdServ": 3800,
+     "CodNcmNbs": "30043999",
+     "NroItemAnexoLei": 64,
+     "DescItemAnexo": "BUDESONIDA"
+    },
+    {
+     "CodIntProdServ": 3801,
+     "CodNcmNbs": "30021580",
+     "NroItemAnexoLei": 65,
+     "DescItemAnexo": "BUROSUMABE"
+    },
+    {
+     "CodIntProdServ": 3802,
+     "CodNcmNbs": "30049095",
+     "NroItemAnexoLei": 66,
+     "DescItemAnexo": "BUSSULFANO"
+    },
+    {
+     "CodIntProdServ": 3803,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 67,
+     "DescItemAnexo": "CABAZITAXEL"
+    },
+    {
+     "CodIntProdServ": 3804,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 68,
+     "DescItemAnexo": "CAPECITABINA"
+    },
+    {
+     "CodIntProdServ": 3805,
+     "CodNcmNbs": "30049035",
+     "NroItemAnexoLei": 69,
+     "DescItemAnexo": "CARBIDOPA + LEVODOPA"
+    },
+    {
+     "CodIntProdServ": 3806,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 70,
+     "DescItemAnexo": "CARBOPLATINA"
+    },
+    {
+     "CodIntProdServ": 3807,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 71,
+     "DescItemAnexo": "CARFILZOMIBE"
+    },
+    {
+     "CodIntProdServ": 3808,
+     "CodNcmNbs": "30049048",
+     "NroItemAnexoLei": 72,
+     "DescItemAnexo": "CARMUSTINA"
+    },
+    {
+     "CodIntProdServ": 3809,
+     "CodNcmNbs": "30042059",
+     "NroItemAnexoLei": 73,
+     "DescItemAnexo": "CEFALOTINA"
+    },
+    {
+     "CodIntProdServ": 3810,
+     "CodNcmNbs": "30042059",
+     "NroItemAnexoLei": 74,
+     "DescItemAnexo": "CEFOXITINA"
+    },
+    {
+     "CodIntProdServ": 3811,
+     "CodNcmNbs": "30042059",
+     "NroItemAnexoLei": 75,
+     "DescItemAnexo": "CEFTAZIDIMA"
+    },
+    {
+     "CodIntProdServ": 3812,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 76,
+     "DescItemAnexo": "CELECOXIBE"
+    },
+    {
+     "CodIntProdServ": 3813,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 77,
+     "DescItemAnexo": "CETUXIMABE"
+    },
+    {
+     "CodIntProdServ": 3814,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 78,
+     "DescItemAnexo": "CICLOFOSFAMIDA"
+    },
+    {
+     "CodIntProdServ": 3815,
+     "CodNcmNbs": "30042094",
+     "NroItemAnexoLei": 79,
+     "DescItemAnexo": "CILASTATINA SÓDICA + IMIPENEM"
+    },
+    {
+     "CodIntProdServ": 3816,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 80,
+     "DescItemAnexo": "CISPLATINA"
+    },
+    {
+     "CodIntProdServ": 3817,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 81,
+     "DescItemAnexo": "CITARABINA"
+    },
+    {
+     "CodIntProdServ": 3818,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 82,
+     "DescItemAnexo": "CITRATO DE IXAZOMIBE"
+    },
+    {
+     "CodIntProdServ": 3819,
+     "CodNcmNbs": "30049034",
+     "NroItemAnexoLei": 84,
+     "DescItemAnexo": "CITRATO DE TAMOXIFENO"
+    },
+    {
+     "CodIntProdServ": 3820,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 85,
+     "DescItemAnexo": "CLADRIBINA"
+    },
+    {
+     "CodIntProdServ": 3821,
+     "CodNcmNbs": "30049058",
+     "NroItemAnexoLei": 86,
+     "DescItemAnexo": "CLODRONATO DISSÓDICO"
+    },
+    {
+     "CodIntProdServ": 3822,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 87,
+     "DescItemAnexo": "CLOFAZIMINA"
+    },
+    {
+     "CodIntProdServ": 3823,
+     "CodNcmNbs": "30049038",
+     "NroItemAnexoLei": 88,
+     "DescItemAnexo": "CLORAMBUCILA"
+    },
+    {
+     "CodIntProdServ": 3824,
+     "CodNcmNbs": "28444200",
+     "NroItemAnexoLei": 89,
+     "DescItemAnexo": "CLORETO DE RÁDIO (223 RA)"
+    },
+    {
+     "CodIntProdServ": 3825,
+     "CodNcmNbs": "25010090",
+     "NroItemAnexoLei": 90,
+     "DescItemAnexo": "CLORETO DE SÓDIO"
+    },
+    {
+     "CodIntProdServ": 3826,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 91,
+     "DescItemAnexo": "CLORETO DE SUXAMETÔNIO"
+    },
+    {
+     "CodIntProdServ": 3827,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 92,
+     "DescItemAnexo": "CLORIDRATO DE ALECTINIBE"
+    },
+    {
+     "CodIntProdServ": 3828,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 93,
+     "DescItemAnexo": "CLORIDRATO DE ALFENTANILA MONOIDRATADA"
+    },
+    {
+     "CodIntProdServ": 3829,
+     "CodNcmNbs": "30049039",
+     "NroItemAnexoLei": 94,
+     "DescItemAnexo": "CLORIDRATO DE AMINOLEVULINATO DE METILA"
+    },
+    {
+     "CodIntProdServ": 3830,
+     "CodNcmNbs": "30049039",
+     "NroItemAnexoLei": 95,
+     "DescItemAnexo": "CLORIDRATO DE CINACALCETE"
+    },
+    {
+     "CodIntProdServ": 3831,
+     "CodNcmNbs": "30042069",
+     "NroItemAnexoLei": 96,
+     "DescItemAnexo": "CLORIDRATO DE DAUNORRUBICINA"
+    },
+    {
+     "CodIntProdServ": 3832,
+     "CodNcmNbs": "30049039",
+     "NroItemAnexoLei": 97,
+     "DescItemAnexo": "CLORIDRATO DE DOBUTAMINA"
+    },
+    {
+     "CodIntProdServ": 3833,
+     "CodNcmNbs": "30042069",
+     "NroItemAnexoLei": 98,
+     "DescItemAnexo": "CLORIDRATO DE DOXORRUBICINA"
+    },
+    {
+     "CodIntProdServ": 3834,
+     "CodNcmNbs": "30042099",
+     "NroItemAnexoLei": 99,
+     "DescItemAnexo": "CLORIDRATO DE EPIRRUBICINA"
+    },
+    {
+     "CodIntProdServ": 3835,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 100,
+     "DescItemAnexo": "CLORIDRATO DE ERLOTINIBE"
+    },
+    {
+     "CodIntProdServ": 3836,
+     "CodNcmNbs": "30049039",
+     "NroItemAnexoLei": 101,
+     "DescItemAnexo": "CLORIDRATO DE FINGOLIMODE"
+    },
+    {
+     "CodIntProdServ": 3837,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 102,
+     "DescItemAnexo": "CLORIDRATO DE GENCITABINA"
+    },
+    {
+     "CodIntProdServ": 3838,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 103,
+     "DescItemAnexo": "CLORIDRATO DE GRANISSETRONA"
+    },
+    {
+     "CodIntProdServ": 3839,
+     "CodNcmNbs": "30042069",
+     "NroItemAnexoLei": 104,
+     "DescItemAnexo": "CLORIDRATO DE IDARRUBICINA"
+    },
+    {
+     "CodIntProdServ": 3840,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 105,
+     "DescItemAnexo": "CLORIDRATO DE IRINOTECANO"
+    },
+    {
+     "CodIntProdServ": 3841,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 106,
+     "DescItemAnexo": "CLORIDRATO DE IRINOTECANO TRI-HIDRATADO"
+    },
+    {
+     "CodIntProdServ": 3842,
+     "CodNcmNbs": "30049041",
+     "NroItemAnexoLei": 107,
+     "DescItemAnexo": "CLORIDRATO DE METOCLOPRAMIDA"
+    },
+    {
+     "CodIntProdServ": 3843,
+     "CodNcmNbs": "30049039",
+     "NroItemAnexoLei": 108,
+     "DescItemAnexo": "CLORIDRATO DE MITOXANTRONA"
+    },
+    {
+     "CodIntProdServ": 3844,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 109,
+     "DescItemAnexo": "CLORIDRATO DE PALONOSETRONA"
+    },
+    {
+     "CodIntProdServ": 3845,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 110,
+     "DescItemAnexo": "CLORIDRATO DE PAZOPANIBE"
+    },
+    {
+     "CodIntProdServ": 3846,
+     "CodNcmNbs": "30045090",
+     "NroItemAnexoLei": 111,
+     "DescItemAnexo": "CLORIDRATO DE PIRIDOXINA"
+    },
+    {
+     "CodIntProdServ": 3847,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 112,
+     "DescItemAnexo": "CLORIDRATO DE PONATINIBE"
+    },
+    {
+     "CodIntProdServ": 3848,
+     "CodNcmNbs": "30044910",
+     "NroItemAnexoLei": 113,
+     "DescItemAnexo": "CLORIDRATO DE TOPOTECANA"
+    },
+    {
+     "CodIntProdServ": 3849,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 114,
+     "DescItemAnexo": "CLORIDRATO DE ZIPRASIDONA MONOIDRATADO"
+    },
+    {
+     "CodIntProdServ": 3850,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 115,
+     "DescItemAnexo": "COMPLEXO PROTROMBÍNICO PARCIALMENTE ATIVADO"
+    },
+    {
+     "CodIntProdServ": 3851,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 116,
+     "DescItemAnexo": "CRIZOTINIBE"
+    },
+    {
+     "CodIntProdServ": 3852,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 117,
+     "DescItemAnexo": "DACARBAZINA"
+    },
+    {
+     "CodIntProdServ": 3853,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 118,
+     "DescItemAnexo": "DAPAGLIFLOZINA"
+    },
+    {
+     "CodIntProdServ": 3854,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 119,
+     "DescItemAnexo": "DARATUMUMABE"
+    },
+    {
+     "CodIntProdServ": 3855,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 120,
+     "DescItemAnexo": "DAROLUTAMIDA"
+    },
+    {
+     "CodIntProdServ": 3856,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 121,
+     "DescItemAnexo": "DASATINIBE"
+    },
+    {
+     "CodIntProdServ": 3857,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 122,
+     "DescItemAnexo": "DECITABINA"
+    },
+    {
+     "CodIntProdServ": 3858,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 123,
+     "DescItemAnexo": "DEFERASIROX"
+    },
+    {
+     "CodIntProdServ": 3859,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 124,
+     "DescItemAnexo": "DENOSUMABE"
+    },
+    {
+     "CodIntProdServ": 3860,
+     "CodNcmNbs": "30043290",
+     "NroItemAnexoLei": 125,
+     "DescItemAnexo": "DEXAMETASONA"
+    },
+    {
+     "CodIntProdServ": 3861,
+     "CodNcmNbs": "30043929",
+     "NroItemAnexoLei": 126,
+     "DescItemAnexo": "DIASPARTATO DE PASIREOTIDA"
+    },
+    {
+     "CodIntProdServ": 3862,
+     "CodNcmNbs": "30049064",
+     "NroItemAnexoLei": 127,
+     "DescItemAnexo": "DIAZEPAM"
+    },
+    {
+     "CodIntProdServ": 3863,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 128,
+     "DescItemAnexo": "DICLORIDRATO DE DACLATASVIR"
+    },
+    {
+     "CodIntProdServ": 3864,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 129,
+     "DescItemAnexo": "DICLORIDRATO DE PRAMIPEXOL MONOIDRATADO"
+    },
+    {
+     "CodIntProdServ": 3865,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 130,
+     "DescItemAnexo": "DICLORIDRATO DE QUININA"
+    },
+    {
+     "CodIntProdServ": 3866,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 131,
+     "DescItemAnexo": "DICLORIDRATO DE SAPROPTERINA"
+    },
+    {
+     "CodIntProdServ": 3867,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 132,
+     "DescItemAnexo": "DIDANOSINA"
+    },
+    {
+     "CodIntProdServ": 3868,
+     "CodNcmNbs": "30049095",
+     "NroItemAnexoLei": 133,
+     "DescItemAnexo": "DIETILESTILBESTROL"
+    },
+    {
+     "CodIntProdServ": 3869,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 134,
+     "DescItemAnexo": "DIFOSFATO DE CLOROQUINA"
+    },
+    {
+     "CodIntProdServ": 3870,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 135,
+     "DescItemAnexo": "DIMALEATO DE AFATINIBE"
+    },
+    {
+     "CodIntProdServ": 3871,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 136,
+     "DescItemAnexo": "DIMETILSULFÓXIDO DE TRAMETINIBE"
+    },
+    {
+     "CodIntProdServ": 3872,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 137,
+     "DescItemAnexo": "DITARTARATO DE VINORELBINA"
+    },
+    {
+     "CodIntProdServ": 3873,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 138,
+     "DescItemAnexo": "DOCETAXEL"
+    },
+    {
+     "CodIntProdServ": 3874,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 139,
+     "DescItemAnexo": "DOCETAXEL TRI-HIDRATADO"
+    },
+    {
+     "CodIntProdServ": 3875,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 140,
+     "DescItemAnexo": "DOLUTEGRAVIR SÓDICO"
+    },
+    {
+     "CodIntProdServ": 3876,
+     "CodNcmNbs": "30042099",
+     "NroItemAnexoLei": 141,
+     "DescItemAnexo": "DOXICICLINA MONOIDRATADA"
+    },
+    {
+     "CodIntProdServ": 3877,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 142,
+     "DescItemAnexo": "DURVALUMABE"
+    },
+    {
+     "CodIntProdServ": 3878,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 143,
+     "DescItemAnexo": "ECULIZUMABE"
+    },
+    {
+     "CodIntProdServ": 3879,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 144,
+     "DescItemAnexo": "EFAVIRENZ"
+    },
+    {
+     "CodIntProdServ": 3880,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 145,
+     "DescItemAnexo": "ELEXACAFTOR"
+    },
+    {
+     "CodIntProdServ": 3881,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 146,
+     "DescItemAnexo": "ELOTUZUMABE"
+    },
+    {
+     "CodIntProdServ": 3882,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 147,
+     "DescItemAnexo": "ELTROMBOPAGUE OLAMINA"
+    },
+    {
+     "CodIntProdServ": 3883,
+     "CodNcmNbs": "30043918",
+     "NroItemAnexoLei": 148,
+     "DescItemAnexo": "EMBONATO DE TRIPTORRELINA"
+    },
+    {
+     "CodIntProdServ": 3884,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 149,
+     "DescItemAnexo": "EMICIZUMABE"
+    },
+    {
+     "CodIntProdServ": 3885,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 150,
+     "DescItemAnexo": "EMTRICITABINA"
+    },
+    {
+     "CodIntProdServ": 3886,
+     "CodNcmNbs": "30043039",
+     "NroItemAnexoLei": 151,
+     "DescItemAnexo": "ENANTATO DE NORETISTERONA + VALERATO DE ESTRADIOL"
+    },
+    {
+     "CodIntProdServ": 3887,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 152,
+     "DescItemAnexo": "ENFLURANO"
+    },
+    {
+     "CodIntProdServ": 3888,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 153,
+     "DescItemAnexo": "ENFUVIRTIDA"
+    },
+    {
+     "CodIntProdServ": 3889,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 154,
+     "DescItemAnexo": "ENTRICITABINA"
+    },
+    {
+     "CodIntProdServ": 3890,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 155,
+     "DescItemAnexo": "ENTRICITABINA + FUMARATO TENOFOVIR DESOPROXILA"
+    },
+    {
+     "CodIntProdServ": 3891,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 156,
+     "DescItemAnexo": "ENZALUTAMIDA"
+    },
+    {
+     "CodIntProdServ": 3892,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 157,
+     "DescItemAnexo": "ERDAFITINIBE"
+    },
+    {
+     "CodIntProdServ": 3893,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 158,
+     "DescItemAnexo": "ESILATO DE NINTEDANIBE"
+    },
+    {
+     "CodIntProdServ": 3894,
+     "CodNcmNbs": "30043220",
+     "NroItemAnexoLei": 159,
+     "DescItemAnexo": "ESPIRONOLACTONA"
+    },
+    {
+     "CodIntProdServ": 3895,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 160,
+     "DescItemAnexo": "ESTAVUDINA"
+    },
+    {
+     "CodIntProdServ": 3896,
+     "CodNcmNbs": "30043939",
+     "NroItemAnexoLei": 161,
+     "DescItemAnexo": "ETINILESTRADIOL + LEVONORGESTREL"
+    },
+    {
+     "CodIntProdServ": 3897,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 162,
+     "DescItemAnexo": "ETOMIDATO"
+    },
+    {
+     "CodIntProdServ": 3898,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 163,
+     "DescItemAnexo": "ETOPOSIDEO"
+    },
+    {
+     "CodIntProdServ": 3899,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 164,
+     "DescItemAnexo": "ETRAVIRINA"
+    },
+    {
+     "CodIntProdServ": 3900,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 165,
+     "DescItemAnexo": "EVEROLIMO"
+    },
+    {
+     "CodIntProdServ": 3901,
+     "CodNcmNbs": "30043994",
+     "NroItemAnexoLei": 166,
+     "DescItemAnexo": "EXEMESTANO"
+    },
+    {
+     "CodIntProdServ": 3902,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 167,
+     "DescItemAnexo": "FATOR IX DE COAGULAÇÃO"
+    },
+    {
+     "CodIntProdServ": 3903,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 168,
+     "DescItemAnexo": "FATOR VII DE COAGULAÇÃO ATIVADO RECOMBINANTE"
+    },
+    {
+     "CodIntProdServ": 3904,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 169,
+     "DescItemAnexo": "FATOR VIII DE COAGULAÇÃO"
+    },
+    {
+     "CodIntProdServ": 3905,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 170,
+     "DescItemAnexo": "FATOR VIII DE COAGULAÇÃO CONTENDO FATOR DE VON WILLEBRAND"
+    },
+    {
+     "CodIntProdServ": 3906,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 171,
+     "DescItemAnexo": "FATOR VIII DE COAGULAÇÃO RECOMBINANTE"
+    },
+    {
+     "CodIntProdServ": 3907,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 172,
+     "DescItemAnexo": "FENTANILA"
+    },
+    {
+     "CodIntProdServ": 3908,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 173,
+     "DescItemAnexo": "FILGRASTIM"
+    },
+    {
+     "CodIntProdServ": 3909,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 174,
+     "DescItemAnexo": "FLUORURACILA"
+    },
+    {
+     "CodIntProdServ": 3910,
+     "CodNcmNbs": "30045010",
+     "NroItemAnexoLei": 175,
+     "DescItemAnexo": "FOLINATO DE CÁLCIO"
+    },
+    {
+     "CodIntProdServ": 3911,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 176,
+     "DescItemAnexo": "FOSAMPRENAVIR CÁLCICO"
+    },
+    {
+     "CodIntProdServ": 3912,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 177,
+     "DescItemAnexo": "FOSFATO DE FLUDARABINA"
+    },
+    {
+     "CodIntProdServ": 3913,
+     "CodNcmNbs": "30049049",
+     "NroItemAnexoLei": 178,
+     "DescItemAnexo": "FOSFATO DE OSELTAMIVIR"
+    },
+    {
+     "CodIntProdServ": 3914,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 179,
+     "DescItemAnexo": "FOSFATO DE RUXOLITINIBE"
+    },
+    {
+     "CodIntProdServ": 3915,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 180,
+     "DescItemAnexo": "FOSFATO DE SITAGLIPTINA"
+    },
+    {
+     "CodIntProdServ": 3916,
+     "CodNcmNbs": "30049058",
+     "NroItemAnexoLei": 181,
+     "DescItemAnexo": "FOTEMUSTINA"
+    },
+    {
+     "CodIntProdServ": 3917,
+     "CodNcmNbs": "30043936",
+     "NroItemAnexoLei": 182,
+     "DescItemAnexo": "FULVESTRANTO"
+    },
+    {
+     "CodIntProdServ": 3918,
+     "CodNcmNbs": "30049029",
+     "NroItemAnexoLei": 183,
+     "DescItemAnexo": "FUMARATO DE DIMETILA"
+    },
+    {
+     "CodIntProdServ": 3919,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 184,
+     "DescItemAnexo": "FUMARATO DE TENOFOVIR DESOPROXILA"
+    },
+    {
+     "CodIntProdServ": 3920,
+     "CodNcmNbs": "30049076",
+     "NroItemAnexoLei": 185,
+     "DescItemAnexo": "FUROSEMIDA"
+    },
+    {
+     "CodIntProdServ": 3921,
+     "CodNcmNbs": "30049019",
+     "NroItemAnexoLei": 186,
+     "DescItemAnexo": "GALSULFASE"
+    },
+    {
+     "CodIntProdServ": 3922,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 187,
+     "DescItemAnexo": "GANCICLOVIR SÓDICO"
+    },
+    {
+     "CodIntProdServ": 3923,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 188,
+     "DescItemAnexo": "GEFITINIBE"
+    },
+    {
+     "CodIntProdServ": 3924,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 189,
+     "DescItemAnexo": "GLICOSE"
+    },
+    {
+     "CodIntProdServ": 3925,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 190,
+     "DescItemAnexo": "GOLIMUMABE"
+    },
+    {
+     "CodIntProdServ": 3926,
+     "CodNcmNbs": "30043927",
+     "NroItemAnexoLei": 191,
+     "DescItemAnexo": "GOSSERRELINA"
+    },
+    {
+     "CodIntProdServ": 3927,
+     "CodNcmNbs": "30044950",
+     "NroItemAnexoLei": 192,
+     "DescItemAnexo": "GRANISETRON"
+    },
+    {
+     "CodIntProdServ": 3928,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 193,
+     "DescItemAnexo": "HALOPERIDOL"
+    },
+    {
+     "CodIntProdServ": 3929,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 194,
+     "DescItemAnexo": "HIDROXIUREIA"
+    },
+    {
+     "CodIntProdServ": 3930,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 195,
+     "DescItemAnexo": "HIPOCLORITO DE SÓDIO"
+    },
+    {
+     "CodIntProdServ": 3931,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 196,
+     "DescItemAnexo": "IBANDRONATO SÓDIO"
+    },
+    {
+     "CodIntProdServ": 3932,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 197,
+     "DescItemAnexo": "IBRUTINIBE"
+    },
+    {
+     "CodIntProdServ": 3933,
+     "CodNcmNbs": "30042063",
+     "NroItemAnexoLei": 198,
+     "DescItemAnexo": "IDARRUBICINA"
+    },
+    {
+     "CodIntProdServ": 3934,
+     "CodNcmNbs": "30049014",
+     "NroItemAnexoLei": 199,
+     "DescItemAnexo": "IDURSULFASE"
+    },
+    {
+     "CodIntProdServ": 3935,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 200,
+     "DescItemAnexo": "IFOSFAMIDA"
+    },
+    {
+     "CodIntProdServ": 3936,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 201,
+     "DescItemAnexo": "IMUNOGLOBULINA ANTIRRÁBICA"
+    },
+    {
+     "CodIntProdServ": 3937,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 202,
+     "DescItemAnexo": "IMUNOGLOBULINA ANTITETÂNICA"
+    },
+    {
+     "CodIntProdServ": 3938,
+     "CodNcmNbs": "30021239",
+     "NroItemAnexoLei": 203,
+     "DescItemAnexo": "IMUNOGLOBULINA HUMANA ANTI-HEPATITE B"
+    },
+    {
+     "CodIntProdServ": 3939,
+     "CodNcmNbs": "30043100",
+     "NroItemAnexoLei": 204,
+     "DescItemAnexo": "INSULINA GLARGINA"
+    },
+    {
+     "CodIntProdServ": 3940,
+     "CodNcmNbs": "30043100",
+     "NroItemAnexoLei": 205,
+     "DescItemAnexo": "INSULINA HUMANA"
+    },
+    {
+     "CodIntProdServ": 3941,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 206,
+     "DescItemAnexo": "INTERFERON ALFA-2A E INTERFERON ALFA-2B"
+    },
+    {
+     "CodIntProdServ": 3942,
+     "CodNcmNbs": "30063013",
+     "NroItemAnexoLei": 207,
+     "DescItemAnexo": "IOPAMIDOL"
+    },
+    {
+     "CodIntProdServ": 3943,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 208,
+     "DescItemAnexo": "IPILIMUMABE"
+    },
+    {
+     "CodIntProdServ": 3944,
+     "CodNcmNbs": "30049047",
+     "NroItemAnexoLei": 209,
+     "DescItemAnexo": "ISETIONATO DE PENTAMIDINA"
+    },
+    {
+     "CodIntProdServ": 3945,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 210,
+     "DescItemAnexo": "ISOFLURANO"
+    },
+    {
+     "CodIntProdServ": 3946,
+     "CodNcmNbs": "30045090",
+     "NroItemAnexoLei": 211,
+     "DescItemAnexo": "ISOTRETINOÍNA"
+    },
+    {
+     "CodIntProdServ": 3947,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 212,
+     "DescItemAnexo": "IVACAFTOR"
+    },
+    {
+     "CodIntProdServ": 3948,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 213,
+     "DescItemAnexo": "LAMIVUDINA + ZIDOVUDINA"
+    },
+    {
+     "CodIntProdServ": 3949,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 214,
+     "DescItemAnexo": "LETROZOL"
+    },
+    {
+     "CodIntProdServ": 3950,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 215,
+     "DescItemAnexo": "LEVETIRACETAM"
+    },
+    {
+     "CodIntProdServ": 3951,
+     "CodNcmNbs": "30049043",
+     "NroItemAnexoLei": 216,
+     "DescItemAnexo": "LIDOCAÍNA"
+    },
+    {
+     "CodIntProdServ": 3952,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 217,
+     "DescItemAnexo": "LINEZOLIDA"
+    },
+    {
+     "CodIntProdServ": 3953,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 218,
+     "DescItemAnexo": "LIPEGFILGRASTIM"
+    },
+    {
+     "CodIntProdServ": 3954,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 219,
+     "DescItemAnexo": "LOPINAVIR + RITONAVIR"
+    },
+    {
+     "CodIntProdServ": 3955,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 220,
+     "DescItemAnexo": "LOSARTANA POTÁSSICA"
+    },
+    {
+     "CodIntProdServ": 3956,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 221,
+     "DescItemAnexo": "LUMACAFTOR"
+    },
+    {
+     "CodIntProdServ": 3957,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 222,
+     "DescItemAnexo": "MALEATO DE ACALABRUTINIBE MONOIDRATADO"
+    },
+    {
+     "CodIntProdServ": 3958,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 223,
+     "DescItemAnexo": "MALEATO DE SUNITINIBE"
+    },
+    {
+     "CodIntProdServ": 3959,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 224,
+     "DescItemAnexo": "MALEATO DE TIMOLOL"
+    },
+    {
+     "CodIntProdServ": 3960,
+     "CodNcmNbs": "30049049",
+     "NroItemAnexoLei": 225,
+     "DescItemAnexo": "MARAVIROQUE"
+    },
+    {
+     "CodIntProdServ": 3961,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 226,
+     "DescItemAnexo": "MEPOLIZUMABE"
+    },
+    {
+     "CodIntProdServ": 3962,
+     "CodNcmNbs": "30049063",
+     "NroItemAnexoLei": 227,
+     "DescItemAnexo": "MERCAPTOPURINA"
+    },
+    {
+     "CodIntProdServ": 3963,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 228,
+     "DescItemAnexo": "MESILATO DE DABRAFENIBE"
+    },
+    {
+     "CodIntProdServ": 3964,
+     "CodNcmNbs": "30049048",
+     "NroItemAnexoLei": 229,
+     "DescItemAnexo": "MESILATO DE DESFERROXAMINA"
+    },
+    {
+     "CodIntProdServ": 3965,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 230,
+     "DescItemAnexo": "MESILATO DE IMATINIBE"
+    },
+    {
+     "CodIntProdServ": 3966,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 231,
+     "DescItemAnexo": "MESILATO DE NELFINAVIR"
+    },
+    {
+     "CodIntProdServ": 3967,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 232,
+     "DescItemAnexo": "MESILATO DE OSIMERTINIBE"
+    },
+    {
+     "CodIntProdServ": 3968,
+     "CodNcmNbs": "30049039",
+     "NroItemAnexoLei": 233,
+     "DescItemAnexo": "MESILATO DE RASAGILINA"
+    },
+    {
+     "CodIntProdServ": 3969,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 234,
+     "DescItemAnexo": "MESNA"
+    },
+    {
+     "CodIntProdServ": 3970,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 235,
+     "DescItemAnexo": "METILPREDNISOLONA"
+    },
+    {
+     "CodIntProdServ": 3971,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 236,
+     "DescItemAnexo": "METOTREXATO"
+    },
+    {
+     "CodIntProdServ": 3972,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 237,
+     "DescItemAnexo": "METOTREXATO DE SÓDIO"
+    },
+    {
+     "CodIntProdServ": 3973,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 238,
+     "DescItemAnexo": "MICOFENOLATO DE MOFETILA"
+    },
+    {
+     "CodIntProdServ": 3974,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 239,
+     "DescItemAnexo": "MICOFENOLATO DE SÓDIO"
+    },
+    {
+     "CodIntProdServ": 3975,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 240,
+     "DescItemAnexo": "MIDAZOLAM"
+    },
+    {
+     "CodIntProdServ": 3976,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 241,
+     "DescItemAnexo": "MIDOSTAURINA"
+    },
+    {
+     "CodIntProdServ": 3977,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 242,
+     "DescItemAnexo": "MIFAMURTIDA"
+    },
+    {
+     "CodIntProdServ": 3978,
+     "CodNcmNbs": "30042091",
+     "NroItemAnexoLei": 243,
+     "DescItemAnexo": "MITOMICINA"
+    },
+    {
+     "CodIntProdServ": 3979,
+     "CodNcmNbs": "30049095",
+     "NroItemAnexoLei": 244,
+     "DescItemAnexo": "MITOTANO"
+    },
+    {
+     "CodIntProdServ": 3980,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 245,
+     "DescItemAnexo": "NEVIRAPINA"
+    },
+    {
+     "CodIntProdServ": 3981,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 246,
+     "DescItemAnexo": "NILOTINIBE"
+    },
+    {
+     "CodIntProdServ": 3982,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 247,
+     "DescItemAnexo": "NITRENDIPINO"
+    },
+    {
+     "CodIntProdServ": 3983,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 248,
+     "DescItemAnexo": "NIVOLUMABE"
+    },
+    {
+     "CodIntProdServ": 3984,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 249,
+     "DescItemAnexo": "NUSINERSENA"
+    },
+    {
+     "CodIntProdServ": 3985,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 250,
+     "DescItemAnexo": "OCRELIZUMABE"
+    },
+    {
+     "CodIntProdServ": 3986,
+     "CodNcmNbs": "30043926",
+     "NroItemAnexoLei": 251,
+     "DescItemAnexo": "OCTREOTIDA"
+    },
+    {
+     "CodIntProdServ": 3987,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 252,
+     "DescItemAnexo": "OLAPARIBE"
+    },
+    {
+     "CodIntProdServ": 3988,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 253,
+     "DescItemAnexo": "OLARATUMABE"
+    },
+    {
+     "CodIntProdServ": 3989,
+     "CodNcmNbs": "30029000",
+     "NroItemAnexoLei": 254,
+     "DescItemAnexo": "ONASEMNOGENO ABEPARVOVEQUE"
+    },
+    {
+     "CodIntProdServ": 3990,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 255,
+     "DescItemAnexo": "OXALIPLATINA"
+    },
+    {
+     "CodIntProdServ": 3991,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 256,
+     "DescItemAnexo": "PACLITAXEL"
+    },
+    {
+     "CodIntProdServ": 3992,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 257,
+     "DescItemAnexo": "PALBOCICLIBE"
+    },
+    {
+     "CodIntProdServ": 3993,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 258,
+     "DescItemAnexo": "PAMIDRONATO DISSÓDICO"
+    },
+    {
+     "CodIntProdServ": 3994,
+     "CodNcmNbs": "30043929",
+     "NroItemAnexoLei": 259,
+     "DescItemAnexo": "PAMOATO DE PASIREOTIDA"
+    },
+    {
+     "CodIntProdServ": 3995,
+     "CodNcmNbs": "30049019",
+     "NroItemAnexoLei": 260,
+     "DescItemAnexo": "PANCREATINA"
+    },
+    {
+     "CodIntProdServ": 3996,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 261,
+     "DescItemAnexo": "PANITUMUMABE"
+    },
+    {
+     "CodIntProdServ": 3997,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 262,
+     "DescItemAnexo": "PEG INTERFERON ALFA-2B"
+    },
+    {
+     "CodIntProdServ": 3998,
+     "CodNcmNbs": "30021510",
+     "NroItemAnexoLei": 263,
+     "DescItemAnexo": "PEG INTERFERON ALFA-2A"
+    },
+    {
+     "CodIntProdServ": 3999,
+     "CodNcmNbs": "30049019",
+     "NroItemAnexoLei": 264,
+     "DescItemAnexo": "PEGASPARGASE"
+    },
+    {
+     "CodIntProdServ": 4000,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 265,
+     "DescItemAnexo": "PEGFILGRASTIM"
+    },
+    {
+     "CodIntProdServ": 4001,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 266,
+     "DescItemAnexo": "PEMETREXEDE DISSÓDICO"
+    },
+    {
+     "CodIntProdServ": 4002,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 267,
+     "DescItemAnexo": "PEMETREXEDE DISSÓDICO HEMIPENTAIDRATADO"
+    },
+    {
+     "CodIntProdServ": 4003,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 268,
+     "DescItemAnexo": "PEMETREXEDE DISSÓDICO HEPTAIDRATADO"
+    },
+    {
+     "CodIntProdServ": 4004,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 269,
+     "DescItemAnexo": "PERTUZUMABE"
+    },
+    {
+     "CodIntProdServ": 4005,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 270,
+     "DescItemAnexo": "PIOGLITAZONA"
+    },
+    {
+     "CodIntProdServ": 4006,
+     "CodNcmNbs": "30022032",
+     "NroItemAnexoLei": 271,
+     "DescItemAnexo": "PIRAZINAMIDA + RIFAMPICINA + CLORIDRATO DE ETAMBUTOL + ISONIAZIDA"
+    },
+    {
+     "CodIntProdServ": 4007,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 272,
+     "DescItemAnexo": "PLERIXAFOR"
+    },
+    {
+     "CodIntProdServ": 4008,
+     "CodNcmNbs": "30049063",
+     "NroItemAnexoLei": 273,
+     "DescItemAnexo": "PRAZIQUANTEL"
+    },
+    {
+     "CodIntProdServ": 4009,
+     "CodNcmNbs": "30043210",
+     "NroItemAnexoLei": 274,
+     "DescItemAnexo": "PREDNISOLONA"
+    },
+    {
+     "CodIntProdServ": 4010,
+     "CodNcmNbs": "30049039",
+     "NroItemAnexoLei": 275,
+     "DescItemAnexo": "PREGABALINA"
+    },
+    {
+     "CodIntProdServ": 4011,
+     "CodNcmNbs": "30049095",
+     "NroItemAnexoLei": 276,
+     "DescItemAnexo": "PROPOFOL"
+    },
+    {
+     "CodIntProdServ": 4012,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 277,
+     "DescItemAnexo": "QUININA"
+    },
+    {
+     "CodIntProdServ": 4013,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 278,
+     "DescItemAnexo": "RABEPRAZOL SÓDICO"
+    },
+    {
+     "CodIntProdServ": 4014,
+     "CodNcmNbs": "30049049",
+     "NroItemAnexoLei": 279,
+     "DescItemAnexo": "RALTEGRAVIR"
+    },
+    {
+     "CodIntProdServ": 4015,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 280,
+     "DescItemAnexo": "RAMUCIRUMABE"
+    },
+    {
+     "CodIntProdServ": 4016,
+     "CodNcmNbs": "30049019",
+     "NroItemAnexoLei": 281,
+     "DescItemAnexo": "RASBURICASE"
+    },
+    {
+     "CodIntProdServ": 4017,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 282,
+     "DescItemAnexo": "REGORAFENIBE"
+    },
+    {
+     "CodIntProdServ": 4018,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 283,
+     "DescItemAnexo": "RIBAVIRINA"
+    },
+    {
+     "CodIntProdServ": 4019,
+     "CodNcmNbs": "30042032",
+     "NroItemAnexoLei": 284,
+     "DescItemAnexo": "RIFAMPICINA + ISONIAZIDA"
+    },
+    {
+     "CodIntProdServ": 4020,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 285,
+     "DescItemAnexo": "RILUZOL"
+    },
+    {
+     "CodIntProdServ": 4021,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 286,
+     "DescItemAnexo": "RISANQUIZUMABE"
+    },
+    {
+     "CodIntProdServ": 4022,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 287,
+     "DescItemAnexo": "RISDIPLAM"
+    },
+    {
+     "CodIntProdServ": 4023,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 288,
+     "DescItemAnexo": "RISPERIDONA"
+    },
+    {
+     "CodIntProdServ": 4024,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 289,
+     "DescItemAnexo": "RITONAVIR"
+    },
+    {
+     "CodIntProdServ": 4025,
+     "CodNcmNbs": "30021520",
+     "NroItemAnexoLei": 290,
+     "DescItemAnexo": "RITUXIMABE"
+    },
+    {
+     "CodIntProdServ": 4026,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 291,
+     "DescItemAnexo": "SACUBITRIL VALSARTANA SÓDICA HIDRATADA"
+    },
+    {
+     "CodIntProdServ": 4027,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 292,
+     "DescItemAnexo": "SAQUINAVIR"
+    },
+    {
+     "CodIntProdServ": 4028,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 293,
+     "DescItemAnexo": "SAXAGLIPTINA"
+    },
+    {
+     "CodIntProdServ": 4029,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 294,
+     "DescItemAnexo": "SECUQUINUMABE"
+    },
+    {
+     "CodIntProdServ": 4030,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 295,
+     "DescItemAnexo": "SELEXIPAGUE"
+    },
+    {
+     "CodIntProdServ": 4031,
+     "CodNcmNbs": "30049059",
+     "NroItemAnexoLei": 296,
+     "DescItemAnexo": "SINVASTATINA"
+    },
+    {
+     "CodIntProdServ": 4032,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 297,
+     "DescItemAnexo": "SOFOSBUVIR"
+    },
+    {
+     "CodIntProdServ": 4033,
+     "CodNcmNbs": "30043929",
+     "NroItemAnexoLei": 298,
+     "DescItemAnexo": "SOMATROPINA"
+    },
+    {
+     "CodIntProdServ": 4034,
+     "CodNcmNbs": "30021211",
+     "NroItemAnexoLei": 299,
+     "DescItemAnexo": "SORO ANTIARACNÍDICO (LOXOSCELES, PHONEUTRIA E TITYUS)"
+    },
+    {
+     "CodIntProdServ": 4035,
+     "CodNcmNbs": "30021211",
+     "NroItemAnexoLei": 300,
+     "DescItemAnexo": "SORO ANTIBOTRÓPICO (PENTAVALENTE)"
+    },
+    {
+     "CodIntProdServ": 4036,
+     "CodNcmNbs": "30021211",
+     "NroItemAnexoLei": 301,
+     "DescItemAnexo": "SORO ANTIBOTRÓPICO (PENTAVALENTE) E ANTICROTÁLICO"
+    },
+    {
+     "CodIntProdServ": 4037,
+     "CodNcmNbs": "30021211",
+     "NroItemAnexoLei": 302,
+     "DescItemAnexo": "SORO ANTIBOTRÓPICO (PENTAVALENTE) E ANTILAQUÉTICO"
+    },
+    {
+     "CodIntProdServ": 4038,
+     "CodNcmNbs": "30021219",
+     "NroItemAnexoLei": 303,
+     "DescItemAnexo": "SORO ANTIBOTULÍNICO AB (BIVALENTE)"
+    },
+    {
+     "CodIntProdServ": 4039,
+     "CodNcmNbs": "30021211",
+     "NroItemAnexoLei": 304,
+     "DescItemAnexo": "SORO ANTICROTÁLICO"
+    },
+    {
+     "CodIntProdServ": 4040,
+     "CodNcmNbs": "30021215",
+     "NroItemAnexoLei": 305,
+     "DescItemAnexo": "SORO ANTIDIFTÉRICO"
+    },
+    {
+     "CodIntProdServ": 4041,
+     "CodNcmNbs": "30021211",
+     "NroItemAnexoLei": 306,
+     "DescItemAnexo": "SORO ANTIELAPÍDICO (BIVALENTE)"
+    },
+    {
+     "CodIntProdServ": 4042,
+     "CodNcmNbs": "30021211",
+     "NroItemAnexoLei": 307,
+     "DescItemAnexo": "SORO ANTIESCORPIÔNICO"
+    },
+    {
+     "CodIntProdServ": 4043,
+     "CodNcmNbs": "30021211",
+     "NroItemAnexoLei": 308,
+     "DescItemAnexo": "SORO ANTILONÔMICO"
+    },
+    {
+     "CodIntProdServ": 4044,
+     "CodNcmNbs": "30021211",
+     "NroItemAnexoLei": 309,
+     "DescItemAnexo": "SORO ANTILOXOSCÉLICO (TRIVALENTE)"
+    },
+    {
+     "CodIntProdServ": 4045,
+     "CodNcmNbs": "30021219",
+     "NroItemAnexoLei": 310,
+     "DescItemAnexo": "SORO ANTIRRÁBICO"
+    },
+    {
+     "CodIntProdServ": 4046,
+     "CodNcmNbs": "30021212",
+     "NroItemAnexoLei": 311,
+     "DescItemAnexo": "SORO ANTITETÂNICO"
+    },
+    {
+     "CodIntProdServ": 4047,
+     "CodNcmNbs": "30049039",
+     "NroItemAnexoLei": 312,
+     "DescItemAnexo": "SUCCINATO DE METOPROLOL"
+    },
+    {
+     "CodIntProdServ": 4048,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 313,
+     "DescItemAnexo": "SUCCINATO DE RIBOCICLIBE"
+    },
+    {
+     "CodIntProdServ": 4049,
+     "CodNcmNbs": "30043210",
+     "NroItemAnexoLei": 314,
+     "DescItemAnexo": "SUCCINATO SÓDICO DE HIDROCORTISONA"
+    },
+    {
+     "CodIntProdServ": 4050,
+     "CodNcmNbs": "30049072",
+     "NroItemAnexoLei": 315,
+     "DescItemAnexo": "SULFADIAZINA"
+    },
+    {
+     "CodIntProdServ": 4051,
+     "CodNcmNbs": "30049072",
+     "NroItemAnexoLei": 316,
+     "DescItemAnexo": "SULFAMETOXAZOL + TRIMETROPINA"
+    },
+    {
+     "CodIntProdServ": 4052,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 317,
+     "DescItemAnexo": "SULFATO DE ABACAVIR"
+    },
+    {
+     "CodIntProdServ": 4053,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 318,
+     "DescItemAnexo": "SULFATO DE ATAZANAVIR"
+    },
+    {
+     "CodIntProdServ": 4054,
+     "CodNcmNbs": "30042093",
+     "NroItemAnexoLei": 319,
+     "DescItemAnexo": "SULFATO DE BLEOMICINA"
+    },
+    {
+     "CodIntProdServ": 4055,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 320,
+     "DescItemAnexo": "SULFATO DE INDINAVIR"
+    },
+    {
+     "CodIntProdServ": 4056,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 321,
+     "DescItemAnexo": "SULFATO DE LAROTRECTINIBE"
+    },
+    {
+     "CodIntProdServ": 4057,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 322,
+     "DescItemAnexo": "SULFATO DE MORFINA"
+    },
+    {
+     "CodIntProdServ": 4058,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 323,
+     "DescItemAnexo": "SULFATO DE MORFINA PENTAIDRATADO"
+    },
+    {
+     "CodIntProdServ": 4059,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 324,
+     "DescItemAnexo": "SULFATO DE QUININA"
+    },
+    {
+     "CodIntProdServ": 4060,
+     "CodNcmNbs": "30044910",
+     "NroItemAnexoLei": 325,
+     "DescItemAnexo": "SULFATO DE VINCRISTINA"
+    },
+    {
+     "CodIntProdServ": 4061,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 326,
+     "DescItemAnexo": "TACROLIMO"
+    },
+    {
+     "CodIntProdServ": 4062,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 327,
+     "DescItemAnexo": "TAFAMIDIS MEGLUMINA"
+    },
+    {
+     "CodIntProdServ": 4063,
+     "CodNcmNbs": "30049034",
+     "NroItemAnexoLei": 328,
+     "DescItemAnexo": "TAMOXIFENO"
+    },
+    {
+     "CodIntProdServ": 4064,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 329,
+     "DescItemAnexo": "TARTARATO DE VARENICLINA"
+    },
+    {
+     "CodIntProdServ": 4065,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 330,
+     "DescItemAnexo": "TARTARATO DE VINORELBINA"
+    },
+    {
+     "CodIntProdServ": 4066,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 331,
+     "DescItemAnexo": "TEMOZOLOMIDA"
+    },
+    {
+     "CodIntProdServ": 4067,
+     "CodNcmNbs": "30049019",
+     "NroItemAnexoLei": 332,
+     "DescItemAnexo": "TENECTEPLASE"
+    },
+    {
+     "CodIntProdServ": 4068,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 333,
+     "DescItemAnexo": "TENIPOSIDEO"
+    },
+    {
+     "CodIntProdServ": 4069,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 334,
+     "DescItemAnexo": "TENOFOVIR"
+    },
+    {
+     "CodIntProdServ": 4070,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 335,
+     "DescItemAnexo": "TENSIROLIMO"
+    },
+    {
+     "CodIntProdServ": 4071,
+     "CodNcmNbs": "30049049",
+     "NroItemAnexoLei": 336,
+     "DescItemAnexo": "TERIFLUNOMIDA"
+    },
+    {
+     "CodIntProdServ": 4072,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 337,
+     "DescItemAnexo": "TERIZIDONA"
+    },
+    {
+     "CodIntProdServ": 4073,
+     "CodNcmNbs": "30042099",
+     "NroItemAnexoLei": 338,
+     "DescItemAnexo": "TETRACICLINA"
+    },
+    {
+     "CodIntProdServ": 4074,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 339,
+     "DescItemAnexo": "TEZACAFTOR"
+    },
+    {
+     "CodIntProdServ": 4075,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 340,
+     "DescItemAnexo": "TIOGUANINA"
+    },
+    {
+     "CodIntProdServ": 4076,
+     "CodNcmNbs": "30049078",
+     "NroItemAnexoLei": 341,
+     "DescItemAnexo": "TIPRANAVIR"
+    },
+    {
+     "CodIntProdServ": 4077,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 342,
+     "DescItemAnexo": "TOCILIZUMABE"
+    },
+    {
+     "CodIntProdServ": 4078,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 343,
+     "DescItemAnexo": "TOSILATO DE SORAFENIBE"
+    },
+    {
+     "CodIntProdServ": 4079,
+     "CodNcmNbs": "30021520",
+     "NroItemAnexoLei": 344,
+     "DescItemAnexo": "TRASTUZUMABE"
+    },
+    {
+     "CodIntProdServ": 4080,
+     "CodNcmNbs": "30049099",
+     "NroItemAnexoLei": 345,
+     "DescItemAnexo": "TRIÓXIDO DE ARSÊNIO"
+    },
+    {
+     "CodIntProdServ": 4081,
+     "CodNcmNbs": "30043918",
+     "NroItemAnexoLei": 346,
+     "DescItemAnexo": "TRIPTORRELINA"
+    },
+    {
+     "CodIntProdServ": 4082,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 347,
+     "DescItemAnexo": "UPADACITINIBE HEMI-HIDRATADO"
+    },
+    {
+     "CodIntProdServ": 4083,
+     "CodNcmNbs": "30042071",
+     "NroItemAnexoLei": 348,
+     "DescItemAnexo": "VANCOMICINA"
+    },
+    {
+     "CodIntProdServ": 4084,
+     "CodNcmNbs": "30049069",
+     "NroItemAnexoLei": 349,
+     "DescItemAnexo": "VANDETANIBE"
+    },
+    {
+     "CodIntProdServ": 4085,
+     "CodNcmNbs": "30021590",
+     "NroItemAnexoLei": 350,
+     "DescItemAnexo": "VEDOLIZUMABE"
+    },
+    {
+     "CodIntProdServ": 4086,
+     "CodNcmNbs": "30044910",
+     "NroItemAnexoLei": 351,
+     "DescItemAnexo": "VIMBLASTINA"
+    },
+    {
+     "CodIntProdServ": 4087,
+     "CodNcmNbs": "30044910",
+     "NroItemAnexoLei": 352,
+     "DescItemAnexo": "VINCRISTINA"
+    },
+    {
+     "CodIntProdServ": 4088,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 353,
+     "DescItemAnexo": "VINFLUNINA"
+    },
+    {
+     "CodIntProdServ": 4089,
+     "CodNcmNbs": "30044990",
+     "NroItemAnexoLei": 354,
+     "DescItemAnexo": "VINORELBINA"
+    },
+    {
+     "CodIntProdServ": 4090,
+     "CodNcmNbs": "30049068",
+     "NroItemAnexoLei": 355,
+     "DescItemAnexo": "ZIAGENAVIR"
+    },
+    {
+     "CodIntProdServ": 4091,
+     "CodNcmNbs": "30049079",
+     "NroItemAnexoLei": 356,
+     "DescItemAnexo": "ZIDOVUDINA"
+    },
+    {
+     "CodIntProdServ": 4092,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 357,
+     "DescItemAnexo": "VACINA ADSORVIDA DIFTERIA E TÉTANO"
+    },
+    {
+     "CodIntProdServ": 4093,
+     "CodNcmNbs": "30024127",
+     "NroItemAnexoLei": 358,
+     "DescItemAnexo": "VACINA ADSORVIDA DIFTERIA, TÉTANO E PERTUSSIS"
+    },
+    {
+     "CodIntProdServ": 4094,
+     "CodNcmNbs": "30024127",
+     "NroItemAnexoLei": 359,
+     "DescItemAnexo": "VACINA ADSORVIDA DIFTERIA, TÉTANO E PERTUSSIS (ACELULAR)"
+    },
+    {
+     "CodIntProdServ": 4095,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 360,
+     "DescItemAnexo": "VACINA ADSORVIDA DIFTERIA, TÉTANO, PERTUSSIS, HEPATITE B (RECOMBINANTE) E HAEMOPHILUS INFLUENZAE B (CONJUGADA)"
+    },
+    {
+     "CodIntProdServ": 4096,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 361,
+     "DescItemAnexo": "VACINA ADSORVIDA HEPATITE A (INATIVADA)"
+    },
+    {
+     "CodIntProdServ": 4097,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 362,
+     "DescItemAnexo": "VACINA BCG"
+    },
+    {
+     "CodIntProdServ": 4098,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 363,
+     "DescItemAnexo": "VACINA CÓLERA (INATIVADA)"
+    },
+    {
+     "CodIntProdServ": 4099,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 364,
+     "DescItemAnexo": "VACINA COVID-19"
+    },
+    {
+     "CodIntProdServ": 4100,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 365,
+     "DescItemAnexo": "VACINA DENGUE 1, 2, 3 E 4"
+    },
+    {
+     "CodIntProdServ": 4101,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 366,
+     "DescItemAnexo": "VACINA FEBRE AMARELA (ATENUADA)"
+    },
+    {
+     "CodIntProdServ": 4102,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 367,
+     "DescItemAnexo": "VACINA FEBRE TIFÓIDE (POLISSACARÍDICA)"
+    },
+    {
+     "CodIntProdServ": 4103,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 368,
+     "DescItemAnexo": "VACINA HAEMOPHILUS INFLUENZAE B (CONJUGADA)"
+    },
+    {
+     "CodIntProdServ": 4104,
+     "CodNcmNbs": "30024123",
+     "NroItemAnexoLei": 369,
+     "DescItemAnexo": "VACINA HEPATITE B (RECOMBINANTE)"
+    },
+    {
+     "CodIntProdServ": 4105,
+     "CodNcmNbs": "30024121",
+     "NroItemAnexoLei": 370,
+     "DescItemAnexo": "VACINA INFLUENZA TRIVALENTE (FRAGMENTADA, INATIVADA)"
+    },
+    {
+     "CodIntProdServ": 4106,
+     "CodNcmNbs": "30024125",
+     "NroItemAnexoLei": 371,
+     "DescItemAnexo": "VACINA MENINGOCÓCICA ACWY (CONJUGADA)"
+    },
+    {
+     "CodIntProdServ": 4107,
+     "CodNcmNbs": "30024125",
+     "NroItemAnexoLei": 372,
+     "DescItemAnexo": "VACINA MENINGOCÓCICA C (CONJUGADA)"
+    },
+    {
+     "CodIntProdServ": 4108,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 373,
+     "DescItemAnexo": "VACINA PAPILOMAVÍRUS HUMANO 6, 11, 16 E 18 (RECOMBINANTE)"
+    },
+    {
+     "CodIntProdServ": 4109,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 374,
+     "DescItemAnexo": "VACINA PNEUMOCÓCICA 10-VALENTE (CONJUGADA)"
+    },
+    {
+     "CodIntProdServ": 4110,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 375,
+     "DescItemAnexo": "VACINA PNEUMOCÓCICA 13-VALENTE (CONJUGADA)"
+    },
+    {
+     "CodIntProdServ": 4111,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 376,
+     "DescItemAnexo": "VACINA PNEUMOCÓCICA 23-VALENTE (POLISSACARÍDICA)"
+    },
+    {
+     "CodIntProdServ": 4112,
+     "CodNcmNbs": "30024122",
+     "NroItemAnexoLei": 377,
+     "DescItemAnexo": "VACINA POLIOMIELITE 1 E 3 (ATENUADA)"
+    },
+    {
+     "CodIntProdServ": 4113,
+     "CodNcmNbs": "30024122",
+     "NroItemAnexoLei": 378,
+     "DescItemAnexo": "VACINA POLIOMIELITE 1, 2 E 3 (INATIVADA)"
+    },
+    {
+     "CodIntProdServ": 4114,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 379,
+     "DescItemAnexo": "VACINA RAIVA (INATIVADA)"
+    },
+    {
+     "CodIntProdServ": 4115,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 380,
+     "DescItemAnexo": "VACINA ROTAVÍRUS HUMANO G1P 8 (ATENUADA)"
+    },
+    {
+     "CodIntProdServ": 4116,
+     "CodNcmNbs": "30024127",
+     "NroItemAnexoLei": 381,
+     "DescItemAnexo": "VACINA SARAMPO, CAXUMBA, RUBÉOLA"
+    },
+    {
+     "CodIntProdServ": 4117,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 382,
+     "DescItemAnexo": "VACINA SARAMPO, CAXUMBA, RUBÉOLA E VARICELA (ATENUADA)"
+    },
+    {
+     "CodIntProdServ": 4118,
+     "CodNcmNbs": "30024129",
+     "NroItemAnexoLei": 383,
+     "DescItemAnexo": "VACINA VARICELA (ATENUADA)"
+    }
+   ],
+   "rotulo": "Anexo XIV revogado"
+  },
+  {
+   "cClassTrib": "200033",
+   "motivo": "Item 54 do Anexo VI da LC 214/2025: NCM 1702.50.00 (Frutose) não consta do IT 2025.002 v1.70.",
+   "referencia": "commit 7c449dd",
+   "itens": [
+    {
+     "CodIntProdServ": 3736,
+     "NroAnexo": 6,
+     "CodNcmNbs": "17025000",
+     "TipoCodigo": "NCM",
+     "TipoPermissao": "PERMITIDO",
+     "DescCondicao": "COMPOSIÇÕES PARA NUTRIÇÃO ENTERAL OU PARENTERAL E COMPOSIÇÕES ESPECIAIS E FÓRMULAS NUTRICIONAIS DESTINADAS ÀS PESSOAS COM ERROS INATOS DO METABOLISMO",
+     "DescExcecao": null,
+     "Observacao": null,
+     "DthIniVig": "2026-01-01T00:00:00",
+     "DthFimVig": null,
+     "CtrDthInc": "2026-01-16T11:42:48.34",
+     "NroItemAnexoLei": null,
+     "DescItemAnexo": "Frutose",
+     "DescAnexo": "COMPOSIÇÕES PARA NUTRIÇÃO ENTERAL OU PARENTERAL E COMPOSIÇÕES ESPECIAIS E FÓRMULAS NUTRICIONAIS DESTINADAS ÀS PESSOAS COM ERROS INATOS DO METABOLISMO SUBMETIDAS À REDUÇÃO DE 60% (SESSENTA POR CENTO) DAS ALÍQUOTAS DO IBS E DA CBS"
+    }
+   ],
+   "rotulo": "ausente no IT v1.70"
+  }
+ ]
+}

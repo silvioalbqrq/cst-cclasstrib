@@ -9,8 +9,8 @@
 <meta property="og:description" content="Consulta tributária IBS/CBS: CST, cClassTrib, NCM e NBS. Espelho do Portal da Conformidade Fácil.">
 <meta property="og:type" content="website">
 <link rel="canonical" href="https://silvioalbqrq.github.io/cst-cclasstrib/">
-<link rel="stylesheet" href="assets/styles.css">
-<link rel="stylesheet" href="assets/corporativo.css">
+<link rel="stylesheet" href="assets/styles.css?v=20261013h">
+<link rel="stylesheet" href="assets/corporativo.css?v=20261013h">
 </head>
 <body>
 
@@ -132,6 +132,54 @@
 
   <section id="resultados" aria-live="polite"></section>
 
+  <details class="filtros" id="painelLote" open>
+    <summary>Importar NCM em lote (CSV ou texto) → exportar CSV / Excel</summary>
+    <div class="lote">
+      <label class="busca-rotulo" for="loteTexto">Cole a lista de NCMs ou abra um arquivo CSV/TXT</label>
+      <textarea id="loteTexto" rows="6" spellcheck="false" autocomplete="off"
+        placeholder="07082000&#10;10062010&#10;30049099&#10;…ou uma coluna NCM com cabeçalho no CSV"></textarea>
+      <p class="dica">Aceita um NCM por linha, lista separada por vírgula/ponto e vírgula, ou arquivo CSV/TXT.
+        Reconhece a coluna <code>NCM</code> (cabeçalho) ou, sem cabeçalho, os códigos do próprio texto.
+        Códigos de 7+ dígitos têm prioridade; sem nenhum, prefixos (ex.: <code>0901</code>) também são aceitos.</p>
+      <div class="acoes">
+        <input type="file" id="loteArquivo" accept=".csv,.txt,.tsv,text/csv,text/plain" hidden>
+        <button type="button" id="btnLoteArquivo" class="btn">Abrir CSV/TXT…</button>
+        <button type="button" id="btnLoteProcessar" class="btn">Processar</button>
+        <button type="button" id="btnLoteLimpar" class="btn">Limpar</button>
+      </div>
+      <p class="dica" id="loteResumo">Colunas: NCM consultado · Descrição NCM · CST · cClassTrib · Descrição CClassTrib · Tipo alíq. · Redução · TR · CP · EC · DF-e · Anexos.
+        NCM sem vínculo nos anexos recebe a <strong>regra geral</strong> (CST <code>000</code> ·
+        cClassTrib <code>000001</code> — LC 214/2025, art. 4º).</p>
+
+      <div class="lote-barra" id="loteBarra" hidden>
+        <label class="campo">Filtrar no resultado
+          <input type="search" id="loteFiltro" placeholder="CST, cClassTrib, palavra, VEDADO…" autocomplete="off">
+        </label>
+        <label class="campo">Exportar
+          <select id="loteEscopo">
+            <option value="tudo" selected>tudo (com o filtro aplicado)</option>
+            <option value="pagina">só a página atual</option>
+          </select>
+        </label>
+        <details class="lote-colunas" id="loteColunasBox">
+          <summary class="btn btn-mini" id="loteColunasResumo">Colunas (11/11)</summary>
+          <div class="lote-colunas-caixa">
+            <p class="dica">Arraste pelo ⠿ (ou use ▲▼) para reordenar; desmarque para esconder.
+              A escolha vale para a tela e para os arquivos exportados.</p>
+            <ul id="loteColunasLista"></ul>
+            <button type="button" class="btn btn-mini" id="loteColunasPadrao">Restaurar padrão</button>
+          </div>
+        </details>
+        <span class="dir">
+          <button type="button" id="btnLoteCsv" class="btn" disabled>Exportar CSV</button>
+          <button type="button" id="btnLoteXlsx" class="btn" disabled>Exportar Excel (.xlsx)</button>
+        </span>
+      </div>
+      <div id="loteResultados"></div>
+      <p class="legenda" id="loteLegenda"></p>
+    </div>
+  </details>
+
 </main>
 
 <dialog id="dlg" aria-labelledby="dlgTitulo">
@@ -160,10 +208,10 @@
     </div>
     <p class="aviso">Consulta não oficial, sem vínculo com SEFAZ/Receita. Para uso fiscal, confirme sempre no
       <a href="https://dfe-portal.svrs.rs.gov.br/CFF/ClassificacaoTributaria" target="_blank" rel="noopener">portal oficial</a>.
-      Dados extraídos em 07/10/2026 (IT 2025.002 v1.70) · <span id="rodape8">Anexo VIII v1.01.00 (08/10/2026)</span> — atualize com <code>python scripts/atualizar.py portal.html</code> e <code>python scripts/atualizar_anexo8.py planilha.xlsx</code>.</p>
+      Dados extraídos em 07/10/2026 (IT 2025.002 v1.70) · <span id="rodape8">Anexo VIII v1.01.00 (08/10/2026)</span> — atualize com <code>python scripts/atualizar_tudo.py</code> (Anexo VIII: <code>--anexo8 planilha.xlsx</code>).</p>
   </div>
 </footer>
 
-<script src="assets/app.js?v=20261010h" defer></script>
+<script src="assets/app.js?v=20261013h" defer></script>
 </body>
 </html>

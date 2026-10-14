@@ -9,6 +9,9 @@
   --navy: #0b1526;
   --navy-soft: #9fb0c9;
   --ok: #1c7c3c;
+  --danger: #b3261e;
+  --danger-soft: #fdecea;
+  --danger-line: #f3c1bd;
   --radius: 14px;
   --shadow: 0 1px 3px rgba(16, 32, 54, 0.08);
 }
@@ -64,7 +67,9 @@ body {
 /* ---------- busca ---------- */
 .buscas-lado {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr): as duas janelas encolhem junto com a viewport em vez de
+     impor o min-content do próprio conteúdo. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
   align-items: start;
 }
@@ -80,8 +85,12 @@ body {
   padding: 16px 18px;
   margin: 16px 0;
   display: grid;
+  /* minmax(0, 1fr) pelo mesmo motivo do painel do lote: a coluna encolhe com o
+     card em vez de assumir o min-content do conteúdo. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
+.busca > * { min-width: 0; }
 .busca-rotulo { font-weight: 700; }
 #q, #q8 {
   width: 100%;
@@ -97,6 +106,42 @@ body {
 }
 .dica { margin: 0; font-size: 0.85rem; color: var(--muted); }
 .visao { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); }
+
+/* ---------- importação em lote de NCM ---------- */
+.lote {
+  display: grid;
+  /* minmax(0, 1fr) no lugar de uma coluna `auto`: sem isto o piso da coluna
+     passa a ser o min-content do item mais largo (a barra de ferramentas e a
+     tabela), e o painel inteiro fica mais largo que o card — estourando o body. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+.lote > * { min-width: 0; max-width: 100%; }
+#loteTexto {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 120px;
+  resize: vertical;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fcfdff;
+  color: var(--ink);
+}
+#loteTexto:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 0;
+  border-color: var(--accent);
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:disabled:hover { background: #fff; border-color: var(--line); color: var(--accent); }
+#loteResultados:empty { display: none; }
+#loteResultados { margin-top: 4px; }
 
 /* ---------- filtros ---------- */
 .filtros {
@@ -199,6 +244,18 @@ fieldset select, fieldset input[type="text"] {
   border-color: #f3c1bd;
   color: #b3261e;
 }
+/* Curadoria (scripts/patches.json): o vínculo não está mais na lista oficial do
+   portal. Vermelho de alerta, com borda tracejada para não se confundir com o
+   VEDADO (vermelho cheio). O texto do selo vem do próprio patch. */
+.via-ncm.cura {
+  background: var(--danger-soft);
+  border: 1px dashed var(--danger-line);
+  color: var(--danger);
+}
+.badge.cura {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
 .ncm-desc {
   background: var(--card);
   border: 1px solid var(--line);
@@ -213,6 +270,34 @@ fieldset select, fieldset input[type="text"] {
   font-family: ui-monospace, Consolas, monospace;
   font-weight: 700;
   color: var(--accent);
+}
+.regra-geral {
+  background: #fff7e6;
+  border: 1px solid #ecd9a0;
+  border-left: 4px solid #d9a520;
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: #6b5314;
+}
+.regra-geral code {
+  font-family: ui-monospace, Consolas, monospace;
+  font-weight: 700;
+  color: #8a6d1a;
+}
+
+/* Ressalva do art. 146 para NCM de medicamento: informativa, sem sugerir
+   classificação (a alíquota zero depende da lista do art. 146, § 3º). */
+.aviso-art146 {
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: var(--ink);
 }
 
 .tab-wrap { overflow-x: auto; }
@@ -232,6 +317,7 @@ tbody tr:hover { background: #f7fafd; }
 td.cod { font-family: ui-monospace, Consolas, monospace; font-weight: 700; white-space: nowrap; }
 td.num { white-space: nowrap; }
 td.dfes { font-size: 0.78rem; color: var(--muted); max-width: 260px; }
+td.dsc { max-width: 420px; }
 .sim { color: var(--ok); font-weight: 700; }
 .nao { color: #b6c0cc; }
 .vazio {
@@ -282,7 +368,144 @@ details.regra pre {
 .rodape { margin: 26px 0 30px; color: var(--muted); font-size: 0.82rem; }
 .rodape code { background: #eef3f8; padding: 1px 6px; border-radius: 5px; }
 
+/* ---------- grupo recolhível (só na consulta individual, agrupada por CST) ---------- */
+details.grupo > summary.grupo-head {
+  cursor: pointer;
+  display: block;
+  list-style: none;
+  position: relative;
+}
+details.grupo > summary.grupo-head::-webkit-details-marker { display: none; }
+details.grupo > summary.grupo-head::before {
+  content: "▸";
+  position: absolute;
+  left: 4px;
+  top: 12px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+details.grupo[open] > summary.grupo-head::before { content: "▾"; }
+details.grupo > summary.grupo-head:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* ---------- paginação ---------- */
+/* A do lote é a única com barra de largura total e seletor de linhas. */
+#loteResultados .paginacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  background: #fafbfd;
+}
+#loteResultados .paginacao .contador { margin-left: 0; }
+.tam-pagina {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.tam-pagina select {
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.82rem;
+}
+.legenda { margin: 0 0 10px; font-size: 0.78rem; color: var(--muted); }
+
+/* ---------- barra da lista em lote ---------- */
+.lote-barra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  margin: 4px 0 10px;
+}
+.lote-barra .campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  /* flexível e sem piso: os campos encolhem antes de empurrar o card */
+  flex: 1 1 190px;
+  min-width: 0;
+}
+.lote-barra .campo input[type="search"],
+.lote-barra .campo select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+.lote-barra .dir {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+.lote-colunas { position: relative; }
+.lote-colunas > summary { list-style: none; cursor: pointer; }
+.lote-colunas > summary::-webkit-details-marker { display: none; }
+.lote-colunas-caixa {
+  position: absolute;
+  z-index: 30;
+  top: 100%;
+  /* ancorado à direita: abrindo para a esquerda o painel não empurra a página */
+  right: 0;
+  left: auto;
+  margin-top: 6px;
+  width: 310px;
+  max-width: min(310px, calc(100vw - 24px));
+  max-height: 60vh;
+  overflow: auto;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(16, 32, 54, 0.16);
+  padding: 10px 12px;
+}
+#loteColunasLista { list-style: none; margin: 0 0 8px; padding: 0; }
+#loteColunasLista li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 6px;
+}
+#loteColunasLista li:hover { background: #f4f7fb; }
+#loteColunasLista li.arrastando { opacity: 0.45; }
+#loteColunasLista .arrasta { cursor: grab; color: var(--muted); }
+#loteColunasLista label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+#loteColunasLista .dir { display: flex; gap: 2px; }
+#loteColunasLista .btn-mini { padding: 1px 6px; font-size: 0.7rem; }
+
+/* cabeçalhos ordenáveis da lista em lote */
+th.ordenavel { cursor: pointer; user-select: none; }
+th.ordenavel:hover { background: var(--accent-soft); }
+th.ordenavel.ativo { color: var(--accent); }
+
 @media (max-width: 640px) {
+  .lote-colunas-caixa { position: static; width: auto; max-width: 100%; box-shadow: none; }
+  .lote-barra .dir { margin-left: 0; }
+  #loteResultados .paginacao { padding: 10px 12px; }
   .dl { grid-template-columns: 1fr; }
   .topo { padding: 30px 0 26px; }
   .topo h1 { font-size: 1.25rem; }
