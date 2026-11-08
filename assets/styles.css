@@ -242,6 +242,12 @@ thead th {
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
 }
+thead th.th-centro {
+  text-align: center;
+  white-space: normal;
+  max-width: 95px;
+  min-width: 60px;
+}
 tbody td { padding: 7px 10px; border-bottom: 1px solid #edf1f5; vertical-align: top; overflow-wrap: break-word; word-break: break-word; }
 tbody tr:hover { background: #f7fafd; }
 td.cod { font-family: ui-monospace, Consolas, monospace; font-weight: 700; white-space: nowrap; }
