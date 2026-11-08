@@ -30,7 +30,7 @@ const PAI_BADGES = {
 const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
 // Versão dos assets para cache-busting (?v=). Bump a cada release de dados.
-const ASSET_V = "20261108a";
+const ASSET_V = "20261108b";
 const urlV = (p) => `${p}?v=${ASSET_V}`;
 
 let DATA = [];
@@ -534,21 +534,25 @@ function render(filtered, F) {
       .flatMap((g) => g.filhos.map((f) => linhaFilho(f, true, badgeNcm(info, f.CodClassTrib, descs))))
       .join("");
     box.innerHTML = (descKeys.length ? descBox(descs) : "") +
-      `<div class="grupo"><div class="tab-wrap">
-      <table>${headFilho(true)}<tbody>${linhas}</tbody></table></div></div>`;
+      `<details class="grupo-colapsado"><summary class="grupo-summary">
+        ${total} classificação(ões)${filtered.viaNcm ? " · inclui vínculos NCM" : ""}${filtered.ncmParcial ? " · lista parcial, refine a busca" : ""}
+      </summary>
+      <div class="grupo-body"><div class="tab-wrap">
+      <table>${headFilho(true)}<tbody>${linhas}</tbody></table></div></div>
+      </details>`;
   } else {
     box.innerHTML = (descKeys.length ? descBox(descs) : "") + filtered.map((g) => `
-      <article class="grupo">
-        <div class="grupo-head">
-          <h2><code>${esc(g.pai.Cst)}</code> — ${esc(g.pai.NomeCst || "")}</h2>
-          <p>Vigência: ${fmtDate(g.pai.DthIniVig)} a ${fmtDate(g.pai.DthFimVig)}
-             · ${g.filhos.length} classificação(ões)</p>
-        </div>
-        ${badgesPai(g.pai) ? `<div class="badges">${badgesPai(g.pai)}</div>` : ""}
-        <div class="tab-wrap"><table>${headFilho(false)}
-          <tbody>${g.filhos.map((f) => linhaFilho(f, false, badgeNcm(info, f.CodClassTrib, descs))).join("")}</tbody>
-        </table></div>
-      </article>`).join("");
+      <details class="grupo-colapsado"><summary class="grupo-summary">
+        <code>${esc(g.pai.Cst)}</code> — ${esc(g.pai.NomeCst || "")}
+        <span style="float:right;font-weight:400;font-size:0.85rem;color:var(--muted)">
+          Vigência: ${fmtDate(g.pai.DthIniVig)} a ${fmtDate(g.pai.DthFimVig)} · ${g.filhos.length} classificação(ões)
+        </span>
+      </summary>
+      ${badgesPai(g.pai) ? `<div class="badges">${badgesPai(g.pai)}</div>` : ""}
+      <div class="grupo-body"><div class="tab-wrap"><table>${headFilho(false)}
+        <tbody>${g.filhos.map((f) => linhaFilho(f, false, badgeNcm(info, f.CodClassTrib, descs))).join("")}</tbody>
+      </table></div></div>
+      </details>`).join("");
   }
 
   box.querySelectorAll("[data-detalhe]").forEach((b) =>

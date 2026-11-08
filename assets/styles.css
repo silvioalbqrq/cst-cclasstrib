@@ -147,6 +147,31 @@ fieldset select, fieldset input[type="text"] {
 .btn:hover { background: var(--accent-soft); border-color: var(--accent); }
 .btn-mini { padding: 3px 10px; font-size: 0.82rem; }
 
+/* ---------- cards de resultados colapsaveis ---------- */
+details.grupo-colapsado {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+details.grupo-colapsado summary {
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 14px;
+  background: #eef3f8;
+  list-style: none;
+}
+details.grupo-colapsado summary::-webkit-details-marker { display: none; }
+details.grupo-colapsado summary::before {
+  content: "▶";
+  float: right;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+details.grupo-colapsado[open] summary::before { content: "▼"; }
+details.grupo-colapsado .grupo-body { padding: 0 14px 14px; }
+
 /* ---------- resultados ---------- */
 .status {
   background: #fff7e6;
