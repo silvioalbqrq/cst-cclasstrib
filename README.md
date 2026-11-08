@@ -76,12 +76,12 @@ python scripts/atualizar_descricoes.py tipi-data.js
 # 3. Confira e commite data/ncm-descricoes.json
 ```
 
-Anexo VIII — correlação NBS × IndOp × cClassTrib (planilha do Anexo VIII, V1.01.00):
+Anexo VIII — correlação NBS × IndOp × cClassTrib (planilha do Anexo VIII, V1.02.00):
 
 ```bash
 # 1. Salve a planilha do Anexo VIII (.xlsx)
 # 2. Rode:
-python scripts/atualizar_anexo8.py "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V1.01.00.xlsx"
+python scripts/atualizar_anexo8.py "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V1.02.00.xlsx"
 # 3. Confira e commite data/anexo-viii.json
 ```
 
@@ -89,7 +89,7 @@ Notas do Anexo VIII:
 - `99.01.01` (“Outros serviços sem incidência de ISSQN/ICMS”) vem na planilha sem NBS/IndOp/cClassTrib e é descartado pelo script — por isso 207 itens com correlação em 208 grupos da aba.
 - 15 correlações têm NBS vazio na própria planilha (ex. `07.13` pulverização → `200038`, `99.03.0x` imóveis → `200027`): alcançáveis só por descrição/IndOp, nunca por dígito NBS.
 - `regraIndOp` (aba `REGRA inc. X`) é a matriz PS Onerosa × Adq. Exterior → IndOp exibida em “Regra de incidência → IndOp”; linhas sem IndOp (ex. N/S) são mantidas como lista vazia.
-- Hierarquia de nomes: em divergência entre Portal (IT 1.70) e planilha (v1.01.00), prevalece o Portal — a UI avisa no detalhe. Divergências conhecidas: `200039`, `200042`, `200044`, `820001`, `820002` (ver `DIVERGENCIAS_CONHECIDAS` em `scripts/test_dados.py`).
+- Hierarquia de nomes: em divergência entre Portal (IT 1.70) e planilha (v1.02.00), prevalece o Portal — a UI avisa no detalhe. Divergências conhecidas: `200039`, `200042`, `200044`, `820001`, `820002` (ver `DIVERGENCIAS_CONHECIDAS` em `scripts/test_dados.py`).
 - Detalhe baixa `data/anexos/<cod>.json` (KB, gerado por `scripts/gerar_anexos.py`); o snapshot completo só é usado como fallback.
 
 Testes:
@@ -99,7 +99,7 @@ python scripts/test_dados.py
 # CI (.github/workflows/ci.yml): node --check assets/app.js + teste acima
 ```
 
-Snapshot atual: **07/10/2026 (IT 2025.002 v1.70)** — 18 CSTs, 173 cClassTrib. Anexo VIII **V1.01.00 (08/10/2026)** — 1517 correlações, 731 NBS, 28 cClassTrib.
+Snapshot atual: **07/10/2026 (IT 2025.002 v1.70)** — 18 CSTs, 173 cClassTrib. Anexo VIII **V1.02.00 (08/11/2026)** — 1608 correlações, 731 NBS, 32 cClassTrib.
 
 ## Aviso
 

@@ -6,22 +6,28 @@ Uso:
     python scripts/atualizar_anexo8.py "caminho/AnexoVIII....xlsx"
 
 A planilha usa células mescladas verticalmente: cada NBS se estende
-pelas linhas-variante de IndOp (030101-030104 = local da prestação;
-100301 = Domicílio principal do adquirente, com PS Onerosa / Adq.
-Exterior). Este script "desmescla" a grade e gera um registro por
-linha, isto é, uma correlação NBS x IndOp x cClassTrib por registro.
+pelas linhas-variante de IndOp. Este script "desmescla" a grade e gera
+um registro por linha, isto é, uma correlação NBS x IndOp x cClassTrib
+por registro.
+
+v1.02.00 (planilha oficial 26/10/2026):
+- Aba de regra renomeada de "REGRA inc. X" para "REGRA OP NÃO ONE_EXT".
+  PS Onerosa / Adq. Exterior não são mais colunas por linha na "tabela
+  geral": agora vêm de uma matriz IndOp → (PS, Adq. Exterior).
+- Novas colunas na "tabela geral": COD_ATIV_SN e DESCRIÇÃO ATIV_SN
+  (Simples Nacional), deslocando INDOP para a coluna 7.
 
 Normalizações:
 - IndOp armazenado como número perde zeros à esquerda -> zfill(6)
-- PS Onerosa / Adq. Exterior: "s"/"n" -> "S"/"N"
+- PS Onerosa / Adq. Exterior: "s"/"n" -> "S"/"N" (derivadas da matriz)
 - Local de incidência: capitalização unificada
 """
 import json, re, sys
 import openpyxl
 
-DEFAULT_XLSX = "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V1.01.00.xlsx"
+DEFAULT_XLSX = "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V1.02.00.xlsx"
 OUT = "data/anexo-viii.json"
-VERSAO = "V1.01.00"
+VERSAO = "V1.02.00"
 
 LOCAIS = {
     "local da entrega ou disponibilização": "Local da entrega ou da disponibilização",
@@ -34,8 +40,6 @@ LOCAIS = {
     "domicílio principal do adquirente": "Domicílio principal do adquirente",
     "domicílio principal do adquirente (estabelecimento matriz)": "Domicílio principal do adquirente (estabelecimento matriz)",
 }
-# A planilha traz "Local da entrega ou disponibilização" (1 ocorrência) e
-# "Local da entrega ou da disponibilização" (60); ambas são unificadas acima.
 
 
 def clean(v):
@@ -69,38 +73,57 @@ def unmerge(ws):
     return grid
 
 
+def build_regra_map(rg):
+    """Constrói mapeamento indOp -> (psOnerosa, adqExterior) da aba de regra.
+
+    Estrutura v1.02.00 (após unmerge):
+      linhas 5-7, colunas A-C = bloco PS Onerosa=SIM:
+        Col A='SIM' (rótulo), Col B=IndOp(ADQ=N), Col C=IndOp(ADQ=S)
+      colunas D-F = bloco PS Onerosa=NÃO:
+        Col D='NÃO' (rótulo), Col E=IndOp(ADQ=N), Col F=IndOp(ADQ=S)
+    """
+    grid = unmerge(rg)
+    indop_to_psadq = {}  # indOp -> (psOnerosa, adqExterior)
+    for r in range(5, rg.max_row + 1):
+        ps_left = clean(grid.get((r, 1)))   # col A: SIM/NÃO
+        ps_right = clean(grid.get((r, 4)))  # col D: SIM/NÃO
+        # Bloco esquerdo (cols B, C)
+        for col, adq in ((2, "N"), (3, "S")):
+            v = grid.get((r, col))
+            indop = norm_indop(v)
+            if indop:
+                indop_to_psadq.setdefault(indop, (ps_left, adq))
+        # Bloco direito (cols E, F)
+        for col, adq in ((5, "N"), (6, "S")):
+            v = grid.get((r, col))
+            indop = norm_indop(v)
+            if indop:
+                indop_to_psadq.setdefault(indop, (ps_right, adq))
+    return indop_to_psadq
+
+
 def main(xlsx_path):
     wb = openpyxl.load_workbook(xlsx_path, data_only=True)
 
-    if "REGRA inc. X" not in wb.sheetnames or "tabela geral" not in wb.sheetnames:
+    # Aba de regra: v1.02.00 usa "REGRA OP NÃO ONE_EXT" (antes "REGRA inc. X")
+    regra_name = None
+    for sn in wb.sheetnames:
+        if sn.upper().startswith("REGRA"):
+            regra_name = sn
+            break
+    if not regra_name or "tabela geral" not in wb.sheetnames:
         raise SystemExit(
             f"abas esperadas não encontradas em {xlsx_path}: "
-            f"{wb.sheetnames} (esperado 'REGRA inc. X' e 'tabela geral')"
+            f"{wb.sheetnames} (esperado aba 'REGRA*' e 'tabela geral')"
         )
 
-    # ---------- matriz REGRA inc. X ----------
-    # leitura direta (sem desmesclar): E:F é merge horizontal visual,
-    # o valor de N/S (coluna F) é vazio de propósito
-    rg = wb["REGRA inc. X"]
-
-    def g(r, c):
-        return clean(rg.cell(row=r, column=c).value)
-
-    # linhas 3-5 = dados; colunas B/C = PS onerosa SIM, E/F = PS onerosa NÃO
-    regra = [
-        {"psOnerosa": "S", "adqExterior": "N",
-         "indop": [x for x in (g(3, 2), g(4, 2), g(5, 2)) if x]},
-        {"psOnerosa": "S", "adqExterior": "S",
-         "indop": [x for x in (g(3, 3), g(4, 3), g(5, 3)) if x]},
-        {"psOnerosa": "N", "adqExterior": "N",
-         "indop": [x for x in (g(3, 5), g(4, 5), g(5, 5)) if x]},
-        {"psOnerosa": "N", "adqExterior": "S",
-         "indop": [x for x in (g(3, 6), g(4, 6), g(5, 6)) if x]},
-    ]
+    # ---------- matriz de regra (IndOp -> PS/ADQ) ----------
+    rg = wb[regra_name]
+    indop_to_psadq = build_regra_map(rg)
 
     # ---------- aba tabela geral ----------
     ws = wb["tabela geral"]
-    cab = [clean(ws.cell(row=1, column=c).value).lower() for c in range(1, 11)]
+    cab = [clean(ws.cell(row=1, column=c).value).lower() for c in range(1, 12)]
     if not (cab[0].startswith("item") and "nbs" in cab[2] and "indop" in cab[6]):
         raise SystemExit(
             f"layout inesperado da aba 'tabela geral' em {xlsx_path}: {cab}. "
@@ -111,10 +134,11 @@ def main(xlsx_path):
     itens = []
     for r in range(2, ws.max_row + 1):
         vals = [clean(grid.get((r, c))) for c in range(1, 11)]
-        item, desc_item, nbs, desc_nbs, ps, adq, indop, local, cct, nome_cct = vals
+        item, desc_item, nbs, desc_nbs, cod_ativ_sn, desc_ativ_sn, indop, local, cct, nome_cct = vals
         indop = norm_indop(indop)
         if not (indop or nbs or cct):
             continue  # linha espaçadora
+        ps_onerosa, adq_exterior = indop_to_psadq.get(indop, ("", ""))
         nbs_digits = re.sub(r"\D", "", nbs)
         itens.append({
             "itemLc116": item,
@@ -122,8 +146,10 @@ def main(xlsx_path):
             "nbs": nbs,
             "nbsDigits": nbs_digits,
             "descNbs": desc_nbs,
-            "psOnerosa": ps.upper(),
-            "adqExterior": adq.upper(),
+            "codAtivSn": cod_ativ_sn,
+            "descAtivSn": desc_ativ_sn,
+            "psOnerosa": ps_onerosa.upper(),
+            "adqExterior": adq_exterior.upper(),
             "indop": indop,
             "localIncidencia": norm_local(local),
             "cClassTrib": cct,
@@ -158,6 +184,18 @@ def main(xlsx_path):
     indops = sorted({it["indop"] for it in itens if it["indop"]})
     locais = sorted({it["localIncidencia"] for it in itens if it["localIncidencia"]})
 
+    # Constrói regraIndOp a partir do mapeamento (agrupado por ps/adq)
+    regra_agrupada = {}
+    for indop, (ps, adq) in indop_to_psadq.items():
+        regra_agrupada.setdefault((ps, adq), []).append(indop)
+    regra = []
+    for (ps, adq), indops_list in sorted(regra_agrupada.items()):
+        regra.append({
+            "psOnerosa": ps,
+            "adqExterior": adq,
+            "indop": sorted(indops_list),
+        })
+
     data = {
         "meta": {
             "fonte": "Anexo VIII — Correlação Item NBS / IndOp / cClassTrib — IBS/CBS",
@@ -165,10 +203,11 @@ def main(xlsx_path):
             "observacao": (
                 "Extraído da planilha com desmesclagem de células: cada registro é uma "
                 "correlação NBS x IndOp x cClassTrib. IndOp numérico foi normalizado "
-                "com zeros à esquerda (6 dígitos). PS Onerosa/Adq. Exterior vazios "
-                "aplicam-se às regras de incidência por local de prestação (0301xx)."
+                "com zeros à esquerda (6 dígitos). PS Onerosa/Adq. Exterior derivadas "
+                "da matriz de regra da planilha v1.02.00. Inclui colunas Simples Nacional "
+                "COD_ATIV_SN / DESCRIÇÃO ATIV_SN."
             ),
-            "geradoEm": "2026-10-08",
+            "geradoEm": "2026-11-08",
             "correlacoes": len(itens),
             "nbsUnicos": len(nbs_unicos),
             "cClassTribUnicos": len(cct_unicos),

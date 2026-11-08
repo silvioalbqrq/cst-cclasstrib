@@ -5,7 +5,7 @@ Valida contagens esperadas e consistência entre:
 - data/resumo.json (IT 2025.002 v1.70)
 - data/classificacao-tributaria.json (snapshot completo)
 - data/ncm-nbs.json (índice reverso)
-- data/anexo-viii.json (Anexo VIII V1.01.00)
+- data/anexo-viii.json (Anexo VIII V1.02.00)
 - data/anexos/*.json (fragmentos por cClassTrib, gerados por scripts/gerar_anexos.py)
 
 Uso: python scripts/test_dados.py
@@ -27,18 +27,18 @@ DATA = os.path.join(REPO, "data")
 ESPERADO = {
     "csts": 18,
     "cclasstrib_resumo": 173,
-    "anexo_versao": "V1.01.00",
-    "anexo_correlacoes": 1531,
-    "anexo_nbs": 732,
-    "anexo_cct": 28,
-    "anexo_indops": 19,
-    "anexo_nbs_vazios": 23,
+    "anexo_versao": "V1.02.00",
+    "anexo_correlacoes": 1608,
+    "anexo_nbs": 731,
+    "anexo_cct": 32,
+    "anexo_indops": 24,
+    "anexo_nbs_vazios": 0,
 }
 
-# Nomes que divergem entre Portal (IT 1.70) e planilha do Anexo VIII (v1.01.00).
+# Nomes que divergem entre Portal (IT 1.70) e planilha do Anexo VIII (v1.02.00).
 # Hierarquia: prevalece o Portal; a UI avisa no detalhe. Aqui o teste só
 # acusa divergências NOVAS (fora desta lista).
-DIVERGENCIAS_CONHECIDAS = {"200039", "200042", "200044", "820001", "820002"}
+DIVERGENCIAS_CONHECIDAS = {"200039", "200042", "200044", "820001", "820002", "221001"}
 
 falhas = []
 

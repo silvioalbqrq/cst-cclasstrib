@@ -30,7 +30,7 @@ const PAI_BADGES = {
 const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
 // Versão dos assets para cache-busting (?v=). Bump a cada release de dados.
-const ASSET_V = "20261010h";
+const ASSET_V = "20261108a";
 const urlV = (p) => `${p}?v=${ASSET_V}`;
 
 let DATA = [];
@@ -732,14 +732,14 @@ async function preencherAnexo8Dlg(cod) {
     return;
   }
   // Hierarquia de nomes: prevalece o Portal (IT 1.70, cabeçalho do detalhe);
-  // a planilha do Anexo VIII v1.01.00 diverge em alguns códigos — avisa.
+  // a planilha do Anexo VIII v1.02.00 diverge em alguns códigos — avisa.
   const nomePortal = ((localizar(cod) || {}).filho || {}).NomeReduzido;
   const nomePlan = ach[0].nomeClassTrib || "";
   const divergente = nomePortal && nomePlan &&
     nomePortal.trim() !== nomePlan.trim();
   const notaNome = divergente
     ? `<p style="color:var(--muted)">Nome no Portal (IT 1.70): “${esc(nomePortal.trim())}”. ` +
-      `Abaixo, nome conforme a planilha do Anexo VIII v1.01.00.</p>`
+      `Abaixo, nome conforme a planilha do Anexo VIII v1.02.00.</p>`
     : "";
   const MAX = 200;
   const linhas = ach.slice(0, MAX).map((it) => `<tr>
