@@ -30,7 +30,7 @@ const PAI_BADGES = {
 const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
 // Versão dos assets para cache-busting (?v=). Bump a cada release de dados.
-const ASSET_V = "20261108f";
+const ASSET_V = "20261108g";
 const urlV = (p) => `${p}?v=${ASSET_V}`;
 
 let DATA = [];
@@ -414,7 +414,7 @@ function renderAnexo8() {
     <thead><tr>
       <th>Item LC 116</th><th>Descrição do item (LC 116)</th><th>NBS</th><th>Descrição NBS</th>
       <th class="th-centro">Cód.<br>Ativ. SN</th><th class="th-centro">Descrição<br>Ativ. SN</th>
-      <th class="th-centro">PS<br>Onerosa</th><th class="th-centro">Adq.<br>Exterior</th><th class="th-centro" title="${esc(indopDesc)}">IndOp</th><th>Local de incidência IBS</th>
+      <th class="th-centro">PS<br>Onerosa</th><th class="th-centro">Adq.<br>Exterior</th><th class="th-centro">IndOp</th><th>Local de incidência IBS</th>
       <th class="th-centro">cClassTrib</th><th>Nome cClassTrib</th>
     </tr></thead>
     <tbody>${linhas}</tbody></table></div>
@@ -788,7 +788,7 @@ async function preencherAnexo8Dlg(cod) {
     ${notaNome}
     <p style="color:var(--muted);font-size:0.85rem">IndOp conforme Anexo VII-IndOp_IBSCBS v1.03.00 (tooltip com tipo de operação e característica).</p>
     <div class="tab-wrap"><table>
-    <thead><tr><th>NBS</th><th>Descrição NBS</th><th class="th-centro" title="${esc(indopDesc)}">IndOp</th><th>Local de incidência</th><th class="th-centro">PS<br>Onerosa</th><th class="th-centro">Adq.<br>Exterior</th><th class="th-centro">Cód.<br>Ativ. SN</th><th class="th-centro">Descrição<br>Ativ. SN</th><th>Item LC 116</th></tr></thead>
+    <thead><tr><th>NBS</th><th>Descrição NBS</th><th class="th-centro">IndOp</th><th>Local de incidência</th><th class="th-centro">PS<br>Onerosa</th><th class="th-centro">Adq.<br>Exterior</th><th class="th-centro">Cód.<br>Ativ. SN</th><th class="th-centro">Descrição<br>Ativ. SN</th><th>Item LC 116</th></tr></thead>
     <tbody>${linhas}</tbody></table></div>
     ${ach.length > MAX ? `<p style="color:var(--muted)">…e mais ${ach.length - MAX}.</p>` : ""}
     </details>`;
