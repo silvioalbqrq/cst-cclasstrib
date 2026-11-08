@@ -22,7 +22,7 @@ body {
   font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+.wrap { max-width: 1500px; margin: 0 auto; padding: 0 16px; }
 
 /* ---------- topo (herói marinho) ---------- */
 .topo { background: var(--navy); color: #fff; padding: 46px 0 42px; text-align: center; }
@@ -231,7 +231,7 @@ details.grupo-colapsado .grupo-body { padding: 0 14px 14px; }
 }
 
 .tab-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; table-layout: auto; }
 thead th {
   position: sticky;
   top: 0;
@@ -242,7 +242,7 @@ thead th {
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
 }
-tbody td { padding: 7px 10px; border-bottom: 1px solid #edf1f5; vertical-align: top; }
+tbody td { padding: 7px 10px; border-bottom: 1px solid #edf1f5; vertical-align: top; overflow-wrap: break-word; word-break: break-word; }
 tbody tr:hover { background: #f7fafd; }
 td.cod { font-family: ui-monospace, Consolas, monospace; font-weight: 700; white-space: nowrap; }
 td.num { white-space: nowrap; }
