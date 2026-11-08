@@ -88,9 +88,12 @@ python scripts/atualizar_anexo8.py "AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_I
 Notas do Anexo VIII:
 - `99.01.01` (“Outros serviços sem incidência de ISSQN/ICMS”) vem na planilha sem NBS/IndOp/cClassTrib e é descartado pelo script — por isso 207 itens com correlação em 208 grupos da aba.
 - 15 correlações têm NBS vazio na própria planilha (ex. `07.13` pulverização → `200038`, `99.03.0x` imóveis → `200027`): alcançáveis só por descrição/IndOp, nunca por dígito NBS.
-- `regraIndOp` (aba `REGRA inc. X`) é a matriz PS Onerosa × Adq. Exterior → IndOp exibida em “Regra de incidência → IndOp”; linhas sem IndOp (ex. N/S) são mantidas como lista vazia.
+- `regraIndOp` (aba `REGRA OP NÃO ONE_EXT`) é a matriz PS Onerosa × Adq. Exterior → IndOp exibida em “Regra de incidência → IndOp”; para operações **NÃO ONEROSAS e/ou ADQUIRENTES ESTABELECIDOS EM OUTRO PAÍS**, utilizar a correlação dessa aba da planilha. Linhas sem IndOp (ex. N/S) são mantidas como lista vazia.
+- Novas colunas da planilha v1.02.00: `COD_ATIV_SN` (Código da Atividade do Simples Nacional) e `DESCRIÇÃO ATIV_SN` (Descrição da Atividade do Simples Nacional) — exibidas na consulta NBS e no detalhe do cClassTrib.
+- Códigos IndOp atualizados de acordo com o Anexo VII-IndOp_IBSCBS_V1.03.00 (tooltip com tipo de operação e característica do fornecimento).
 - Hierarquia de nomes: em divergência entre Portal (IT 1.70) e planilha (v1.02.00), prevalece o Portal — a UI avisa no detalhe. Divergências conhecidas: `200039`, `200042`, `200044`, `820001`, `820002` (ver `DIVERGENCIAS_CONHECIDAS` em `scripts/test_dados.py`).
 - Detalhe baixa `data/anexos/<cod>.json` (KB, gerado por `scripts/gerar_anexos.py`); o snapshot completo só é usado como fallback.
+- `scripts/gerar_indop_v103.py` gera `data/indop-v103.json` a partir da planilha `AnexoVII-IndOp_IBSCBS_v1-03-00-nt009.xlsx` (NT009 v1.01).
 
 Testes:
 

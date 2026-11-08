@@ -30,7 +30,7 @@ const PAI_BADGES = {
 const FILHO_FLAGS = ["IndTribRegular", "IndPermiteCredPres", "IndEstornoCred"];
 
 // Versão dos assets para cache-busting (?v=). Bump a cada release de dados.
-const ASSET_V = "20261108c";
+const ASSET_V = "20261108d";
 const urlV = (p) => `${p}?v=${ASSET_V}`;
 
 let DATA = [];
@@ -40,6 +40,7 @@ let IDX = null;       // indice reverso NCM/NBS, carregado sob demanda
 let NCM_DESC = null;  // descricoes NCM (g: grupos, i: itens), sob demanda
 let NCM_NORM = null;  // cache codigo -> descricao normalizada (busca textual)
 let ANEXO8 = null;    // dados do Anexo VIII (NBS x IndOp x cClassTrib), sob demanda
+let INDOP_V103 = null; // descrições do IndOp conforme Anexo VII v1.03.00 (NT009)
 
 let tBusca = null;
 let tBusca8 = null;
@@ -315,6 +316,19 @@ function mostrarVersao8() {
   }
 }
 
+async function garantirIndopV103(silencioso) {
+  if (INDOP_V103) return true;
+  if (!silencioso) showStatus("Carregando IndOp Anexo VII v1.03.00…");
+  try {
+    INDOP_V103 = await carregarJson(urlV("data/indop-v103.json"));
+  } catch (e) {
+    if (!silencioso) showStatus("Não foi possível carregar data/indop-v103.json (" + e.message + ").");
+    return false;
+  }
+  if (!silencioso) showStatus("");
+  return true;
+}
+
 async function garantirAnexo8(silencioso) {
   if (ANEXO8) return true;
   if (!silencioso) showStatus("Carregando Anexo VIII…");
@@ -378,21 +392,28 @@ function renderAnexo8() {
   pagina8 = Math.min(Math.max(0, pagina8), totalPag - 1);
   const ini = pagina8 * PAGE8;
   const fatia = itens.slice(ini, ini + PAGE8);
-  const linhas = fatia.map((it) => `<tr>
+  const linhas = fatia.map((it) => {
+    const ind = INDOP_V103 && INDOP_V103.indops ? INDOP_V103.indops[it.indop] : null;
+    const indopDesc = ind ? `${ind.tipoOperacao} · ${ind.caracteristica}` : "";
+    return `<tr>
     <td class="cod">${esc(it.itemLc116)}</td>
     <td>${esc(it.descItem)}</td>
     <td class="cod">${esc(it.nbs || "—")}</td>
     <td>${esc(it.descNbs || "—")}</td>
+    <td>${esc(it.codAtivSn || "—")}</td>
+    <td>${esc(it.descAtivSn || "—")}</td>
     <td>${esc(it.psOnerosa || "—")}</td>
     <td>${esc(it.adqExterior || "—")}</td>
-    <td class="cod">${esc(it.indop)}</td>
+    <td class="cod" title="${esc(indopDesc)}">${esc(it.indop)}</td>
     <td>${esc(it.localIncidencia || "—")}</td>
     <td class="cod">${esc(it.cClassTrib || "—")}</td>
     <td>${esc(it.nomeClassTrib || "—")}</td>
-  </tr>`).join("");
+  </tr>`;
+  }).join("");
   box.innerHTML = `<div class="grupo"><div class="tab-wrap"><table>
     <thead><tr>
       <th>Item LC 116</th><th>Descrição do item (LC 116)</th><th>NBS</th><th>Descrição NBS</th>
+      <th>Cód. Ativ. SN</th><th>Descrição Ativ. SN</th>
       <th>PS Onerosa</th><th>Adq. Exterior</th><th>IndOp</th><th>Local de incidência IBS</th>
       <th>cClassTrib</th><th>Nome cClassTrib</th>
     </tr></thead>
@@ -423,12 +444,14 @@ function renderRegra8() {
 function exportarCSVAnexo8() {
   if (!ANEXO8) return;
   const head = ["Item LC 116", "Descrição item", "NBS", "Descrição NBS",
+    "Cód. Ativ. SN", "Descrição Ativ. SN",
     "PS Onerosa", "Adq. Exterior", "IndOp", "Local de incidência IBS",
     "cClassTrib", "Nome cClassTrib"];
   const linhas = [head.map(csvCell).join(";")];
   for (const it of filtroAnexo8($("q8").value)) {
     linhas.push([
       it.itemLc116, it.descItem, it.nbs, it.descNbs,
+      it.codAtivSn, it.descAtivSn,
       it.psOnerosa, it.adqExterior, it.indop, it.localIncidencia,
       it.cClassTrib, it.nomeClassTrib,
     ].map(csvCell).join(";"));
@@ -746,19 +769,26 @@ async function preencherAnexo8Dlg(cod) {
       `Abaixo, nome conforme a planilha do Anexo VIII v1.02.00.</p>`
     : "";
   const MAX = 200;
-  const linhas = ach.slice(0, MAX).map((it) => `<tr>
+  const linhas = ach.slice(0, MAX).map((it) => {
+    const ind = INDOP_V103 && INDOP_V103.indops ? INDOP_V103.indops[it.indop] : null;
+    const indopDesc = ind ? `${ind.tipoOperacao} · ${ind.caracteristica}` : "";
+    return `<tr>
     <td class="cod">${esc(it.nbs || "—")}</td>
     <td>${esc(it.descNbs || "")}</td>
-    <td class="cod">${esc(it.indop)}</td>
+    <td class="cod" title="${esc(indopDesc)}">${esc(it.indop)}</td>
     <td>${esc(it.localIncidencia || "—")}</td>
     <td>${esc(it.psOnerosa || "—")}</td>
     <td>${esc(it.adqExterior || "—")}</td>
+    <td class="cod">${esc(it.codAtivSn || "—")}</td>
+    <td>${esc(it.descAtivSn || "—")}</td>
     <td class="cod">${esc(it.itemLc116)}</td>
-  </tr>`).join("");
+  </tr>`;
+  }).join("");
   wrap.innerHTML = `<details class="regra" open><summary>Anexo VIII — ${ach.length} correlação(ões) NBS/IndOp</summary>
     ${notaNome}
+    <p style="color:var(--muted);font-size:0.85rem">IndOp conforme Anexo VII-IndOp_IBSCBS v1.03.00 (tooltip com tipo de operação e característica).</p>
     <div class="tab-wrap"><table>
-    <thead><tr><th>NBS</th><th>Descrição NBS</th><th>IndOp</th><th>Local de incidência</th><th>PS Onerosa</th><th>Adq. Exterior</th><th>Item LC 116</th></tr></thead>
+    <thead><tr><th>NBS</th><th>Descrição NBS</th><th>IndOp</th><th>Local de incidência</th><th>PS Onerosa</th><th>Adq. Exterior</th><th>Cód. Ativ. SN</th><th>Descrição Ativ. SN</th><th>Item LC 116</th></tr></thead>
     <tbody>${linhas}</tbody></table></div>
     ${ach.length > MAX ? `<p style="color:var(--muted)">…e mais ${ach.length - MAX}.</p>` : ""}
     </details>`;
@@ -945,9 +975,9 @@ $("dlg").addEventListener("close", () => {
   }
   });
 
-  // Pre-carrega o Anexo VIII em segundo plano (janela 2 + detalhe do cClassTrib).
-  garantirAnexo8(true).then((ok) => {
-    if (!ok) return;
+  // Pre-carrega o Anexo VIII e o IndOp Anexo VII v1.03.00 em segundo plano (janela 2 + detalhe do cClassTrib).
+  Promise.all([garantirAnexo8(true), garantirIndopV103(true)]).then(([ok8, okIndop]) => {
+    if (!ok8) return;
     renderRegra8();
     renderAnexo8();
     mostrarVersao8();
