@@ -3,7 +3,7 @@
   --blue:#2563eb;--blue-dark:#1d4ed8;--blue-soft:#eaf1fe;
   --emerald:#0f9f6e;--emerald-light:#34d399;--emerald-soft:#e7f7f1;
   --ink:#152033;--muted:#5f6f85;--line:#dfe7f1;
-  --bg:#f4f7fb;--card:#ffffff;
+  --bg:#e4ecf6;--card:#ffffff;
   --amber:#93370d;--amberbg:#fffaeb;
   --red:#b42318;--redbg:#fef3f2;
   --green:#067a54;--greenbg:#e7f7f1;
@@ -34,9 +34,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 .corp-inner{max-width:1500px;margin:0 auto;padding:0 16px}
 .corp-bar .corp-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:64px;padding-top:8px;padding-bottom:8px;flex-wrap:wrap}
 .corp-brand{display:flex;gap:11px;align-items:center}
-.corp-logo{width:36px;height:36px;border-radius:10px;background:var(--navy);color:#fff;display:grid;place-items:center;flex:none;box-shadow:0 6px 14px -6px rgba(11,31,58,.6)}
-.corp-logo svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.corp-logo svg .hl{stroke:var(--emerald-light);stroke-width:2.2}
+.corp-logo{width:36px;height:36px;flex:none;display:grid;place-items:center;box-shadow:0 6px 14px -6px rgba(11,31,58,.6);border-radius:10px;overflow:hidden}
+.corp-logo img{width:36px;height:36px;display:block;border-radius:10px}
 .corp-brand strong{font-size:1rem;display:block;line-height:1.2;font-weight:800;letter-spacing:-.02em;color:var(--navy)}
 .corp-brand small{color:var(--muted);font-size:.66rem;font-weight:500;display:block;margin-top:2px}
 .corp-nav{display:flex;gap:10px;align-items:center}
@@ -177,8 +176,10 @@ fieldset select, fieldset input[type="text"] {
 
 /* ---------- cards de resultados colapsaveis ---------- */
 details.grupo-colapsado {
+  background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
   margin-bottom: 12px;
   overflow: hidden;
 }
@@ -186,15 +187,19 @@ details.grupo-colapsado summary {
   cursor: pointer;
   font-weight: 700;
   padding: 10px 14px;
-  background: #eef3f8;
+  background: var(--card);
+  border-bottom: 1px solid transparent;
 }
+details.grupo-colapsado[open] summary { border-bottom-color: var(--line); }
 details.grupo-colapsado .grupo-body { padding: 0 14px 14px; }
 
 /* ---------- resultados ---------- */
 .status {
-  background: #fff7e6;
-  border: 1px solid #ecd9a0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--amber);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 12px 16px;
   margin: 16px 0;
 }

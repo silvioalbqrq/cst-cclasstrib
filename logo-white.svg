@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Consulta tributária IBS/CBS">
+  <rect width="64" height="64" rx="14" fill="#ffffff"/>
+  <path d="M16 17 H37 L53 33.5 37 50 H16 A6 6 0 0 1 10 44 V23 A6 6 0 0 1 16 17 Z" fill="#0b1f3a"/>
+  <circle cx="18.5" cy="33.5" r="3" fill="#ffffff"/>
+  <path d="M25 34.5 l5 5.2 l10.5 -12" fill="none" stroke="#34d399" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

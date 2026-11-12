@@ -1,12 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Consulta CST × cClassTrib (IBS/CBS)">
-  <!-- Fundo documento branco com borda navy -->
-  <rect x="6" y="6" width="52" height="52" rx="12" fill="#ffffff" stroke="#0b1f3a" stroke-width="2.5"/>
-  <!-- Aba superior do documento -->
-  <rect x="10" y="10" width="24" height="7" rx="2" fill="#0b1f3a"/>
-  <!-- Linhas de tabela/classificação -->
-  <rect x="16" y="24" width="14" height="2" rx="1" fill="#2563eb"/>
-  <rect x="16" y="28" width="22" height="2" rx="1" fill="#0f9f6e" opacity=".9"/>
-  <rect x="16" y="32" width="16" height="2" rx="1" fill="#cbd5e1"/>
-  <!-- Selo de verificação verde -->
-  <path d="M26 42 l-3 3 l-6-2" fill="none" stroke="#0f9f6e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Consulta tributária IBS/CBS">
+  <defs>
+    <linearGradient id="ctBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1f3a"/>
+      <stop offset="1" stop-color="#123a6b"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#ctBg)"/>
+  <!-- Etiqueta de classificação tributária -->
+  <path d="M16 17 H37 L53 33.5 37 50 H16 A6 6 0 0 1 10 44 V23 A6 6 0 0 1 16 17 Z" fill="#ffffff"/>
+  <circle cx="18.5" cy="33.5" r="3" fill="#0b1f3a"/>
+  <!-- Check de conformidade -->
+  <path d="M25 34.5 l5 5.2 l10.5 -12" fill="none" stroke="#0f9f6e" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
